@@ -32,9 +32,9 @@
         <rar.file.name>${rar.name}-${rar.version}.rar</rar.file.name>
         <vertx.version>3.5.1</vertx.version>
 
-		<qwanda-services.version>1.0.56</qwanda-services.version>
+		<qwanda-services.version>1.0.57</qwanda-services.version>
 
-		<version.org.wildfly>14.0.0.Final</version.org.wildfly>
+		<version.org.wildfly>14.0.1.Final</version.org.wildfly>
 
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
@@ -56,8 +56,8 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.jboss.bom>13.0.0.Final</version.jboss.bom>
-		<drools.version>6.4.0.Final</drools.version>
-		<jbpm.version>6.4.0.Final</jbpm.version>
+		<drools.version>7.0.0.Final</drools.version>
+		<jbpm.version>7.0.0.Final</jbpm.version>
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
 
@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-ejb-client-bom</artifactId>
-			<version>12.0.0.Final</version>
+			<version>14.0.1.Final</version>
 			<type>pom</type>
 		</dependency>
 
@@ -163,7 +163,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-jms-client-bom</artifactId>
-			<version>12.0.0.Final</version>
+			<version>14.0.1.Final</version>
 			<type>pom</type>
 		</dependency>
 
@@ -478,7 +478,7 @@
 			<dependency>
 				<groupId>org.wildfly.bom</groupId>
 				<artifactId>wildfly-javaee7</artifactId>
-				<version>12.0.0.Final</version>
+				<version>14.0.1.Final</version>
 				<type>pom</type>
 			</dependency>
 
@@ -518,7 +518,7 @@
 						</goals>
 						<configuration>
 							<generateGitPropertiesFile>true</generateGitPropertiesFile>
-							<generateGitPropertiesFilename>target/classes/git.properties</generateGitPropertiesFilename>
+							<generateGitPropertiesFilename>target/classes/${project.name}-git.properties</generateGitPropertiesFilename>
 							<!-- If you'd like to tell the plugin where your .git directory is, 
 								use this setting, otherwise we'll perform a search trying to figure out the 
 								right directory. It's better to add it explicite IMHO. -->
@@ -556,7 +556,7 @@
 							<generateGitPropertiesFile>true</generateGitPropertiesFile>
 							<!-- The path for the to be generated properties file, it's relative 
 								to ${project.basedir} -->
-							<generateGitPropertiesFilename>src/main/resources/git.properties</generateGitPropertiesFilename>
+							<generateGitPropertiesFilename>src/main/resources/${project.name}-git.properties</generateGitPropertiesFilename>
 
 							<!-- Denotes the format to save properties in. Valid options are "properties" 
 								(default) and "json". Properties will be saved to the generateGitPropertiesFilename 
@@ -688,8 +688,8 @@
 						<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
 						<!-- the maven dependency plugin will have already downloaded the server 
 							on /target -->
-						<jboss.home>${project.basedir}/target/wildfly-12.0.0.Final</jboss.home>
-						<module.path>${project.basedir}/target/wildfly-12.0.0.Final/modules</module.path>
+						<jboss.home>${project.basedir}/target/wildfly-14.0.1.Final</jboss.home>
+						<module.path>${project.basedir}/target/wildfly-14.0.1.Final/modules</module.path>
 					</systemPropertyVariables>
 					<redirectTestOutputToFile>false</redirectTestOutputToFile>
 				</configuration>
@@ -774,7 +774,7 @@
 										<artifactItem>
 											<groupId>org.wildfly</groupId>
 											<artifactId>wildfly-dist</artifactId>
-											<version>12.0.0.Final</version>
+											<version>14.0.1.Final</version>
 											<type>zip</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${project.build.directory}</outputDirectory>

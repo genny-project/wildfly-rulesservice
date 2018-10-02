@@ -18,8 +18,11 @@ public class RestApplication extends Application {
   public Set<Class<?>> getClasses() {
     final Set<Class<?>> resources = new HashSet<Class<?>>();
     resources.add(JsonDateTimeProvider.class);
-    resources.add(RulesEndpoint.class);
+    resources.add(QwandaEndpoint.class);
+    resources.add(ServiceEndpoint.class);
     resources.add(VersionEndpoint.class);
+    resources.add(KeycloakEndpoint.class);
+    resources.add(UtilsEndpoint.class);
     resources.add(CORSFilter.class);
 
     resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);
