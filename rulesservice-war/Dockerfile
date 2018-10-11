@@ -5,9 +5,6 @@ USER root
 RUN env
 
 ENV PROJECT wildfly-qwanda-service
-ADD gennyCredentials /root/.credentials/sheets.googleapis.com-java-quickstart/StoredCredential
-ADD gennyCredentials /root/.credentials/genny/StoredCredential
-ADD gennyC /root/.credentials/sheets.googleapis.com-java-quickstart/StoredCredential
 ADD channel /root/.credentials/channel/StoredCredential
 USER root
 
@@ -16,7 +13,6 @@ RUN mkdir /opt/jboss/wildfly/realm
 RUN mkdir /realm
 
 ADD realm /opt/realm
-ADD google $JBOSS_HOME/google
 ADD docker-entrypoint2.sh /opt/jboss/
 
 USER root

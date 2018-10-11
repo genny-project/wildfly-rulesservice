@@ -7,7 +7,7 @@
 	<assembly-descriptor>
 		<r:resource-adapter-binding>
 			<ejb-name>*</ejb-name>
-			<r:resource-adapter-name>qwanda-service-ear.ear#vertx-jca-adapter-3.5.1.rar
+			<r:resource-adapter-name>rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar
 			</r:resource-adapter-name>
 		</r:resource-adapter-binding>
 	</assembly-descriptor>
@@ -16,7 +16,7 @@
 			<activation-config>
 				<activation-config-property>
 					<activation-config-property-name>address</activation-config-property-name>
-					<activation-config-property-value>api</activation-config-property-value>
+					<activation-config-property-value>events</activation-config-property-value>
 				</activation-config-property>
 				<activation-config-property>
 					<activation-config-property-name>clusterPort</activation-config-property-name>
