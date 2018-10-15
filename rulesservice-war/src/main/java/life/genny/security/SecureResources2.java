@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
@@ -14,25 +17,32 @@ import javax.enterprise.event.Observes;
 
 import life.genny.qwandautils.GennySettings;
 
-@ApplicationScoped
-public class SecureResources {
 
+public class SecureResources2 {
+
+	private static Map<String, String> keycloakJsonMap = new ConcurrentHashMap<String, String>();
+
+	
 	/**
 	 * @return the keycloakJsonMap
 	 */
 	public static Map<String, String> getKeycloakJsonMap() {
+		if (keycloakJsonMap==null || keycloakJsonMap.isEmpty()) {
+			init();
+		}
 		return keycloakJsonMap;
 	}
 
-	private static Map<String, String> keycloakJsonMap = new HashMap<String, String>();
 
 
 
-	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
-		readFilenamesFromDirectory(GennySettings.realmDir);
+	public static void init() {
+	
+			readFilenamesFromDirectory(GennySettings.realmDir);
+	
 	}
 
-	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
+	public static void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
 		keycloakJsonMap.clear();
 	}
 

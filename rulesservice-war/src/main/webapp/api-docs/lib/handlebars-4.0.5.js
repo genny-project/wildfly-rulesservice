@@ -1878,9 +1878,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.yytext = '';
 	                    this.match = '';
 	                }
-	                var rules = this._currentRules();
-	                for (var i = 0; i < rules.length; i++) {
-	                    tempMatch = this._input.match(this.rules[rules[i]]);
+	                var life.genny.rules = this._currentRules();
+	                for (var i = 0; i < life.genny.rules.length; i++) {
+	                    tempMatch = this._input.match(this.rules[life.genny.rules[i]]);
 	                    if (tempMatch && (!match || tempMatch[0].length > match[0].length)) {
 	                        match = tempMatch;
 	                        index = i;
@@ -1904,7 +1904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this._more = false;
 	                    this._input = this._input.slice(match[0].length);
 	                    this.matched += match[0];
-	                    token = this.performAction.call(this, this.yy, this, rules[index], this.conditionStack[this.conditionStack.length - 1]);
+	                    token = this.performAction.call(this, this.yy, this, life.genny.rules[index], this.conditionStack[this.conditionStack.length - 1]);
 	                    if (this.done && this._input) this.done = false;
 	                    if (token) return token;else return;
 	                }
@@ -2117,7 +2117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        };
 	        lexer.rules = [/^(?:[^\x00]*?(?=(\{\{)))/, /^(?:[^\x00]+)/, /^(?:[^\x00]{2,}?(?=(\{\{|\\\{\{|\\\\\{\{|$)))/, /^(?:\{\{\{\{(?=[^\/]))/, /^(?:\{\{\{\{\/[^\s!"#%-,\.\/;->@\[-\^`\{-~]+(?=[=}\s\/.])\}\}\}\})/, /^(?:[^\x00]*?(?=(\{\{\{\{)))/, /^(?:[\s\S]*?--(~)?\}\})/, /^(?:\()/, /^(?:\))/, /^(?:\{\{\{\{)/, /^(?:\}\}\}\})/, /^(?:\{\{(~)?>)/, /^(?:\{\{(~)?#>)/, /^(?:\{\{(~)?#\*?)/, /^(?:\{\{(~)?\/)/, /^(?:\{\{(~)?\^\s*(~)?\}\})/, /^(?:\{\{(~)?\s*else\s*(~)?\}\})/, /^(?:\{\{(~)?\^)/, /^(?:\{\{(~)?\s*else\b)/, /^(?:\{\{(~)?\{)/, /^(?:\{\{(~)?&)/, /^(?:\{\{(~)?!--)/, /^(?:\{\{(~)?![\s\S]*?\}\})/, /^(?:\{\{(~)?\*?)/, /^(?:=)/, /^(?:\.\.)/, /^(?:\.(?=([=~}\s\/.)|])))/, /^(?:[\/.])/, /^(?:\s+)/, /^(?:\}(~)?\}\})/, /^(?:(~)?\}\})/, /^(?:"(\\["]|[^"])*")/, /^(?:'(\\[']|[^'])*')/, /^(?:@)/, /^(?:true(?=([~}\s)])))/, /^(?:false(?=([~}\s)])))/, /^(?:undefined(?=([~}\s)])))/, /^(?:null(?=([~}\s)])))/, /^(?:-?[0-9]+(?:\.[0-9]+)?(?=([~}\s)])))/, /^(?:as\s+\|)/, /^(?:\|)/, /^(?:([^\s!"#%-,\.\/;->@\[-\^`\{-~]+(?=([=~}\s\/.)|]))))/, /^(?:\[(\\\]|[^\]])*\])/, /^(?:.)/, /^(?:$)/];
-	        lexer.conditions = { "mu": { "rules": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44], "inclusive": false }, "emu": { "rules": [2], "inclusive": false }, "com": { "rules": [6], "inclusive": false }, "raw": { "rules": [3, 4, 5], "inclusive": false }, "INITIAL": { "rules": [0, 1, 44], "inclusive": true } };
+	        lexer.conditions = { "mu": { "life.genny.rules": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44], "inclusive": false }, "emu": { "life.genny.rules": [2], "inclusive": false }, "com": { "life.genny.rules": [6], "inclusive": false }, "raw": { "life.genny.rules": [3, 4, 5], "inclusive": false }, "INITIAL": { "life.genny.rules": [0, 1, 44], "inclusive": true } };
 	        return lexer;
 	    })();
 	    parser.lexer = lexer;

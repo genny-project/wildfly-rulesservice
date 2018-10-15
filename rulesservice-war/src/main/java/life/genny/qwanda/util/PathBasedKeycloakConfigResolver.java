@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Inject;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -18,7 +20,7 @@ import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.OIDCHttpFacade;
 
-import life.genny.security.SecureResources;
+import life.genny.security.SecureResources2;
 
 public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	/**
@@ -29,6 +31,9 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	private final Map<String, KeycloakDeployment> cache = new ConcurrentHashMap<String, KeycloakDeployment>();
 	private static String lastlog = "";
+	
+	@Inject
+	SecureResources2 secureResources2;
 
 	@Override
 	public KeycloakDeployment resolve(final OIDCHttpFacade.Request request) {
@@ -73,7 +78,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 					aURL = new URL(request.getURI());
 					final String url = aURL.getHost();
-					final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(url + ".json");
+					final String keycloakJsonText = secureResources2.getKeycloakJsonMap().get(url + ".json");
 					if (keycloakJsonText==null) {
 						log.error(url + ".json is NOT in rulesservice Keycloak Map!");
 					} else {
@@ -105,7 +110,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			InputStream is;
 			try {
 				is = new ByteArrayInputStream(
-						SecureResources.getKeycloakJsonMap().get(key).getBytes(StandardCharsets.UTF_8.name()));
+						secureResources2.getKeycloakJsonMap().get(key).getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);
 				cache.put(realm, deployment);
 				

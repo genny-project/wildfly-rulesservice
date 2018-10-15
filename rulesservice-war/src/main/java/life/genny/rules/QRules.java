@@ -29,6 +29,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.money.CurrencyUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -117,7 +118,7 @@ import life.genny.qwandautils.KeycloakUtils;
 import life.genny.qwandautils.MessageUtils;
 import life.genny.qwandautils.QwandaMessage;
 import life.genny.qwandautils.QwandaUtils;
-import life.genny.security.SecureResources;
+import life.genny.security.SecureResources2;
 import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.CacheUtils;
 import life.genny.utils.DateUtils;
@@ -142,6 +143,8 @@ public class QRules {
 	public static final String projectUrl = System.getenv("PROJECT_URL");
 
 	final static String DEFAULT_STATE = "NEW";
+	
+
 
 	private String token;
 	private EventBusInterface eventBus;
@@ -867,7 +870,7 @@ public class QRules {
 		HashMap<String, String> contextMap = new HashMap<>(); <br>
 		contextMap.put("USER", userBe); <br>
 		
-		 rules.sendMessage(directRecipientEmailIds, "MSG_USER_CONTACTED", contextMap, "EMAIL"); 
+		 life.genny.rules.sendMessage(directRecipientEmailIds, "MSG_USER_CONTACTED", contextMap, "EMAIL"); 
 	 */
 	public void sendMessage(String[] to, String templateCode, HashMap<String, String> contextMap,
 			String messageType, List<QBaseMSGAttachment> attachmentList) {
@@ -1707,7 +1710,7 @@ public class QRules {
 					+ this.decodedTokenMap.get("preferred_username") // This is faster than calling getUser()
 					+ showStates());
 		} catch (NullPointerException e) {
-			println("Error in rules: ", "ANSI_RED");
+			println("Error in life.genny.rules: ", "ANSI_RED");
 		}
 		ruleStartMs = System.nanoTime();
 	}
@@ -1722,7 +1725,7 @@ public class QRules {
 					+ this.decodedTokenMap.get("preferred_username") // This is faster than calling getUser()
 					+ showStates());
 		} catch (NullPointerException e) {
-			println("Error in rules: ", "ANSI_RED");
+			println("Error in life.genny.rules: ", "ANSI_RED");
 		}
 	}
 
@@ -2104,7 +2107,7 @@ public class QRules {
 	public void startWorkflow(final String id) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("rules", this);
+		params.put("life.genny.rules", this);
 
 		startWorkflow(id, params);
 	}
@@ -2114,7 +2117,7 @@ public class QRules {
 		println("Starting process " + id);
 		if (drools != null) {
 
-			parms.put("rules", this);
+			parms.put("life.genny.rules", this);
 			drools.getKieRuntime().startProcess(id, parms);
 		}
 	}
@@ -4610,16 +4613,20 @@ public class QRules {
 		println(RulesUtils.ANSI_BLUE + "PRE_INIT_STARTUP Loading in keycloak data and setting up service token for "
 				+ realm() + RulesUtils.ANSI_RESET);
 
-		for (String jsonFile : SecureResources.getKeycloakJsonMap().keySet()) {
+		if (SecureResources2.getKeycloakJsonMap()==null) {
+			log.error("SecureResources2.getKeycloakJsonMap  is null");
+		}
+		
+		for (String jsonFile :SecureResources2.getKeycloakJsonMap().keySet()) {
 
-			String keycloakJson = SecureResources.getKeycloakJsonMap().get(jsonFile);
+			String keycloakJson =SecureResources2.getKeycloakJsonMap().get(jsonFile);
 			if (keycloakJson == null) {
 				log.info("No keycloakMap for " + realm());
 				if (GennySettings.devMode) {
 					System.out.println("Fudging realm so genny keycloak used");
 					// Use basic Genny json when project json not available
-					String gennyJson = SecureResources.getKeycloakJsonMap().get("genny.json");
-					SecureResources.getKeycloakJsonMap().put(jsonFile, gennyJson);
+					String gennyJson =SecureResources2.getKeycloakJsonMap().get("genny.json");
+					SecureResources2.getKeycloakJsonMap().put(jsonFile, gennyJson);
 					keycloakJson = gennyJson;
 				} else {
 					return false;
@@ -4857,7 +4864,7 @@ public class QRules {
 		this.sendCachedItem("GRP_DASHBOARD", subscriptions, bucketsToBeSent);
 		this.sendCachedItem("GRP_BEGS", subscriptions, bucketsToBeSent);
 
-		/* end of process, tell rules to show layouts */
+		/* end of process, tell life.genny.rules to show layouts */
 		this.setState("DATA_SENT_FINISHED");
 
 	}

@@ -16,7 +16,7 @@ import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
-import life.genny.rules.RulesLoader;
+
 import life.genny.services.BatchLoading;
 
 /**

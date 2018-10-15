@@ -19,8 +19,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
-
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 
 import org.kie.api.KieBase;
@@ -45,11 +44,24 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vertx.core.json.DecodeException;
+import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.buffer.Buffer;
+import io.vertx.rxjava.core.eventbus.EventBus;
 import life.genny.eventbus.EventBusInterface;
+import life.genny.qwanda.entity.User;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
+import life.genny.rules.QRules;
+
+import life.genny.security.SecureResources2;
+import life.genny.utils.RulesUtils;
+import life.genny.utils.VertxUtils;
+import life.genny.eventbus.EventBusInterface;
+import io.vertx.resourceadapter.examples.mdb.EventBusBean;
+import javax.inject.Inject;
+import life.genny.qwanda.message.QEventMessage;
+
 
 /**
  * @author acrow
@@ -69,6 +81,13 @@ public class RulesService {
 	KieServices ks = KieServices.Factory.get();
 
 	Set<String> realms = new HashSet<String>();
+	
+
+	
+	@Inject
+	EventBusBean eventBus;
+
+
 
 
 	@PostConstruct
@@ -78,6 +97,8 @@ public class RulesService {
 		
 		// Load in Rules
 		loadInitialRules(GennySettings.rulesDir);
+		
+		triggerStartupRules(GennySettings.rulesDir);
 	}
 	
 	/**
@@ -87,15 +108,15 @@ public class RulesService {
 	public void loadInitialRules(final String rulesDir) {
 		log.info("Loading Rules and workflows!!!");
 			setKieBaseCache(new HashMap<String, KieBase>()); // clear
-			// List<Tuple2<String, String>> rules = processFile(rulesDir);
-			// setupKieRules("rules", rules);
+			// List<Tuple2<String, String>> life.genny.rules = processFile(rulesDir);
+			// setupKieRules("life.genny.rules", life.genny.rules);
 
 			List<Tuple3<String, String, String>> rules = processFileRealms("genny", rulesDir);
 
 			realms = getRealms(rules);
 			realms.stream().forEach(System.out::println);
 			realms.remove("genny");
-			setupKieRules("genny", rules); // run genny rules first
+			setupKieRules("genny", rules); // run genny life.genny.rules first
 			for (String realm : realms) {
 				setupKieRules(realm, rules);
 			}
@@ -113,8 +134,7 @@ public class RulesService {
 
 
 			if (realms.isEmpty()) {
-////				EBCHandlers.initMsg("Event:INIT_STARTUP", "genny", new QEventMessage("EVT_MSG", "INIT_STARTUP"),
-////						CurrentVtxCtx.getCurrentCtx().getClusterVtx().eventBus());
+				initMsg("Event:INIT_STARTUP", "genny", new QEventMessage("EVT_MSG", "INIT_STARTUP"), eventBus);
 			}
 			// }
 			else {
@@ -122,8 +142,7 @@ public class RulesService {
 
 					// Trigger Startup Rules
 					log.info("---- Realm:" + realm + " Startup Rules ----------");
-////					EBCHandlers.initMsg("Event:INIT_STARTUP", realm, new QEventMessage("EVT_MSG", "INIT_STARTUP"),
-////							CurrentVtxCtx.getCurrentCtx().getClusterVtx().eventBus());
+					initMsg("Event:INIT_STARTUP", realm, new QEventMessage("EVT_MSG", "INIT_STARTUP"), eventBus);
 				}
 			}
 			log.info("Startup Rules Triggered");
@@ -141,7 +160,7 @@ public class RulesService {
 	 List<Tuple3<String, String, String>> processFileRealms(final String realm, String inputFileStrs) {
 		List<Tuple3<String, String, String>> rules = new ArrayList<Tuple3<String, String, String>>();
 
-		String[] inputFileStrArray = inputFileStrs.split(";"); // allow multiple rules dirs
+		String[] inputFileStrArray = inputFileStrs.split(";"); // allow multiple life.genny.rules dirs
 
 		for (String inputFileStr : inputFileStrArray) {
 			log.info("InputFileStr=" + inputFileStr);
@@ -168,7 +187,7 @@ public class RulesService {
 							filesList.add(f.getAbsolutePath());
 						}
 						} else {
-							log.error("No rules files located in "+inputFileStr);
+							log.error("No life.genny.rules files located in "+inputFileStr);
 						}
 					}
 
@@ -207,9 +226,15 @@ public class RulesService {
 						}
 
 						Tuple3<String, String, String> rule = (Tuple.of(realm, fileName + "." + fileNameExt, ruleText));
-						String filerule = inputFileStr.substring(inputFileStr.indexOf("/rules/"));
+						String filerule = null;
+						
+						try {
+						//filerule = inputFileStr.substring(inputFileStr.indexOf("/life.genny.rules/"));
 						log.info("("+realm+") Loading in Rule:" + rule._1 + " of " + inputFileStr);
 						rules.add(rule);
+						} catch (StringIndexOutOfBoundsException e) {
+							log.error("Bad parsing ["+inputFileStr+"]");
+						}
 					} else if ((!fileName.startsWith("XX")) && (fileNameExt.equalsIgnoreCase("bpmn"))) { // ignore files
 																											// that
 																											// start
@@ -312,13 +337,13 @@ public class RulesService {
 			final KieBaseConfiguration kbconf = ks.newKieBaseConfiguration();
 			final KieBase kbase = kContainer.newKieBase(kbconf);
 
-			log.info("Put rules KieBase into Custom Cache");
+			log.info("Put life.genny.rules KieBase into Custom Cache");
 			if (getKieBaseCache().containsKey(realm)) {
 				getKieBaseCache().remove(realm);
 				log.info(realm + " removed");
 			}
 			getKieBaseCache().put(realm, kbase);
-			log.info(realm + " rules installed\n");
+			log.info(realm + " life.genny.rules installed\n");
 
 		} catch (final Throwable t) {
 			t.printStackTrace();
@@ -328,7 +353,7 @@ public class RulesService {
 
 	/**
 	 * @param realm
-	 * @param rules
+	 * @param life.genny.rules
 	 * @param kfs
 	 * @param rule
 	 */
@@ -343,13 +368,13 @@ public class RulesService {
 			if ((rule._1.equalsIgnoreCase("genny")) && (!"genny".equalsIgnoreCase(realm))) {
 				String filename = rule._2;
 				// check if realm rule exists, if so then continue
-				// if (rules.stream().anyMatch(item -> ((!realm.equals("genny")) &&
+				// if (life.genny.rules.stream().anyMatch(item -> ((!realm.equals("genny")) &&
 				// realm.equals(item._1()) && filename.equals(item._2()))))
 				// {
 				// log.info(realm+" - Overriding genny rule "+rule._2);
 				// return;
 				// }
-				for (Tuple3<String, String, String> ruleCheck : rules) { // look for rules that are not genny rules
+				for (Tuple3<String, String, String> ruleCheck : rules) { // look for life.genny.rules that are not genny life.genny.rules
 					String realmCheck = ruleCheck._1;
 					if (realmCheck.equals(realm)) {
 
@@ -439,7 +464,7 @@ public class RulesService {
 		return globals;
 	}
 	
-	public void executeStatefull(final String rulesGroup, final EventBusInterface bus,
+	public void executeStateful(final String rulesGroup, final EventBusInterface bus,
 			final List<Tuple2<String, Object>> globals, final List<Object> facts,
 			final Map<String, String> keyValueMap) {
 
@@ -484,11 +509,137 @@ public class RulesService {
 			int rulesFired = kieSession.fireAllRules();
 			
 			
-			System.out.println("Fired "+rulesFired+" rules");
-			 System.out.println("finished rules");
+			System.out.println("Fired "+rulesFired+" life.genny.rules");
+			 System.out.println("finished life.genny.rules");
 			kieSession.dispose();
 		} catch (final Throwable t) {
 			t.printStackTrace();
 		}
+	}
+	
+	public void initMsg(final String msgType,String ruleGroup,final Object msg, final EventBusInterface eventBus) {
+			Map<String,Object> adecodedTokenMap = new HashMap<String,Object>();
+			Set<String> auserRoles = new HashSet<String>();
+			auserRoles.add("admin");
+			auserRoles.add("user");
+
+			String token = generateServiceToken(ruleGroup); // ruleGroup matches realm
+
+			QRules qRules = new QRules(eventBus, token, adecodedTokenMap);
+			qRules.set("realm", ruleGroup);
+
+			List<Tuple2<String, Object>> globals = getStandardGlobals();
+
+			List<Object> facts = new ArrayList<Object>();
+			facts.add(qRules);
+			facts.add(msg);
+			facts.add(adecodedTokenMap);
+			facts.add(auserRoles);
+	            User currentUser = new User("service", "Service", ruleGroup, "admin");
+				//usersSession.put("user", currentUser);
+				facts.add(currentUser);
+
+
+
+			Map<String, String> keyvalue = new HashMap<String, String>();
+			// calculate service token for this ...
+			System.out.println("Realm:"+ruleGroup+" -> generated service token="+token);
+			keyvalue.put("token", token);
+
+		//	if (!"GPS".equals(msgType)) { System.out.println("FIRE RULES ("+ruleGroup+") "+msgType); }
+
+		//	String ruleGroupRealm = realm + (StringUtils.isBlank(ruleGroup)?"":(":"+ruleGroup));
+			try {
+				executeStateful(ruleGroup, eventBus, globals, facts, keyvalue);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
+
+	}
+	
+	public  String generateServiceToken(String realm) {
+	
+		
+		// check if already in cache
+		String serviceToken = VertxUtils.getObject(realm, "CACHE", "SERVICE_TOKEN", String.class);
+//TODO check expiry date 
+		//		if (serviceToken != null) {
+//			println("Fetching Service Token for "+realm+" from cache :"+StringUtils.abbreviateMiddle(serviceToken, "...", 20));
+//			return serviceToken;
+//		}
+		
+		log.info("Generating Service Token for "+realm);
+
+		String jsonFile = realm + ".json";
+		
+		if (SecureResources2.getKeycloakJsonMap().isEmpty()) {
+			log.info("Nothing in the KeycloakJsonMap!");
+		}
+
+		String keycloakJson = SecureResources2.getKeycloakJsonMap().get(jsonFile);
+		if (keycloakJson == null) {
+			log.info("No keycloak Map for " + realm+" ... fixing to use genny.json instead");
+			SecureResources2.init();
+			String gennyKeycloakJson = SecureResources2.getKeycloakJsonMap().get("genny.json");
+			if (GennySettings.devMode) {
+				SecureResources2.getKeycloakJsonMap().put(jsonFile, gennyKeycloakJson);
+				keycloakJson = gennyKeycloakJson;
+			} else {
+				if ("10.123.123.123".equalsIgnoreCase(GennySettings.hostIP)) {
+					log.info("gennyKeycloakJson="+gennyKeycloakJson);
+					// Running in local docker mode
+					SecureResources2.getKeycloakJsonMap().put(jsonFile, gennyKeycloakJson);
+					keycloakJson = gennyKeycloakJson;
+					log.info("No keycloak Json file available for realm - "+realm+" , so using genny instead ..");
+				} else {
+					log.info("Error - No keycloak Json file available for realm - "+realm);
+				}
+			}
+		}
+		log.info("keycloak.json="+keycloakJson);
+		JsonObject realmJson = new JsonObject(keycloakJson);
+		JsonObject secretJson = realmJson.getJsonObject("credentials");
+		String secret = secretJson.getString("secret");
+		String jsonRealm = realmJson.getString("realm");
+		
+		String key = GennySettings.dynamicKey(jsonRealm);
+		String initVector = GennySettings.dynamicInitVector(jsonRealm);
+		String encryptedPassword = GennySettings.dynamicEncryptedPassword(jsonRealm);
+		String password= null;
+		String dynamicRealm = GennySettings.dynamicRealm(jsonRealm);
+		
+		log.info("key:"+key+":"+initVector+":"+encryptedPassword);
+		password = GennySettings.dynamicPassword(jsonRealm);
+
+		log.info("password="+password);
+
+		// Now ask the bridge for the keycloak to use
+		String keycloakurl = realmJson.getString("auth-server-url").substring(0,
+				realmJson.getString("auth-server-url").length() - ("/auth".length()));
+
+		log.info(keycloakurl);
+
+		try {
+			log.info("jsonRealm= "+jsonRealm+", dynamicRealm() : " + dynamicRealm + "\n" + "realm : " + realm + "\n" + "secret : " + secret + "\n"
+					+ "keycloakurl: " + keycloakurl + "\n" + "key : " + key + "\n" + "initVector : " + initVector + "\n"
+					+ "enc pw : " + encryptedPassword + "\n" + "password : " + password + "\n");
+
+			String token = KeycloakUtils.getToken(keycloakurl, dynamicRealm, dynamicRealm, secret, "service", password);
+			log.info("token = " + StringUtils.abbreviateMiddle(token, "...", 20));
+			if (token == null) {
+				log.info(RulesUtils.ANSI_RED+"Token is Null -> Check that keycloak for realm ("+realm+") has service user password set properly to "+password+RulesUtils.ANSI_RESET);
+			} else {
+				//VertxUtils.putObject(realm,"CACHE", "SERVICE_TOKEN", token);
+			}
+			return token;
+
+		} catch (Exception e) {
+			log.info(e);
+		}
+
+		return null;
 	}
 }

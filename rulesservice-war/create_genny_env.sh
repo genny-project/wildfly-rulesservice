@@ -70,7 +70,7 @@ GOOGLE_CLIENT_SECRET="{\"installed\":{\"client_id\":\"260075856207-9d7a02ekmujr2
 GOOGLE_SHEETID="1VSXJUn8_BHG1aW0DQrFDnvLjx_jxcNiD33QzqO5D-jc"
 
 DEVUSER=${USER}
-RULES_DIR=/opt/rules
+RULES_DIR=/opt/life.genny.rules
 
 JAVA_OPTS="-Xms256m -Xmx512m -Djava.net.preferIPv4Stack=true"
 

@@ -13,7 +13,7 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import org.apache.logging.log4j.Logger;
 
-
+import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -25,11 +25,12 @@ import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
 import life.genny.qwanda.message.QEventBtnClickMessage;
 import life.genny.qwanda.message.QEventLinkChangeMessage;
 import life.genny.qwanda.message.QEventMessage;
+import life.genny.qwanda.service.RulesService;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
 import life.genny.rules.QRules;
-import life.genny.rules.RulesLoader;
+
 import life.genny.eventbus.EventBusInterface;
 
 
@@ -44,6 +45,9 @@ public class VertxMonitor implements VertxListener {
 
 @Inject
 EventBusBean eventBus;
+
+@Inject
+RulesService rulesService;
 
   final static String st = System.getenv("MYIP");
 	protected static final Logger log = org.apache.logging.log4j.LogManager
@@ -92,7 +96,7 @@ EventBusBean eventBus;
   
 	public void processMsg(final String msgType,String ruleGroup,final Object msg, final EventBusInterface eventBus, final String token) {
 			
-			Map<String,Object> adecodedTokenMap = RulesLoader.getDecodedTokenMap(token);
+			Map<String,Object> adecodedTokenMap = rulesService.getDecodedTokenMap(token);
 			// check for token expiry
 			
 			
@@ -113,7 +117,7 @@ EventBusBean eventBus;
 
 
 			List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
-			RulesLoader.getStandardGlobals();
+			rulesService.getStandardGlobals();
 
 			List<Object> facts = new ArrayList<Object>();
 			facts.add(qRules);
@@ -136,7 +140,7 @@ EventBusBean eventBus;
 
 		//	String ruleGroupRealm = realm + (StringUtils.isBlank(ruleGroup)?"":(":"+ruleGroup));
 			try {
-				RulesLoader.executeStatefull(realm, eventBus, globals, facts, keyvalue);
+				rulesService.executeStateful(realm, eventBus, globals, facts, keyvalue);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -146,5 +150,5 @@ EventBusBean eventBus;
 
 	}
 
-  
+
 }

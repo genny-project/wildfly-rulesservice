@@ -32,8 +32,8 @@
 		<rar.file.name>${rar.name}-${rar.version}.rar</rar.file.name>
 		<vertx.version>3.5.1</vertx.version>
 
-		<qwanda-services.version>1.0.59</qwanda-services.version>
-		<genny-verticle.version>1.0.59</genny-verticle.version>
+		<qwanda-services.version>1.0.60</qwanda-services.version>
+		<genny-verticle.version>1.0.60</genny-verticle.version>
 
 		<version.org.wildfly>14.0.1.Final</version.org.wildfly>
 
@@ -57,8 +57,8 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.jboss.bom>13.0.0.Final</version.jboss.bom>
-		<drools.version>7.0.0.Final</drools.version>
-		<jbpm.version>7.0.0.Final</jbpm.version>
+		<drools.version>7.1.0.Final</drools.version>
+		<jbpm.version>7.1.0.Final</jbpm.version>
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
 
@@ -181,7 +181,11 @@
 			<version>${qwanda-services.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
+<dependency>
+    <groupId>javax.cache</groupId>
+    <artifactId>cache-api</artifactId>
+    <version>1.0.0-PFD</version>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf -->
 		<dependency>
 			<groupId>org.wildfly</groupId>
@@ -446,16 +450,7 @@
 			<artifactId>xnio-api</artifactId>
 			<version>3.5.4.Final</version>
 		</dependency>
-		<!--> <dependency> <groupId>javax.cache</groupId> <artifactId>cache-api</artifactId> 
-			<version>${javax-cache.version}</version> </dependency> </! -->
-		<!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast-hibernate -->
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-hibernate</artifactId>
-			<version>3.8.2</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.kie</groupId>
 			<artifactId>kie-api</artifactId>

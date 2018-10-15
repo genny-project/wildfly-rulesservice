@@ -24,12 +24,6 @@
 	
 
 
-	<context-param>
-    <param-name>resteasy.providers</param-name>
-    <param-value>life.genny.qwanda.providers.CORSFilter</param-value>
-</context-param>
-
-
 
 	<filter>
         <filter-name>Rules Service</filter-name>
@@ -89,7 +83,7 @@
 		<security-constraint>
 		<web-resource-collection>
 		<web-resource-name>Rules Service</web-resource-name>
-			<url-pattern>/rules/*</url-pattern>
+			<url-pattern>/life.genny.rules/*</url-pattern>
 		</web-resource-collection>
 	<auth-constraint>
         <role-name>user</role-name>

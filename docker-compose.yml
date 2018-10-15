@@ -42,7 +42,7 @@ services:
       - 8180:8080
     command: -b 0.0.0.0
 
-  rulesservice:
+  wildfly-rulesservice:
     depends_on:
       - mysql
       - keycloak
