@@ -150,7 +150,7 @@
 			<artifactId>vertx-jca-adapter</artifactId>
 			<version>${vertx.version}</version>
 			<type>rar</type>
-		</dependency>
+        </dependency>
 
 
 
@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-ejb-client-bom</artifactId>
-			<version>${version.org.wildfly}</version>
+			<version>14.0.1.Final</version>
 			<type>pom</type>
 		</dependency>
 
@@ -166,39 +166,47 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-jms-client-bom</artifactId>
-			<version>${version.org.wildfly}</version>
+			<version>14.0.1.Final</version>
 			<type>pom</type>
 		</dependency>
+
 		<dependency>
 			<groupId>life.genny</groupId>
 			<artifactId>genny-verticle</artifactId>
 			<version>${genny-verticle.version}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>life.genny</groupId>
 			<artifactId>qwanda-services</artifactId>
 			<version>${qwanda-services.version}</version>
 			<scope>compile</scope>
 		</dependency>
-<dependency>
-    <groupId>javax.cache</groupId>
-    <artifactId>cache-api</artifactId>
-    <version>1.0.0-PFD</version>
-</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf -->
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-jsf</artifactId>
 			<version>${version.org.wildfly}</version>
 		</dependency>
+	<dependency>
+    <groupId>javax.cache</groupId>
+    <artifactId>cache-api</artifactId>
+    <version>1.0.0-PFD</version>
+</dependency>	
 
-		<!-- <dependency> <groupId>life.genny</groupId> <artifactId>genny-verticle</artifactId> 
-			<version>${qwanda-services.version}</version> <scope>compile</scope> </dependency> -->
-		<!--> <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId> 
-			<version>${hazelcast.version}</version> </dependency> <dependency> <groupId>com.hazelcast</groupId> 
-			<artifactId>hazelcast-client</artifactId> <version>${hazelcast.version}</version> 
-			</dependency> </! -->
+        <!-->
+<dependency>
+    <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version>
+            </dependency>
+<dependency>
+    <groupId>com.hazelcast</groupId>
+        <artifactId>hazelcast-client</artifactId>
+            <version>${hazelcast.version}</version>
+            </dependency>
+        </!-->
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -451,6 +459,17 @@
 			<version>3.5.4.Final</version>
 		</dependency>
 
+
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-hibernate</artifactId>
+			<version>3.8.2</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
+
+
+
 		<dependency>
 			<groupId>org.kie</groupId>
 			<artifactId>kie-api</artifactId>
@@ -499,16 +518,6 @@
 			<groupId>io.vavr</groupId>
 			<artifactId>vavr</artifactId>
 			<version>0.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j-core-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j-core-version}</version>
 		</dependency>
 
 	</dependencies>

@@ -73,7 +73,7 @@ RulesService rulesService;
   @Override
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
-//    logger.info("Get a aaaaaaaaaaaaaaaaaaaamessage from Vert.x: " + payload);
+    log.info("Get a aaaaaaaaaaaaaaaaaaaamessage from Vert.x: " + payload);
 
 	QEventMessage eventMsg = null;
 	String evtMsg = "Event:";

@@ -49,7 +49,7 @@ import com.hazelcast.util.collection.ArrayUtils;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.rxjava.core.eventbus.EventBus;
+
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.Ask;
 import life.genny.qwanda.GPS;
