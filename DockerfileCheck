@@ -1,0 +1,11 @@
+FROM  openjdk:11-jdk 
+
+ADD rulesservice-ear/target/rulesservice-ear.ear /rulesservice-ear.ear
+
+RUN jar -xvf rulesservice-ear.ear
+RUN ls -l
+RUN jar -xvf rulesservice-war.war
+WORKDIR /WEB-INF
+ADD checkrules.sh /WEB-INF/checkrules.sh
+
+ENTRYPOINT [ "/WEB-INF/checkrules.sh" ]

@@ -20,7 +20,7 @@ import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.OIDCHttpFacade;
 
-import life.genny.security.SecureResources2;
+import life.genny.security.SecureResourcesBean;
 
 public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	/**
@@ -33,7 +33,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	private static String lastlog = "";
 	
 	@Inject
-	SecureResources2 secureResources2;
+	SecureResourcesBean secureResources;
 
 	@Override
 	public KeycloakDeployment resolve(final OIDCHttpFacade.Request request) {
@@ -78,7 +78,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 					aURL = new URL(request.getURI());
 					final String url = aURL.getHost();
-					final String keycloakJsonText = secureResources2.getKeycloakJsonMap().get(url + ".json");
+					final String keycloakJsonText = secureResources.getKeycloakJsonMap().get(url + ".json");
 					if (keycloakJsonText==null) {
 						log.error(url + ".json is NOT in rulesservice Keycloak Map!");
 					} else {
@@ -110,7 +110,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			InputStream is;
 			try {
 				is = new ByteArrayInputStream(
-						secureResources2.getKeycloakJsonMap().get(key).getBytes(StandardCharsets.UTF_8.name()));
+						secureResources.getKeycloakJsonMap().get(key).getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);
 				cache.put(realm, deployment);
 				

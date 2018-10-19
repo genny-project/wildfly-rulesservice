@@ -17,7 +17,6 @@ import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 
-import life.genny.services.BatchLoading;
 
 /**
  * This Service bean demonstrate various JPA manipulations of {@link BaseEntity}

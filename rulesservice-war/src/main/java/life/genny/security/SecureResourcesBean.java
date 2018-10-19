@@ -6,44 +6,30 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
 import life.genny.qwandautils.GennySettings;
+import life.genny.security.SecureResources;
 
 
-public class SecureResources2 {
+@ApplicationScoped
+public class SecureResourcesBean {
 
-	private static Map<String, String> keycloakJsonMap = new ConcurrentHashMap<String, String>();
-
-	
-	/**
-	 * @return the keycloakJsonMap
-	 */
-	public static Map<String, String> getKeycloakJsonMap() {
-		if (keycloakJsonMap==null || keycloakJsonMap.isEmpty()) {
-			init();
-		}
-		return keycloakJsonMap;
+	public Map<String,String> getKeycloakJsonMap()
+	{
+		return SecureResources.keycloakJsonMap;
 	}
 
-
-
-
-	public static void init() {
-	
-			readFilenamesFromDirectory(GennySettings.realmDir);
-	
+	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
+		SecureResources.readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
-	public static void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
-		keycloakJsonMap.clear();
+	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
+		SecureResources.clear();
 	}
 
 	public static void addRealm(final String key, String keycloakJsonText) {
@@ -51,24 +37,24 @@ public class SecureResources2 {
 		keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
 		System.out.println("Adding keycloak key:" + key + "," + keycloakJsonText);
 
-		keycloakJsonMap.put(key, keycloakJsonText);
+		SecureResources.keycloakJsonMap.put(key, keycloakJsonText);
 	}
 
 	public static void removeRealm(final String key) {
 		System.out.println("Removing keycloak key:" + key);
 
-		keycloakJsonMap.remove(key);
+		SecureResources.keycloakJsonMap.remove(key);
 	}
 
 	public static String reload() {
-		keycloakJsonMap.clear();
+		SecureResources.keycloakJsonMap.clear();
 		return readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
 	public static String fetchRealms() {
 		String ret = "";
-		for (String keycloakRealmKey : keycloakJsonMap.keySet()) {
-			ret += keycloakRealmKey + ":" + keycloakJsonMap.get(keycloakRealmKey) + "\n";
+		for (String keycloakRealmKey : SecureResources.keycloakJsonMap.keySet()) {
+			ret += keycloakRealmKey + ":" + SecureResources.keycloakJsonMap.get(keycloakRealmKey) + "\n";
 		}
 		return ret;
 	}
@@ -94,8 +80,8 @@ public class SecureResources2 {
 					final String key = listOfFiles[i].getName(); // .replaceAll(".json", "");
 					System.out.println("keycloak key:" + key + "," + keycloakJsonText);
 
-					keycloakJsonMap.put(key, keycloakJsonText);
-					keycloakJsonMap.put(key+".json", keycloakJsonText);
+					SecureResources.keycloakJsonMap.put(key, keycloakJsonText);
+					SecureResources.keycloakJsonMap.put(key+".json", keycloakJsonText);
 					ret += keycloakJsonText + "\n";
 				} catch (final IOException e) {
 					// TODO Auto-generated catch block
