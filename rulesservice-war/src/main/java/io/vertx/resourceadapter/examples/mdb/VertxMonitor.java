@@ -29,9 +29,10 @@ import life.genny.qwanda.service.RulesService;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
-import life.genny.rules.QRules;
+
 
 import life.genny.eventbus.EventBusInterface;
+import life.genny.rules.RulesLoader;
 
 
 /**
@@ -90,65 +91,10 @@ RulesService rulesService;
 			log.error("No class def found ["+payload.toString()+"]");
 		}
 	}
-	processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
+	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
   }
 
   
-	public void processMsg(final String msgType,String ruleGroup,final Object msg, final EventBusInterface eventBus, final String token) {
-			
-			Map<String,Object> adecodedTokenMap = rulesService.getDecodedTokenMap(token);
-			// check for token expiry
-			
-			
-			Set<String> auserRoles = KeycloakUtils.getRoleSet(adecodedTokenMap.get("realm_access").toString());
-			User userInSession = usersSession.get(adecodedTokenMap.get("preferred_username").toString());
-
-			String preferredUName = adecodedTokenMap.get("preferred_username").toString();
-			String fullName = adecodedTokenMap.get("name").toString();
-			String realm = adecodedTokenMap.get("realm").toString();
-			if ("genny".equalsIgnoreCase(realm)) {
-				realm = GennySettings.mainrealm;
-				adecodedTokenMap.put("realm", GennySettings.mainrealm);
-			}
-			String accessRoles = adecodedTokenMap.get("realm_access").toString();
-
-			QRules qRules = new QRules(eventBus, token, adecodedTokenMap);
-			qRules.set("realm", realm);
-
-
-			List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
-			rulesService.getStandardGlobals();
-
-			List<Object> facts = new ArrayList<Object>();
-			facts.add(qRules);
-			facts.add(msg);
-			facts.add(adecodedTokenMap);
-			facts.add(auserRoles);
-			if(userInSession!=null)
-				facts.add(usersSession.get(preferredUName));
-			else {
-	            User currentUser = new User(preferredUName, fullName, realm, accessRoles);
-				usersSession.put(adecodedTokenMap.get("preferred_username").toString(), currentUser);
-				facts.add(currentUser);
-			}
-
-
-			Map<String, String> keyvalue = new HashMap<String, String>();
-			keyvalue.put("token", token);
-
-			if (!"GPS".equals(msgType)) { System.out.println("FIRE RULES ("+realm+") "+msgType); }
-
-		//	String ruleGroupRealm = realm + (StringUtils.isBlank(ruleGroup)?"":(":"+ruleGroup));
-			try {
-				rulesService.executeStateful(realm, eventBus, globals, facts, keyvalue);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-	
-
-	}
 
 
 }
