@@ -60,10 +60,12 @@ import life.genny.utils.VertxUtils;
 
 import life.genny.eventbus.EventBusInterface;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
+import io.vertx.resourceadapter.examples.mdb.WildflyCache;
 import javax.inject.Inject;
 import life.genny.qwanda.message.QEventMessage;
 
 import life.genny.rules.RulesLoader;
+
 
 /**
  * @author acrow
@@ -77,15 +79,22 @@ public class RulesService {
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
+	@Inject
+	Hazel inDb;
 
 	@Inject
 	EventBusBean eventBus;
+	
+	//@Inject
+	WildflyCache cacheInterface;
 
 	@PostConstruct
 	public void init() {
 		log.info("Loading in Rules .... from " + GennySettings.rulesDir);
+		cacheInterface = new WildflyCache(inDb);
+	//	eventBus = new EventBusBean();
 		
-
+		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
@@ -105,5 +114,11 @@ public class RulesService {
 	
 	public List<Tuple2<String, Object>> getStandardGlobals() {
 		return RulesLoader.getStandardGlobals();
+	}
+	
+	public void info()
+	
+	{
+		log.info("Rules info");
 	}
 }
