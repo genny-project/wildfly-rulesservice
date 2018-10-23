@@ -98,6 +98,7 @@ public class EventBusBean implements EventBusInterface {
 	@Override
 	public void publish(BaseEntity user, String channel, Object payload, final String[] filterAttributes) {
 		try {
+			logger.info("SENDING DATA FROM WILDFLY RULESSERVICE THROUGH! "+channel);
 		// Actually Send ....
 		switch (channel) {
 		case "event":
