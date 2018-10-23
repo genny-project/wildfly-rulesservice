@@ -14,6 +14,7 @@ import javax.enterprise.event.Observes;
 
 import life.genny.qwandautils.GennySettings;
 import life.genny.security.SecureResources;
+import javax.annotation.PostConstruct;
 
 
 @ApplicationScoped
@@ -21,11 +22,13 @@ public class SecureResourcesBean {
 
 	public Map<String,String> getKeycloakJsonMap()
 	{
-		return SecureResources.keycloakJsonMap;
+		return SecureResources.getKeycloakJsonMap();
 	}
 
-	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
-		SecureResources.readFilenamesFromDirectory(GennySettings.realmDir);
+	@PostConstruct
+	public void init() {
+		System.out.println("Initialising SecureReresourcxes in wildfly-rulesservice");
+		readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
 	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
@@ -37,24 +40,24 @@ public class SecureResourcesBean {
 		keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
 		System.out.println("Adding keycloak key:" + key + "," + keycloakJsonText);
 
-		SecureResources.keycloakJsonMap.put(key, keycloakJsonText);
+		SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
 	}
 
 	public static void removeRealm(final String key) {
 		System.out.println("Removing keycloak key:" + key);
 
-		SecureResources.keycloakJsonMap.remove(key);
+		SecureResources.getKeycloakJsonMap().remove(key);
 	}
 
 	public static String reload() {
-		SecureResources.keycloakJsonMap.clear();
+		SecureResources.getKeycloakJsonMap().clear();
 		return readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
 	public static String fetchRealms() {
 		String ret = "";
-		for (String keycloakRealmKey : SecureResources.keycloakJsonMap.keySet()) {
-			ret += keycloakRealmKey + ":" + SecureResources.keycloakJsonMap.get(keycloakRealmKey) + "\n";
+		for (String keycloakRealmKey : SecureResources.getKeycloakJsonMap().keySet()) {
+			ret += keycloakRealmKey + ":" + SecureResources.getKeycloakJsonMap().get(keycloakRealmKey) + "\n";
 		}
 		return ret;
 	}
@@ -80,8 +83,8 @@ public class SecureResourcesBean {
 					final String key = listOfFiles[i].getName(); // .replaceAll(".json", "");
 					System.out.println("keycloak key:" + key + "," + keycloakJsonText);
 
-					SecureResources.keycloakJsonMap.put(key, keycloakJsonText);
-					SecureResources.keycloakJsonMap.put(key+".json", keycloakJsonText);
+					SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
+					SecureResources.getKeycloakJsonMap().put(key+".json", keycloakJsonText);
 					ret += keycloakJsonText + "\n";
 				} catch (final IOException e) {
 					// TODO Auto-generated catch block

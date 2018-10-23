@@ -78,6 +78,10 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 					aURL = new URL(request.getURI());
 					final String url = aURL.getHost();
+					if (secureResources == null) {
+						secureResources = new SecureResourcesBean();
+						secureResources.init();
+					}
 					final String keycloakJsonText = secureResources.getKeycloakJsonMap().get(url + ".json");
 					if (keycloakJsonText==null) {
 						log.error(url + ".json is NOT in rulesservice Keycloak Map!");
@@ -89,12 +93,17 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 					}
 				}
 
+			} catch (final NullPointerException e) {
+				log.error("Null Pointer Exception ");
+				e.printStackTrace();
 			} catch (final Exception e) {
 				log.error("Error in accessing request.getURI , spi issue?");
+				e.printStackTrace();
 			}
 		}
 
 		// don't bother showing Docker health checks
+
 		if (!request.getURI().equals("http://localhost:8080/version")) {
 			String logtext = ">>>>> INCOMING REALM IS " + realm + " :" + request.getURI() + ":" + request.getMethod()
 			+ ":" + request.getRemoteAddr();
@@ -103,6 +112,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 				lastlog = logtext;
 			}
 		}
+	
 
 		KeycloakDeployment deployment = cache.get(realm);
 

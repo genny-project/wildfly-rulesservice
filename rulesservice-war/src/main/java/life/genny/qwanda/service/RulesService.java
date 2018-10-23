@@ -85,7 +85,7 @@ public class RulesService {
 	@Inject
 	EventBusBean eventBus;
 	
-	//@Inject
+
 	WildflyCache cacheInterface;
 
 	@PostConstruct
