@@ -38,7 +38,7 @@ while IFS=$': \t' read -a line ;do
 
 #export IPMY=$myip
 export MYIP=`ip a | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | grep -v 127.0.0.1 | grep -v 0.0.0.0 | head -n 1`
-
+echo "MYIP = ${MYIP}"
 
 if [ $ADMIN_USERNAME ] && [ $ADMIN_PASSWORD ]; then
     /opt/jboss/wildfly/bin/add-user.sh  $ADMIN_USERNAME  $ADMIN_PASSWORD

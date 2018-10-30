@@ -32,8 +32,8 @@
 		<rar.file.name>${rar.name}-${rar.version}.rar</rar.file.name>
 		<vertx.version>3.5.1</vertx.version>
 
-		<genny-rules.version>1.0.63</genny-rules.version>
-		<genny-verticle.version>1.0.62</genny-verticle.version>
+		<genny-rules.version>1.0.64</genny-rules.version>
+		<genny-verticle.version>1.0.64</genny-verticle.version>
 
 		<version.org.wildfly>14.0.1.Final</version.org.wildfly>
 
@@ -57,9 +57,9 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.jboss.bom>14.1.0.Final</version.jboss.bom>
-		<drools.version>7.12.0.Final</drools.version>
-		<jbpm.version>7.12.0.Final</jbpm.version>
-		<kie.version>7.12.0.Final</kie.version>
+		<drools.version>7.1.0.Final</drools.version>
+		<jbpm.version>7.1.0.Final</jbpm.version>
+		<kie.version>7.1.0.Final</kie.version>
 		
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
@@ -193,7 +193,7 @@
 
 		<dependency>
 			<groupId>life.genny</groupId>
-			<artifactId>genny-verticle</artifactId>
+			<artifactId>genny-verticle-rules</artifactId>
 			<version>${genny-verticle.version}</version>
 			<exclusions>
 				<exclusion>
