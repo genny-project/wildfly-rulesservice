@@ -42,6 +42,7 @@ public class Hazel {
 
   @PostConstruct
   public void init() {
+	  System.out.println("Initialising Hazel ");
     Config cfg = new Config();
     cfg.getGroupConfig().setName(GennySettings.username);
     cfg.getGroupConfig().setPassword(GennySettings.username);
