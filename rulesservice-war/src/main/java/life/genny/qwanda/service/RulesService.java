@@ -90,7 +90,7 @@ public class RulesService {
 
 	@PostConstruct
 	public void init() {
-		log.info("Loading in Rules .... from " + GennySettings.rulesDir);
+		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
 	//	eventBus = new EventBusBean();
 		

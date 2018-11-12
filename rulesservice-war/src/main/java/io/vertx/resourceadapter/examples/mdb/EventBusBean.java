@@ -98,7 +98,6 @@ public class EventBusBean implements EventBusInterface {
 	@Override
 	public void publish(BaseEntity user, String channel, Object payload, final String[] filterAttributes) {
 		try {
-			logger.info("SENDING DATA FROM WILDFLY RULESSERVICE THROUGH! "+channel);
 		// Actually Send ....
 		switch (channel) {
 		case "event":
@@ -114,8 +113,9 @@ public class EventBusBean implements EventBusInterface {
 			write("webdata",payload);
 			break;
 		case "cmds":
+		case "webbcmds":
 			payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
-			write("cmds",payload);
+			write("webcmds",payload);
 			break;
 		case "services":
 			write("services",payload);
