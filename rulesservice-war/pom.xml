@@ -57,10 +57,10 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.jboss.bom>14.1.0.Final</version.jboss.bom>
-		<drools.version>7.12.0.Final</drools.version>
-		<jbpm.version>7.12.0.Final</jbpm.version>
-		<kie.version>7.12.0.Final</kie.version>
-		
+		<drools.version>7.1.0.Final</drools.version>
+		<jbpm.version>7.1.0.Final</jbpm.version>
+		<kie.version>7.1.0.Final</kie.version>
+
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
 
@@ -217,7 +217,7 @@
 			<artifactId>wildfly-jsf</artifactId>
 			<version>${version.org.wildfly}</version>
 		</dependency>
-	  <dependency>
+		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
 			<version>${javax-cache.version}</version>
@@ -228,17 +228,14 @@
 			<artifactId>hazelcast-client</artifactId> <version>${hazelcast.version}</version> 
 			</dependency> </! -->
 
-	<!-- 	<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.5</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>commons-io</groupId> <artifactId>commons-io</artifactId> 
+			<version>2.5</version> </dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.8.1</version>
-		</dependency> 
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.google.gdata/core -->
 		<dependency>
@@ -282,12 +279,12 @@
 			<version>1.0.2.Final</version>
 			<scope>provided</scope>
 		</dependency>
-	 	<dependency>
+		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>8.0</version>
 			<scope>provided</scope>
-		</dependency> 
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-validator-provider-11 -->
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
@@ -335,7 +332,7 @@
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
-	
+
 		</dependency>
 		<dependency>
 			<groupId>com.google.maps</groupId>
@@ -409,14 +406,9 @@
 			<version>${log4j-core-version}</version>
 		</dependency>
 
-<!--		<dependency>
-			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-javaee-7.0</artifactId>
-			<type>pom</type>
-			<version>${version.ee7}</version>
-			<scope>provided</scope>
-		</dependency>
--->
+		<!-- <dependency> <groupId>org.jboss.spec</groupId> <artifactId>jboss-javaee-7.0</artifactId> 
+			<type>pom</type> <version>${version.ee7}</version> <scope>provided</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jaxrs</artifactId>
@@ -444,19 +436,10 @@
 			<scope>test</scope>
 		</dependency>
 
-<!--  
-		<dependency>
-			<groupId>org.jboss.arquillian.junit</groupId>
-			<artifactId>arquillian-junit-container</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jboss.arquillian.protocol</groupId>
-			<artifactId>arquillian-protocol-servlet</artifactId>
-			<scope>test</scope>
-		</dependency>
--->
+		<!-- <dependency> <groupId>org.jboss.arquillian.junit</groupId> <artifactId>arquillian-junit-container</artifactId> 
+			<scope>test</scope> </dependency> <dependency> <groupId>org.jboss.arquillian.protocol</groupId> 
+			<artifactId>arquillian-protocol-servlet</artifactId> <scope>test</scope> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-core</artifactId>
@@ -549,6 +532,12 @@
 
 		</dependency>
 		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-persistence-jpa</artifactId>
+			<version>${kie.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 			<version>2.6.0</version>
@@ -559,7 +548,7 @@
 			<groupId>io.vavr</groupId>
 			<artifactId>vavr</artifactId>
 			<version>0.9.1</version>
-	
+
 		</dependency>
 
 	</dependencies>
