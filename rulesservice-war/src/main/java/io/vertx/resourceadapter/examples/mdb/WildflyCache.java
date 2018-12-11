@@ -10,10 +10,12 @@ import life.genny.channel.DistMap;
 import life.genny.qwanda.service.Hazel;
 import life.genny.qwandautils.GennyCacheInterface;
 import life.genny.qwandautils.GennySettings;
+import life.genny.eventbus.WildflyCacheInterface;
 
-@ApplicationScoped
-public class WildflyCache implements GennyCacheInterface {
+//@ApplicationScoped
+public class WildflyCache implements WildflyCacheInterface {
 	
+
 	Hazel inDb;
 	
 	public WildflyCache(Hazel inDb)
@@ -23,22 +25,25 @@ public class WildflyCache implements GennyCacheInterface {
 
 	@Override
 	public Object readCache(String key, String token) {
-		return inDb.getMapBaseEntitys(GennySettings.mainrealm).get(key);
+
+		Object ret = inDb.getMapBaseEntitys().get(key);
+
+		return ret;
 	}
 
 	@Override
 	public void writeCache(String key, String value, String token,long ttl_seconds) {
 		if (value == null) {
 			
-			inDb.getMapBaseEntitys(GennySettings.mainrealm).remove(key);
+			inDb.getMapBaseEntitys().remove(key);
 		} else {
-			inDb.getMapBaseEntitys(GennySettings.mainrealm).put(key, value);
+			inDb.getMapBaseEntitys().put(key, value);
 		}
 	}
 
 	@Override
 	public void clear() {
-		inDb.getMapBaseEntitys(GennySettings.mainrealm).clear();
+		inDb.getMapBaseEntitys().clear();
 		
 	}
 

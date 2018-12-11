@@ -52,6 +52,7 @@ import life.genny.eventbus.EventBusInterface;
 import life.genny.qwanda.entity.User;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
+import life.genny.cluster.ClusterConfig;
 
 
 
@@ -95,6 +96,9 @@ public class RulesService {
 	//	eventBus = new EventBusBean();
 		
 		VertxUtils.init(eventBus,cacheInterface);
+		
+		ClusterConfig.configCluster();
+		
 		// Load in Rules
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
@@ -121,4 +125,9 @@ public class RulesService {
 	{
 		log.info("Rules info");
 	}
+	
+	public Map<File, ResourceType> getKieResources() {
+		return RulesLoader.getKieResources();	
+	}
+
 }

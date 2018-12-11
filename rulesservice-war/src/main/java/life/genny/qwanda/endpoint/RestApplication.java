@@ -19,6 +19,7 @@ public class RestApplication extends Application {
     final Set<Class<?>> resources = new HashSet<Class<?>>();
     resources.add(JsonDateTimeProvider.class);
     resources.add(VersionEndpoint.class);
+    resources.add(CacheEndpoint.class);
     resources.add(CORSFilter.class);
 
     resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);

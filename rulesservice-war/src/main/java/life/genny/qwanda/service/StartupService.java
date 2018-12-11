@@ -44,7 +44,7 @@ public class StartupService {
 	@Transactional
 	public void init() {
 
-		rulesservice.init();
+		rulesservice.info();
 			System.out.println("---------------- Completed Startup ----------------");
 	}
 
