@@ -24,4 +24,5 @@ src/main/resources/rebel.xml
 npm-debug.log
 /bin/
 .settings/org.eclipse.wst.common.component
+rulesservice-war/src/main/resources/rulesservice-war-git.properties
 **/target/
