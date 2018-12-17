@@ -32,8 +32,8 @@
 		<rar.file.name>${rar.name}-${rar.version}.rar</rar.file.name>
 		<vertx.version>3.5.1</vertx.version>
 
-		<genny-rules.version>1.0.64</genny-rules.version>
-		<genny-verticle.version>1.0.64</genny-verticle.version>
+		<genny-rules.version>1.0.65</genny-rules.version>
+		<genny-verticle.version>1.0.65</genny-verticle.version>
 
 		<version.org.wildfly>14.0.1.Final</version.org.wildfly>
 
@@ -193,7 +193,7 @@
 
 		<dependency>
 			<groupId>life.genny</groupId>
-			<artifactId>genny-verticle</artifactId>
+			<artifactId>genny-verticle-rules</artifactId>
 			<version>${genny-verticle.version}</version>
 			<exclusions>
 				<exclusion>

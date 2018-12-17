@@ -36,6 +36,8 @@ while IFS=$': \t' read -a line ;do
         [ "${ip#127.0.0.1}" ] && myip=$ip
   done< <(LANG=C /sbin/ifconfig eth0)
 
+myip=$CLUSTER_IP}
+
 export IPMY=$myip
 
 
