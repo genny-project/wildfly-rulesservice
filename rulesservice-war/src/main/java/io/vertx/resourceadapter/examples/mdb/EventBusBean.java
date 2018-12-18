@@ -113,7 +113,7 @@ public class EventBusBean implements EventBusInterface {
 			write("webdata",payload);
 			break;
 		case "cmds":
-		case "webbcmds":
+		case "webcmds":
 			payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
 			write("webcmds",payload);
 			break;

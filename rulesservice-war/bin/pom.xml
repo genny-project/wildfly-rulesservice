@@ -35,7 +35,7 @@
 		<genny-rules.version>1.0.65</genny-rules.version>
 		<genny-verticle.version>1.0.65</genny-verticle.version>
 
-		<version.org.wildfly>14.0.1.Final</version.org.wildfly>
+		<version.org.wildfly>15.0.0.Final</version.org.wildfly>
 
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
@@ -56,10 +56,10 @@
 		<project.http.version>1.19.0</project.http.version>
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.jboss.bom>14.1.0.Final</version.jboss.bom>
-		<drools.version>7.12.0.Final</drools.version>
-		<jbpm.version>7.12.0.Final</jbpm.version>
-		<kie.version>7.12.0.Final</kie.version>
+		<version.jboss.bom>15.0.0.Final</version.jboss.bom>
+		<drools.version>7.1.0.Final</drools.version>
+		<jbpm.version>7.1.0.Final</jbpm.version>
+		<kie.version>7.1.0.Final</kie.version>
 		
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-ejb-client-bom</artifactId>
-			<version>14.0.1.Final</version>
+			<version>15.0.0.Final</version>
 			<type>pom</type>
 		</dependency>
 
@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-jms-client-bom</artifactId>
-			<version>14.0.1.Final</version>
+			<version>15.0.0.Final</version>
 			<type>pom</type>
 		</dependency>
 
@@ -587,7 +587,7 @@
 			<dependency>
 				<groupId>org.wildfly.bom</groupId>
 				<artifactId>wildfly-javaee7</artifactId>
-				<version>14.0.1.Final</version>
+				<version>15.0.0.Final</version>
 				<type>pom</type>
 			</dependency>
 
@@ -890,7 +890,7 @@
 										<artifactItem>
 											<groupId>org.wildfly</groupId>
 											<artifactId>wildfly-dist</artifactId>
-											<version>14.0.1.Final</version>
+											<version>15.0.0.Final</version>
 											<type>zip</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${project.build.directory}</outputDirectory>

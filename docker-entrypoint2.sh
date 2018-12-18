@@ -36,8 +36,6 @@ while IFS=$': \t' read -a line ;do
         [ "${ip#127.0.0.1}" ] && myip=$ip
   done< <(LANG=C /sbin/ifconfig eth0)
 
-export myip=${CLUSTER_IP}
-echo "myip = ${myip}"
 export IPMY=$myip
 
 
@@ -61,7 +59,7 @@ rm -Rf /opt/jboss/wildfly/data/*
 if [[ $DEBUG == "TRUE" ]]; then
 echo "Remote Debug on port 8787 True";
 export JAVA_OPTS="${JAVA_OPTS}   -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=${DEBUG_SUSPEND:=n}  -Drebel.remoting_plugin=true "
-/opt/jboss/wildfly/bin/standalone.sh --debug  -Djboss.bind.address.private=$myip  -bmanagement=0.0.0.0 -b 0.0.0.0 -Dadmin.username=${ADMIN_USERNAME} -Dadmin.password=${ADMIN_PASSWORD} -Dpublic.host=${myip}  -DHIBERNATE_SHOW_SQL=${HIBERNATE_SHOW_SQL:=false} -DHIBERNATE_HBM2DDL=$HIBERNATE_HBM2DDL -DMYSQL_USER=$MYSQL_USER -DMYSQL_PASSWORD=$MYSQLA_PASSWORD -Djava.security.auth.login.config=''  -b 0.0.0.0 -Dresteasy.preferJacksonOverJsonB -Djboss.tx.node.id=${hostname}  -Dhazelcast.health.monitoring.level=OFF -Dhazelcast.http.healthcheck.enabled=false
+/opt/jboss/wildfly/bin/standalone.sh --debug  -Djboss.bind.address.private=${CLUSTER_IP}  -bmanagement=0.0.0.0 -b 0.0.0.0 -Dadmin.username=${ADMIN_USERNAME} -Dadmin.password=${ADMIN_PASSWORD} -Dpublic.host=${myip}  -DHIBERNATE_SHOW_SQL=${HIBERNATE_SHOW_SQL:=false} -DHIBERNATE_HBM2DDL=$HIBERNATE_HBM2DDL -DMYSQL_USER=$MYSQL_USER -DMYSQL_PASSWORD=$MYSQLA_PASSWORD -Djava.security.auth.login.config=''  -b 0.0.0.0 -Dresteasy.preferJacksonOverJsonB -Djboss.tx.node.id=${hostname}  -Dhazelcast.health.monitoring.level=OFF -Dhazelcast.http.healthcheck.enabled=false
 #--server-config=standalone-full-ha.xml
 else
 echo "Debug is False";
