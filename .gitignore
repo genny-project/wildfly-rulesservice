@@ -25,3 +25,5 @@ npm-debug.log
 /bin/
 .settings/org.eclipse.wst.common.component
 **/target/
+rulesservice-war/src/main/resources/rulesservice-war-git.properties
+**/rulesservice-war/bin/
