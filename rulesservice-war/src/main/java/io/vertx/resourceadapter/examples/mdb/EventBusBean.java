@@ -1,15 +1,22 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
+
+import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.*;
 import life.genny.channel.Producer;
 import life.genny.eventbus.EventBusInterface;
+import life.genny.eventbus.WildflyCacheInterface;
 import life.genny.qwanda.entity.BaseEntity;
+import life.genny.qwandautils.GennySettings;
+import life.genny.qwandautils.QwandaUtils;
+
 import javax.enterprise.context.ApplicationScoped;
 
 
@@ -97,37 +104,52 @@ public class EventBusBean implements EventBusInterface {
 
 	@Override
 	public void publish(BaseEntity user, String channel, Object payload, final String[] filterAttributes) {
-		try {
-		// Actually Send ....
-		switch (channel) {
-		case "event":
-		case "events":
-			send("events",payload);
-			break;
-		case "data":
-			write("data",payload);
-			break;
+		
+		if (!(GennySettings.devMode  && cacheInterface instanceof WildflyCacheInterface)/*|| (!GennySettings.isCacheServer)*/) {
 
-		case "webdata":
-			payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
-			write("webdata",payload);
-			break;
-		case "cmds":
-		case "webcmds":
-			payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
-			write("webcmds",payload);
-			break;
-		case "services":
-			write("services",payload);
-			break;
-		case "messages":
-			write("messages",payload);
-			break;
-		default:
-			log.error("Channel does not exist: " + channel);
+			try {
+				// Actually Send ....
+				switch (channel) {
+				case "event":
+				case "events":
+					send("events",payload);
+					break;
+				case "data":
+					write("data",payload);
+					break;
+
+				case "webdata":
+					payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
+					write("webdata",payload);
+					break;
+				case "cmds":
+				case "webcmds":
+					payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
+					write("webcmds",payload);
+					break;
+				case "services":
+					write("services",payload);
+					break;
+				case "messages":
+					write("messages",payload);
+					break;
+				default:
+					log.error("Channel does not exist: " + channel);
+				}
+				} catch (NamingException e) {
+					e.printStackTrace();
+				}
+		} else {
+			try {
+				log.info("WRITING TO CACHE USING API! "+key);
+				JsonObject json = new JsonObject();
+		        json.put("key", key);
+		        json.put("json", value);
+		        QwandaUtils.apiPostEntity(GennySettings.ddtUrl + "/write", json.toString(), token);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		} catch (NamingException e) {
-			e.printStackTrace();
-		}
+
 	}
 }
