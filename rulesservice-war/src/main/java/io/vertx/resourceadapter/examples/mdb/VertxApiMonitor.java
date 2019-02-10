@@ -25,30 +25,28 @@ import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
 import life.genny.qwanda.message.QEventBtnClickMessage;
 import life.genny.qwanda.message.QEventLinkChangeMessage;
 import life.genny.qwanda.message.QEventMessage;
-import life.genny.qwanda.service.RulesService;
+
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
 
 
 import life.genny.eventbus.EventBusInterface;
-import life.genny.rules.RulesLoader;
+
 
 
 /**
- * Message-Driven Bean implementation class for: VertxMonitor
+ * Message-Driven Bean implementation class for: VertxApiMonitor
  */
-//@MessageDriven(name = "VertxMonitor", messageListenerInterface = VertxListener.class)
-@MessageDriven(name = "VertxMonitor", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
+//@MessageDriven(name = "VertxApiMonitor", messageListenerInterface = VertxListener.class)
+@MessageDriven(name = "VertxApiMonitor", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "api"), })
 
-public class VertxMonitor implements VertxListener {
+public class VertxApiMonitor implements VertxListener {
 	
 
 @Inject
 EventBusBean eventBus;
 
-@Inject
-RulesService rulesService;
 
   final static String st = System.getenv("MYIP");
 	protected static final Logger log = org.apache.logging.log4j.LogManager
@@ -67,31 +65,16 @@ RulesService rulesService;
   /**
    * Default constructor.
    */
-  public VertxMonitor() {
-    log.info("VertxMonitor started.");
+  public VertxApiMonitor() {
+    log.info("VertxApiMonitor started.");
   }
 
   @Override
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
-   // log.info("Get a aaaaaaaaaaaaaaaaaaaamessage from Vert.x: " + payload);
+    log.info("Got an api message from Vert.x: " + payload);
 
-	QEventMessage eventMsg = null;
-	String evtMsg = "Event:";
-	if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
-		eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
-	} else if (payload.getString("event_type").equals("BTN_CLICK")) {
-		eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
-	} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
-		eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
-	} else {
-		try {
-			eventMsg = JsonUtils.fromJson(payload.toString(), QEventMessage.class);
-		} catch (NoClassDefFoundError e) {
-			log.error("No class def found ["+payload.toString()+"]");
-		}
-	}
-	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
+
   }
 
   
