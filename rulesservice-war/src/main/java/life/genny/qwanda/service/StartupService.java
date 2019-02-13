@@ -45,6 +45,7 @@ public class StartupService {
 	
 	@PostConstruct
 	@Transactional
+	@TransactionTimeout(value=3000, unit=TimeUnit.SECONDS)
 	public void init() {
 
 		rulesservice.init();
