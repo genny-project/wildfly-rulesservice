@@ -75,7 +75,7 @@ public class EventBusBean implements EventBusInterface {
 		JsonObject event = new JsonObject(json);
 		if (GennySettings.forceEventBusApi) {
 			try {
-				QwandaUtils.apiPostEntity(bridgeApi, json, event.getString("token"));
+				QwandaUtils.apiPostEntity(GennySettings.bridgeServiceUrl, json, event.getString("token"));
 			} catch (Exception e) {
 				log.error("Error in posting message to bridge eventbus:" + event);
 			}
