@@ -49,7 +49,7 @@ public class StartupService {
 	public void init() {
 
 		rulesservice.init();
-			System.out.println("---------------- Completed Startup ----------------");
+		log.info("---------------- Completed Startup ----------------");
 	}
 
 

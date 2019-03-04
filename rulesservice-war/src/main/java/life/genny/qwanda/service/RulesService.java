@@ -98,7 +98,11 @@ public class RulesService {
 		// Load in Rules
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
-		RulesLoader.triggerStartupRules(GennySettings.rulesDir, eventBus);
+ 	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
+ 	    	RulesLoader.triggerStartupRules(GennySettings.rulesDir, eventBus);
+ 	    } else {
+ 	    	log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
+ 	    }
 	}
 
 	public void executeStateful(final String rulesGroup, final EventBusInterface bus,

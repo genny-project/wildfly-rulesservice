@@ -1,5 +1,6 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import java.lang.invoke.MethodHandles;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -13,7 +14,8 @@ import io.vertx.resourceadapter.*;
 // @Startup
 public class SentVertx {
 
-  private Logger logger = Logger.getLogger(SentVertx.class.getName());
+	protected static final Logger log = org.apache.logging.log4j.LogManager
+			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
   // @PostConstruct
   public static void whatever() throws NamingException, ResourceException {
@@ -50,7 +52,7 @@ public class SentVertx {
     // conn.vertxEventBus().send("inbound-address",
     // "Hello from JCA");
     // } catch (Exception e) {
-    // System.out.println(e.getMessage());
+    // log.info(e.getMessage());
     // System.out.flush();
     // } finally {
     // if (ctx != null) {

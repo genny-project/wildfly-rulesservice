@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,8 @@ import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
+import org.apache.logging.log4j.Logger;
+
 import life.genny.qwandautils.GennySettings;
 import life.genny.security.SecureResources;
 import javax.annotation.PostConstruct;
@@ -19,6 +22,9 @@ import javax.annotation.PostConstruct;
 
 @ApplicationScoped
 public class SecureResourcesBean {
+	
+	protected static final Logger log = org.apache.logging.log4j.LogManager
+			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
 	public Map<String,String> getKeycloakJsonMap()
 	{
@@ -27,7 +33,7 @@ public class SecureResourcesBean {
 
 	@PostConstruct
 	public void init() {
-		System.out.println("Initialising SecureReresourcxes in wildfly-rulesservice");
+		log.info("Initialising SecureReresourcxes in wildfly-rulesservice");
 		readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
@@ -38,13 +44,13 @@ public class SecureResourcesBean {
 	public static void addRealm(final String key, String keycloakJsonText) {
 
 		keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
-		System.out.println("Adding keycloak key:" + key + "," + keycloakJsonText);
+		log.info("Adding keycloak key:" + key + "," + keycloakJsonText);
 
 		SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
 	}
 
 	public static void removeRealm(final String key) {
-		System.out.println("Removing keycloak key:" + key);
+		log.info("Removing keycloak key:" + key);
 
 		SecureResources.getKeycloakJsonMap().remove(key);
 	}
@@ -67,11 +73,11 @@ public class SecureResourcesBean {
 		final File folder = new File(rootFilePath);
 		final File[] listOfFiles = folder.listFiles();
 
-		System.out.println("Loading Files! with HOSTIP=" + GennySettings.hostIP);
+		log.info("Loading Files! with HOSTIP=" + GennySettings.hostIP);
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
-				System.out.println("Importing Keycloak Realm File " + listOfFiles[i].getName());
+				log.info("Importing Keycloak Realm File " + listOfFiles[i].getName());
 				try {
 					String keycloakJsonText = getFileAsText(listOfFiles[i]);
 					// Handle case where dev is in place with localhost
@@ -81,7 +87,7 @@ public class SecureResourcesBean {
 
 					// }
 					final String key = listOfFiles[i].getName(); // .replaceAll(".json", "");
-					System.out.println("keycloak key:" + key + "," + keycloakJsonText);
+					log.info("keycloak key:" + key + "," + keycloakJsonText);
 
 					SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
 					SecureResources.getKeycloakJsonMap().put(key+".json", keycloakJsonText);
@@ -92,7 +98,7 @@ public class SecureResourcesBean {
 				}
 
 			} else if (listOfFiles[i].isDirectory()) {
-				System.out.println("Directory " + listOfFiles[i].getName());
+				log.info("Directory " + listOfFiles[i].getName());
 				readFilenamesFromDirectory(listOfFiles[i].getName());
 			}
 		}
