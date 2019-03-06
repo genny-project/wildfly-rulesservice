@@ -1,13 +1,14 @@
 package io.vertx.resourceadapter.examples.mdb;
 
 import java.lang.invoke.MethodHandles;
-import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import io.vertx.resourceadapter.*;
+import org.apache.logging.log4j.Logger;
 
 
 @Singleton

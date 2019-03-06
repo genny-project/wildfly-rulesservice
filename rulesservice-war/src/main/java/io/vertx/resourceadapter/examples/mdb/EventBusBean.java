@@ -75,13 +75,14 @@ public class EventBusBean implements EventBusInterface {
 
 	public void send(final String channel, final Object msg) throws NamingException 
 	{
-	      String msgStr = JsonUtils.toJson(msg);
-	      JsonObject event = new JsonObject(msgStr);
+		//String msgStr = JsonUtils.toJson(msg);
+	   //   JsonObject event = new JsonObject(msgStr);
+		String json = (String)msg;
+		JsonObject event = new JsonObject(json);
 	      
 		if (GennySettings.forceEventBusApi) {
 			try {
-
-				QwandaUtils.apiPostEntity(GennySettings.bridgeServiceUrl, msgStr, event.getString("token"));
+				QwandaUtils.apiPostEntity(GennySettings.bridgeServiceUrl, json, event.getString("token"));
 			} catch (Exception e) {
 				log.error("Error in posting message to bridge eventbus:" + event);
 			}
@@ -97,6 +98,7 @@ public class EventBusBean implements EventBusInterface {
 		              .lookup("java:/eis/VertxConnectionFactory");
 		      log.info("Sending Vertx Bus Message on channel "+channel+":");
 		      conn = connFactory.getVertxConnection();
+
 		      conn.vertxEventBus().send(channel, event);
 		      log.info("Sent Vertx Bus Message on channel "+channel);
 		    } catch (Exception e) {
@@ -156,7 +158,7 @@ public class EventBusBean implements EventBusInterface {
 			write("webdata",payload);
 			break;
 		case "cmds":
-		case "webbcmds":
+		case "webcmds":
 			payload = EventBusInterface.privacyFilter(user, payload,filterAttributes);
 			write("webcmds",payload);
 			break;
