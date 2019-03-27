@@ -158,7 +158,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-ejb-client-bom</artifactId>
-			<version>15.0.0.Final</version>
+			<version>${version.org.wildfly}</version>
 			<type>pom</type>
 		</dependency>
 
@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.wildfly</groupId>
 			<artifactId>wildfly-jms-client-bom</artifactId>
-			<version>15.0.0.Final</version>
+			<version>${version.org.wildfly}</version>
 			<type>pom</type>
 		</dependency>
 
@@ -275,6 +275,7 @@
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.spec.javax.ejb</groupId>
@@ -562,6 +563,23 @@
 	
 		</dependency>
 
+
+<dependency>
+    <groupId>org.jbpm</groupId>
+    <artifactId>jbpm-persistence-jpa</artifactId>
+    <version>${kie.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.drools</groupId>
+    <artifactId>drools-persistence-jpa</artifactId>
+    <version>${kie.version}</version>
+</dependency>
+<dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>persistence-api</artifactId>
+    <version>1.0.2</version>
+</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -587,7 +605,7 @@
 			<dependency>
 				<groupId>org.wildfly.bom</groupId>
 				<artifactId>wildfly-javaee7</artifactId>
-				<version>15.0.0.Final</version>
+				<version>${version.org.wildfly}</version>
 				<type>pom</type>
 			</dependency>
 
@@ -804,8 +822,8 @@
 						<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
 						<!-- the maven dependency plugin will have already downloaded the server 
 							on /target -->
-						<jboss.home>${project.basedir}/target/wildfly-14.0.1.Final</jboss.home>
-						<module.path>${project.basedir}/target/wildfly-14.0.1.Final/modules</module.path>
+						<jboss.home>${project.basedir}/target/${version.org.wildfly}</jboss.home>
+						<module.path>${project.basedir}/target/${version.org.wildfly}/modules</module.path>
 					</systemPropertyVariables>
 					<redirectTestOutputToFile>false</redirectTestOutputToFile>
 				</configuration>
@@ -890,7 +908,7 @@
 										<artifactItem>
 											<groupId>org.wildfly</groupId>
 											<artifactId>wildfly-dist</artifactId>
-											<version>15.0.0.Final</version>
+											<version>${version.org.wildfly}</version>
 											<type>zip</type>
 											<overWrite>true</overWrite>
 											<outputDirectory>${project.build.directory}</outputDirectory>
