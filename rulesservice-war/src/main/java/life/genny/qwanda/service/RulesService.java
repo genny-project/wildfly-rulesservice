@@ -88,7 +88,7 @@ public class RulesService {
 
 	WildflyCache cacheInterface;
 
-	@PostConstruct
+//	@PostConstruct
 	public void init() {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
@@ -96,6 +96,8 @@ public class RulesService {
 		
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
+		
+
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
  	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
