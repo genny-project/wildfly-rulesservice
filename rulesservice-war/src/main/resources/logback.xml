@@ -2,7 +2,8 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+           <!--  <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+             <pattern>"%d{dd MMM yyyy HH:mm:ss,SSS} - %msg%n" </pattern>
         </encoder>
     </appender>
 
@@ -20,5 +21,6 @@
 	
     <logger name="io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder" level="WARN"/>
     <logger name="com.hazelcast.internal.diagnostics.HealthMonitor" level="ERROR" />
+    <logger name="org.jboss.resteasy.resteasy_jaxrs.i18n" level="ERROR" />
 </configuration>
 

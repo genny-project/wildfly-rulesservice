@@ -5,7 +5,7 @@
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 	version="2.1">
 	
- 	<persistence-unit name="genny-persistence-unit2"
+ 	<persistence-unit name="genny-persistence-jbpm-jpa"
 		transaction-type="JTA">
 		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -46,7 +46,7 @@
 
 			<!-- 2LC -->
 			<property name="hibernate.cache.use_second_level_cache"
-				value="false" />
+				value="true" />
 			<property name="hibernate.cache.use_query_cache"
 				value="true" />
 				
