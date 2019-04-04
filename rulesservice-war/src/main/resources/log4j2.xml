@@ -6,8 +6,7 @@
 
 	<Appenders>
 		<Console name="STDOUT">
-			<PatternLayout
-				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+			<PatternLayout pattern="%d{dd MMM yyyy HH:mm:ss,SSS} - %msg%n" />
 		</Console>
 
 
@@ -29,7 +28,11 @@
 		<Logger name="life.genny" level="INFO" additivity="false">
 			<AppenderRef ref="STDOUT" />
 		</Logger>
-
+		<Logger name="org.jboss.resteasy.resteasy_jaxrs.i18n" level="ERROR">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
 
 	</Loggers>
 </Configuration>
+
+	<!-- pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" /> -->

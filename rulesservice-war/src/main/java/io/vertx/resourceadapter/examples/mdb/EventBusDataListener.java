@@ -98,7 +98,7 @@ RulesService rulesService;
 		List<Tuple3<String,String, String>> rules = new ArrayList<Tuple3<String,String, String>>();
 		rules.add(Tuple.of(ruleGroup,ruleCode, ruleText));
 
-		RulesLoader.setupKieRules(rulesGroup, rules);
+		RulesLoader.addRules(rulesGroup, rules);
 	} else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
 		log.info("DATA Msg :");;
 		try {
