@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
@@ -14,31 +15,32 @@ import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import life.genny.qwandautils.GennySettings;
-import life.genny.security.SecureResources;
-import javax.annotation.PostConstruct;
-
 
 @ApplicationScoped
-public class SecureResourcesBean {
-	
-	protected static final Logger log = org.apache.logging.log4j.LogManager
-			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+public class SecureResources {
+	  protected static final Logger log = org.apache.logging.log4j.LogManager
+		      .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
-	public Map<String,String> getKeycloakJsonMap()
-	{
-		return SecureResources.getKeycloakJsonMap();
+	/**
+	 * @return the keycloakJsonMap
+	 */
+	public static Map<String, String> getKeycloakJsonMap() {
+		return keycloakJsonMap;
 	}
 
-	@PostConstruct
-	public void init() {
-		log.info("Initialising SecureReresourcxes in wildfly-rulesservice");
-		readFilenamesFromDirectory(GennySettings.realmDir);
+	private static Map<String, String> keycloakJsonMap = new ConcurrentHashMap<String, String>();
+
+
+
+	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
+		//readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
 	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
-		SecureResources.clear();
+		keycloakJsonMap.clear();
 	}
 
 	public static void addRealm(final String key, String keycloakJsonText) {
@@ -46,24 +48,24 @@ public class SecureResourcesBean {
 		keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
 		log.info("Adding keycloak key:" + key + "," + keycloakJsonText);
 
-		SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
+		keycloakJsonMap.put(key, keycloakJsonText);
 	}
 
 	public static void removeRealm(final String key) {
 		log.info("Removing keycloak key:" + key);
 
-		SecureResources.getKeycloakJsonMap().remove(key);
+		keycloakJsonMap.remove(key);
 	}
 
 	public static String reload() {
-		SecureResources.getKeycloakJsonMap().clear();
+		keycloakJsonMap.clear();
 		return readFilenamesFromDirectory(GennySettings.realmDir);
 	}
 
 	public static String fetchRealms() {
 		String ret = "";
-		for (String keycloakRealmKey : SecureResources.getKeycloakJsonMap().keySet()) {
-			ret += keycloakRealmKey + ":" + SecureResources.getKeycloakJsonMap().get(keycloakRealmKey) + "\n";
+		for (String keycloakRealmKey : keycloakJsonMap.keySet()) {
+			ret += keycloakRealmKey + ":" + keycloakJsonMap.get(keycloakRealmKey) + "\n";
 		}
 		return ret;
 	}
@@ -82,15 +84,20 @@ public class SecureResourcesBean {
 					String keycloakJsonText = getFileAsText(listOfFiles[i]);
 					// Handle case where dev is in place with localhost
 
-					// if (!"localhost.json".equalsIgnoreCase(listOfFiles[i].getName())) {
+					if ("localhost.json".equalsIgnoreCase(listOfFiles[i].getName())) {
+						keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
+						keycloakJsonMap.put(GennySettings.mainrealm+".json", keycloakJsonText);
+					}
 					keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
 
 					// }
 					final String key = listOfFiles[i].getName(); // .replaceAll(".json", "");
 					log.info("keycloak key:" + key + "," + keycloakJsonText);
 
-					SecureResources.getKeycloakJsonMap().put(key, keycloakJsonText);
-					SecureResources.getKeycloakJsonMap().put(key+".json", keycloakJsonText);
+					keycloakJsonMap.put(key, keycloakJsonText);
+					if (!StringUtils.endsWith(key,".json")) {
+						keycloakJsonMap.put(key+".json", keycloakJsonText);
+					}
 					ret += keycloakJsonText + "\n";
 				} catch (final IOException e) {
 					// TODO Auto-generated catch block
