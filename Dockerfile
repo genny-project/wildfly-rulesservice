@@ -1,4 +1,4 @@
-FROM gennyproject/wildfly:release-2.0.6 
+FROM gennyproject/wildfly:16.0.0.Final 
 
 USER root
 
