@@ -6,6 +6,12 @@ ADD docker-entrypoint.sh /opt/jboss/docker-entrypoint.sh
 ADD docker-entrypoint2.sh /opt/jboss/
 
 EXPOSE 8080
+
+RUN mkdir -p /.m2/conf
+ADD settings.xml /.m2/conf/settings.xml
+ARG m2_variable=/.m2
+ENV M2_HOME=$m2_variable
+
 RUN mkdir /opt/realm
 RUN mkdir /opt/jboss/wildfly/realm
 RUN mkdir /realm
