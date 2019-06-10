@@ -27,8 +27,8 @@
 					<activation-config-property-value>${public.host}</activation-config-property-value>
 				</activation-config-property>
 			</activation-config>
-			<ejb-name>VertxMonitor</ejb-name>
-			<ejb-class>io.vertx.resourceadapter.examples.mdb.VertxMonitor</ejb-class>
+			<ejb-name>EventBusEventListener</ejb-name>
+			<ejb-class>io.vertx.resourceadapter.examples.mdb.EventBusEventListener</ejb-class>
 			<messaging-type>io.vertx.resourceadapter.inflow.VertxListener</messaging-type>
 		</message-driven>
 				<message-driven>

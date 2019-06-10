@@ -38,10 +38,10 @@ import life.genny.rules.RulesLoader;
 /**
  * Message-Driven Bean implementation class for: VertxMonitor
  */
-//@MessageDriven(name = "VertxMonitor", messageListenerInterface = VertxListener.class)
-@MessageDriven(name = "VertxMonitor", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
 
-public class VertxMonitor implements VertxListener {
+@MessageDriven(name = "EventBusEventListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
+
+public class EventBusEventListener implements VertxListener {
 	
 
 @Inject
@@ -50,8 +50,7 @@ EventBusBean eventBus;
 @Inject
 RulesService rulesService;
 
-  final static String st = System.getenv("MYIP");
-	protected static final Logger log = org.apache.logging.log4j.LogManager
+ 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
   
 	static Map<String, Object> decodedToken = null;
@@ -67,14 +66,13 @@ RulesService rulesService;
   /**
    * Default constructor.
    */
-  public VertxMonitor() {
-    log.info("VertxMonitor started.");
+  public EventBusEventListener() {
+    log.info("EventBusEventListener started.");
   }
 
   @Override
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
-   // log.info("Get a aaaaaaaaaaaaaaaaaaaamessage from Vert.x: " + payload);
 
 	QEventMessage eventMsg = null;
 	String evtMsg = "Event:";
@@ -91,6 +89,10 @@ RulesService rulesService;
 			log.error("No class def found ["+payload.toString()+"]");
 		}
 	}
+	
+	
+	log.info("********* THIS IS WILDFLY EVENT LISTENER!!!! *******************");
+	
 	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
   }
 
