@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,14 +17,20 @@ import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
 import org.apache.logging.log4j.Logger;
+
+import io.vertx.core.json.JsonObject;
+
 import org.apache.commons.lang3.StringUtils;
 
+import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwandautils.GennySettings;
+import life.genny.qwandautils.JsonUtils;
+import life.genny.utils.VertxUtils;
 
 @ApplicationScoped
 public class SecureResources {
-	  protected static final Logger log = org.apache.logging.log4j.LogManager
-		      .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+	protected static final Logger log = org.apache.logging.log4j.LogManager
+			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
 	/**
 	 * @return the keycloakJsonMap
@@ -33,10 +41,73 @@ public class SecureResources {
 
 	private static Map<String, String> keycloakJsonMap = new ConcurrentHashMap<String, String>();
 
-
-
 	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
-		//readFilenamesFromDirectory(GennySettings.realmDir);
+		// readFilenamesFromDirectory(GennySettings.realmDir);
+		// read all services from api
+
+		Set<String> realmsSet = VertxUtils.fetchRealmsFromApi();
+
+		// Now fetch all the Realms for keycloak json
+		for (String realm : realmsSet) {
+			log.info("Loaded realm is "+realm);
+			getKeycloakJson("http://"+realm + ".genny.life");
+		}
+
+	}
+
+	public static String getKeycloakJson(String fullurl) {
+		fullurl = StringUtils.removeEnd(fullurl, ".json");
+		log.info("Getting KeycloakJson from SecureResource :"+fullurl);
+		String keycloakJson = SecureResources.getKeycloakJsonMap().get(fullurl+".json");
+		if ( keycloakJson != null) {
+			return keycloakJson;
+		}
+		
+		URL aURL = null;
+		try {
+			if (!fullurl.startsWith("http")) {
+				fullurl = "http://"+fullurl;
+				fullurl = StringUtils.removeEnd(fullurl, ".json");
+			}
+			aURL = new URL(fullurl);
+			final String url = aURL.getHost();
+			log.info("pure host url is "+url);
+			JsonObject retInit = null;
+			String token = null;
+			// Fetch Project BE
+			JsonObject jsonObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM, url.toUpperCase());
+			BaseEntity projectBe = null;
+			if ((jsonObj == null) || ("error".equals(jsonObj.getString("status")))) {
+				log.error(url.toUpperCase() + " not found in cache");
+
+			} else {
+				String value = jsonObj.getString("value");
+				projectBe = JsonUtils.fromJson(value.toString(), BaseEntity.class);
+				JsonObject tokenObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM,
+						"TOKEN" + url.toUpperCase());
+				token = tokenObj.getString("value");
+
+				log.info(projectBe.getRealm());
+			}
+
+			if ((projectBe != null) ) {
+				retInit = new JsonObject(projectBe.getValue("ENV_KEYCLOAK_JSON", "NO JSON"));
+			//	log.info("KEYCLOAK JSON VALUE: " + retInit);
+				String tokenRealm = retInit.getString("resource");
+				String realm = projectBe.getRealm();
+				String serviceToken = projectBe.getValue("ENV_SERVICE_TOKEN", "DUMMY");
+				keycloakJsonMap.put(realm,retInit.toString());
+				keycloakJsonMap.put(url,retInit.toString());
+				keycloakJsonMap.put(realm+".json",retInit.toString());
+				keycloakJsonMap.put(url+".json",retInit.toString());
+				return retInit.toString();
+			}
+		} catch (Exception e)
+		{
+					log.error("KeycloakJson not available for "+fullurl);
+		}
+		return null;
+				
 	}
 
 	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
@@ -86,7 +157,7 @@ public class SecureResources {
 
 					if ("localhost.json".equalsIgnoreCase(listOfFiles[i].getName())) {
 						keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
-						keycloakJsonMap.put(GennySettings.mainrealm+".json", keycloakJsonText);
+						keycloakJsonMap.put(GennySettings.mainrealm + ".json", keycloakJsonText);
 					}
 					keycloakJsonText = keycloakJsonText.replaceAll("localhost", GennySettings.hostIP);
 
@@ -95,8 +166,8 @@ public class SecureResources {
 					log.info("keycloak key:" + key + "," + keycloakJsonText);
 
 					keycloakJsonMap.put(key, keycloakJsonText);
-					if (!StringUtils.endsWith(key,".json")) {
-						keycloakJsonMap.put(key+".json", keycloakJsonText);
+					if (!StringUtils.endsWith(key, ".json")) {
+						keycloakJsonMap.put(key + ".json", keycloakJsonText);
 					}
 					ret += keycloakJsonText + "\n";
 				} catch (final IOException e) {

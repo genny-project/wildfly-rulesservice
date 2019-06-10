@@ -33,6 +33,7 @@ import life.genny.qwandautils.KeycloakUtils;
 
 import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
+import life.genny.models.GennyToken;
 
 
 /**
@@ -92,8 +93,9 @@ RulesService rulesService;
 	
 	
 	log.info("********* THIS IS WILDFLY EVENT LISTENER!!!! *******************");
+	GennyToken gennyToken = new GennyToken(payload.getString("token"));
 	
-	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
+	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, gennyToken.getToken());
   }
 
   
