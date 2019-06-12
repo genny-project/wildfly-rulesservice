@@ -7,9 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +19,9 @@ import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.KeycloakDeploymentBuilder;
 import org.keycloak.adapters.OIDCHttpFacade;
 
-import life.genny.security.SecureResourcesBean;
+import life.genny.qwandautils.GennySettings;
+
+import life.genny.security.SecureResources;
 
 public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	/**
@@ -31,9 +32,6 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 	private final Map<String, KeycloakDeployment> cache = new ConcurrentHashMap<String, KeycloakDeployment>();
 	private static String lastlog = "";
-	
-	@Inject
-	SecureResourcesBean secureResources;
 
 	@Override
 	public KeycloakDeployment resolve(final OIDCHttpFacade.Request request) {
@@ -76,57 +74,67 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 				} else {
 
-					aURL = new URL(request.getURI());
-					final String url = aURL.getHost();
-					if (secureResources == null) {
-						secureResources = new SecureResourcesBean();
-						secureResources.init();
-					}
-					final String keycloakJsonText = secureResources.getKeycloakJsonMap().get(url + ".json");
-					if (keycloakJsonText==null) {
-						log.error(url + ".json is NOT in rulesservice Keycloak Map!");
+					if (request.getURI().equals("http://localhost:8080/version")) {
+						realm = GennySettings.mainrealm;
 					} else {
-					// extract realm
-					final JSONObject json = new JSONObject(keycloakJsonText);
-					realm = json.getString("realm");
-					key = realm + ".json";
+						aURL = new URL(request.getURI());
+						final String url = aURL.getHost();
+						final String keycloakJsonText = SecureResources.getKeycloakJson(url + ".json");
+						if (keycloakJsonText == null) {
+							log.error(url + ".json is NOT in qwanda-service Keycloak Map!");
+
+						} else {
+							// extract realm
+							final JSONObject json = new JSONObject(keycloakJsonText);
+							realm = json.getString("realm");
+							key = realm + ".json";
+						}
 					}
 				}
 
-			} catch (final NullPointerException e) {
-				log.error("Null Pointer Exception ");
-				e.printStackTrace();
 			} catch (final Exception e) {
 				log.error("Error in accessing request.getURI , spi issue?");
-				e.printStackTrace();
 			}
 		}
 
 		// don't bother showing Docker health checks
-
 		if (!request.getURI().equals("http://localhost:8080/version")) {
 			String logtext = ">>>>> INCOMING REALM IS " + realm + " :" + request.getURI() + ":" + request.getMethod()
-			+ ":" + request.getRemoteAddr();
+					+ ":" + request.getRemoteAddr();
 			if (!logtext.equals(lastlog)) {
 				log.debug(logtext);
 				lastlog = logtext;
 			}
-		}
-	
+		} else {
+			Optional<String> firstRealm = SecureResources.getKeycloakJsonMap().keySet().stream().findFirst();
+			if (firstRealm.isPresent()) {
+				String kcStr = firstRealm.get();
+				final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(kcStr);
 
-		KeycloakDeployment deployment = cache.get(realm);
+				final JSONObject json = new JSONObject(keycloakJsonText);
+				realm = json.getString("realm");
+				key = realm + ".json";
+
+			} else {
+				log.error("No Realms in KeycloakJson Cache!");
+				return null;
+			}
+		}
+
+		KeycloakDeployment deployment = cache.get(realm); // just get one
+		key = realm;
 
 		if (null == deployment) {
 			InputStream is;
 			try {
-				is = new ByteArrayInputStream(
-						secureResources.getKeycloakJsonMap().get(key).getBytes(StandardCharsets.UTF_8.name()));
+				String keycloakJson = SecureResources.getKeycloakJsonMap().get(key);
+				is = new ByteArrayInputStream(keycloakJson.getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);
 				cache.put(realm, deployment);
-				
+
 			} catch (final java.lang.RuntimeException ce) {
-				log.debug("Connection Refused:"+username+":"+ realm + " :" + request.getURI() + ":" + request.getMethod()
-				+ ":" + request.getRemoteAddr()+" ->"+ce.getMessage());
+				log.debug("Connection Refused:" + username + ":" + realm + " :" + request.getURI() + ":"
+						+ request.getMethod() + ":" + request.getRemoteAddr() + " ->" + ce.getMessage());
 			} catch (final UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}

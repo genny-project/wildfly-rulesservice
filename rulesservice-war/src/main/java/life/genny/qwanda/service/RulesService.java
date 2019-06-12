@@ -107,11 +107,11 @@ public class RulesService {
  	    }
 	}
 
-	public void executeStateful(final String rulesGroup, final EventBusInterface bus,
+	public void executeStateless(final String rulesGroup, final EventBusInterface bus,
 			final List<Tuple2<String, Object>> globals, final List<Object> facts,
 			final Map<String, String> keyValueMap) {
 		
-		RulesLoader.executeStateful(rulesGroup, bus, globals, facts, keyValueMap);
+		RulesLoader.executeStateless(rulesGroup, bus, globals, facts, keyValueMap);
 	}
 	
 	public Map<String, Object> getDecodedTokenMap(final String token) {

@@ -57,7 +57,6 @@ EventBusBean eventBus;
 @Inject
 RulesService rulesService;
 
-  final static String st = System.getenv("MYIP");
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
   
@@ -82,6 +81,7 @@ RulesService rulesService;
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
     log.info("Get a data message from Vert.x: " + payload);
+	log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *******************");
 
 	QDataAnswerMessage dataMsg = null;
 
