@@ -49,6 +49,7 @@ import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import life.genny.eventbus.EventBusInterface;
+import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.User;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
@@ -92,12 +93,8 @@ public class RulesService {
 	public void init() {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
-	//	eventBus = new EventBusBean();
-		
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
-		
-
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
  	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
@@ -107,20 +104,20 @@ public class RulesService {
  	    }
 	}
 
-	public void executeStateless(final String rulesGroup, final EventBusInterface bus,
-			final List<Tuple2<String, Object>> globals, final List<Object> facts,
-			final Map<String, String> keyValueMap) {
-		
-		RulesLoader.executeStateless(rulesGroup, bus, globals, facts, keyValueMap);
-	}
-	
-	public Map<String, Object> getDecodedTokenMap(final String token) {
-		return RulesLoader.getDecodedTokenMap(token);
-	}
-	
-	public List<Tuple2<String, Object>> getStandardGlobals() {
-		return RulesLoader.getStandardGlobals();
-	}
+//	public void executeStateless(final String rulesGroup, final EventBusInterface bus,
+//			final List<Tuple2<String, Object>> globals, final List<Object> facts,
+//			final Map<String, String> keyValueMap, final GennyToken gennyToken) {
+//		
+//		RulesLoader.executeStateless(rulesGroup, bus, globals, facts,gennyToken);
+//	}
+//	
+//	public Map<String, Object> getDecodedTokenMap(final String token) {
+//		return RulesLoader.getDecodedTokenMap(token);
+//	}
+//	
+//	public List<Tuple2<String, Object>> getStandardGlobals() {
+//		return RulesLoader.getStandardGlobals();
+//	}
 	
 	public void info()
 	

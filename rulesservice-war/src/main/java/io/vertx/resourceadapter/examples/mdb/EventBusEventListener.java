@@ -93,9 +93,8 @@ RulesService rulesService;
 	
 	
 	log.info("********* THIS IS WILDFLY EVENT LISTENER!!!! *******************");
-	GennyToken gennyToken = new GennyToken(payload.getString("token"));
 	
-	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, gennyToken.getToken());
+	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
   }
 
   
