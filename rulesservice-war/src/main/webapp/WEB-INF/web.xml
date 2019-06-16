@@ -90,6 +90,17 @@
     </auth-constraint>
 	</security-constraint>
 	
+		<security-constraint>
+		<web-resource-collection>
+		<web-resource-name>Rules Service</web-resource-name>
+			<url-pattern>/service/*</url-pattern>
+		</web-resource-collection>
+	<auth-constraint>
+        <role-name>dev</role-name>
+         <role-name>test</role-name>
+    </auth-constraint>
+	</security-constraint>
+	
 
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>

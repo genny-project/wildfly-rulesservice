@@ -34,6 +34,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import life.genny.qwanda.service.SecurityService;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -59,13 +60,23 @@ public class ServiceEndpoint {
 	@Inject
 	private SecurityService securityService;
 
-  
+	@Inject
+	EventBusBean eventBus;
+
 
   
 	@GET
 	@Path("/loadrules")
 	public Response reloadRules() {
 		RulesLoader.loadRules(GennySettings.rulesDir);
+		return Response.status(200).entity("Loaded").build();
+	}
+
+	@GET
+	@Path("/loadrulesfull")
+	public Response reloadRulesFull() {
+		RulesLoader.loadRules(GennySettings.rulesDir);
+		RulesLoader.triggerStartupRules(GennySettings.rulesDir, eventBus);
 		return Response.status(200).entity("Loaded").build();
 	}
 
