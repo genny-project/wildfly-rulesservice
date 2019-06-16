@@ -54,14 +54,6 @@ RulesService rulesService;
  	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
   
-	static Map<String, Object> decodedToken = null;
-	static Set<String> userRoles = null;
-	private static Map<String, User> usersSession = new HashMap<String, User>();
-
-	
-
-
-	static String token;
 
 
   /**
@@ -76,7 +68,6 @@ RulesService rulesService;
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
 	QEventMessage eventMsg = null;
-	String evtMsg = "Event:";
 	if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
 	} else if (payload.getString("event_type").equals("BTN_CLICK")) {

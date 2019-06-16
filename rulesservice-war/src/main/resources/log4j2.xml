@@ -32,6 +32,13 @@
 			<AppenderRef ref="STDOUT" />
 		</Logger>
 
+		<Logger name="org.drools.compiler.kie.builder.impl.KieBuilderImpl" level="ERROR">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
+		<Logger name="org.drools.core.xml.ExtensibleXmlParser" level="ERROR">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
+
 	</Loggers>
 </Configuration>
 

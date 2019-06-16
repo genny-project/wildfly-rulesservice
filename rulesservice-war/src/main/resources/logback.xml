@@ -22,5 +22,8 @@
     <logger name="io.netty.handler.codec.http.websocketx.WebSocket08FrameDecoder" level="WARN"/>
     <logger name="com.hazelcast.internal.diagnostics.HealthMonitor" level="ERROR" />
     <logger name="org.jboss.resteasy.resteasy_jaxrs.i18n" level="ERROR" />
+    <logger name="org.drools.compiler.kie.builder.impl.KieBuilderImpl" level="ERROR"/>
+	<logger name="org.drools.core.xml.ExtensibleXmlParser" level="ERROR"/>
+
 </configuration>
 
