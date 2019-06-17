@@ -27,3 +27,6 @@ else
   echo "ERROR: git properties $file not found."
 fi
 
+#create the dummy container that is used in docker-compose to disable things easier
+docker pull gennyproject/dummy:latest
+docker tag gennyproject/dummy:latest gennyproject/${project}:dummy

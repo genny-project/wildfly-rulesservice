@@ -75,8 +75,8 @@ public class ServiceEndpoint {
 	@GET
 	@Path("/loadrulesfull")
 	public Response reloadRulesFull() {
-		RulesLoader.loadRules(GennySettings.rulesDir);
-		RulesLoader.triggerStartupRules(GennySettings.rulesDir, eventBus);
+		RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir);
+		RulesLoader.triggerStartupRules(securityService.getRealm(),GennySettings.rulesDir,eventBus);
 		return Response.status(200).entity("Loaded").build();
 	}
 
