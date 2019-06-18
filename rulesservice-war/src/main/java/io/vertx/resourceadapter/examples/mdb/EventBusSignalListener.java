@@ -65,7 +65,7 @@ public class EventBusSignalListener implements VertxListener {
    * Default constructor.
    */
   public EventBusSignalListener() {
-    log.info("EventBusSignalListener started.");
+    //log.info("EventBusSignalListener started.");
   }
 
 	@Override

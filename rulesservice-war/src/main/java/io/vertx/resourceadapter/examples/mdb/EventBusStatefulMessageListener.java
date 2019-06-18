@@ -65,7 +65,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
    * Default constructor.
    */
   public EventBusStatefulMessageListener() {
-    log.info("EventBusStatefulMessageListener started.");
+    //log.info("EventBusStatefulMessageListener started.");
   }
 
 	@Override

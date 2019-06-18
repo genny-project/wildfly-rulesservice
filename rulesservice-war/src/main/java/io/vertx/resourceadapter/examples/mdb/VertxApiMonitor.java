@@ -38,7 +38,7 @@ import life.genny.eventbus.EventBusInterface;
 /**
  * Message-Driven Bean implementation class for: VertxApiMonitor
  */
-//@MessageDriven(name = "VertxApiMonitor", messageListenerInterface = VertxListener.class)
+
 @MessageDriven(name = "VertxApiMonitor", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "api"), })
 
 public class VertxApiMonitor implements VertxListener {
@@ -66,7 +66,7 @@ EventBusBean eventBus;
    * Default constructor.
    */
   public VertxApiMonitor() {
-    log.info("VertxApiMonitor started.");
+    //log.info("VertxApiMonitor started.");
   }
 
   @Override

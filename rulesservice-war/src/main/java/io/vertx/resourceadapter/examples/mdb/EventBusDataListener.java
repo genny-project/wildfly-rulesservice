@@ -43,9 +43,9 @@ import life.genny.rules.RulesLoader;
 
 
 /**
- * Message-Driven Bean implementation class for: VertxMonitor
+ * Message-Driven Bean implementation class for: EventBusDataListener
  */
-//@MessageDriven(name = "VertxMonitor", messageListenerInterface = VertxListener.class)
+
 @MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "data"), })
 
 public class EventBusDataListener implements VertxListener {
@@ -74,7 +74,7 @@ RulesService rulesService;
    * Default constructor.
    */
   public EventBusDataListener() {
-    log.info("EventBusDataListener started.");
+    //log.info("EventBusDataListener started.");
   }
 
   @Override
