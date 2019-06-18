@@ -8,6 +8,7 @@ import life.genny.qwanda.providers.CORSFilter;
 import life.genny.qwanda.providers.JsonDateTimeProvider;
 
 
+
 @ApplicationPath("")
 public class RestApplication extends Application {
   public RestApplication() {
