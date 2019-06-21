@@ -80,8 +80,8 @@ public class EventBusStatefulMessageListener implements VertxListener {
 
 		if (token != null/* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
 
-			log.info("Roles from this token are allow and authenticated "
-					+ TokenIntrospection.checkAuthForRoles(roles, token));
+//			log.info("Roles from this token are allow and authenticated "
+//					+ TokenIntrospection.checkAuthForRoles(roles, token));
 			
 			QEventMessage eventMsg = null;
 			if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
