@@ -33,7 +33,6 @@
 		<vertx.version>3.5.1</vertx.version>
 
 		<genny-rules.version>${revision}</genny-rules.version>
-		<genny-verticle.version>${revision}</genny-verticle.version>
 
 		<version.org.wildfly>17.0.0.Final</version.org.wildfly>
 
