@@ -54,7 +54,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
-	static String token;
+
 	private static final List<String> roles;
 
 	static {
@@ -75,8 +75,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
 
 		final JsonObject payload = new JsonObject(message.body().toString());
 
-		String token = payload.getString("token"); // GODO, this should be grabbed from header
-		GennyToken userToken = new GennyToken(token);
+		String token = payload.getString("token"); // TODO, this should be grabbed from header
 
 		if (token != null/* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
 
@@ -98,9 +97,9 @@ public class EventBusStatefulMessageListener implements VertxListener {
 				}
 			}
 
-			GennyToken gennyToken = new GennyToken(token);
+			GennyToken userToken = new GennyToken(token);
 			
-			RulesLoader.processStatefulMessage(eventMsg,gennyToken);
+			RulesLoader.processStatefulMessage(eventMsg,userToken);
 		}
 	}
 
