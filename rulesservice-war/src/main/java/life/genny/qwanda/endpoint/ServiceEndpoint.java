@@ -76,12 +76,15 @@ public class ServiceEndpoint {
 	}
 
 	@GET
-	@Path("/loadrulesfull")
-	public Response reloadRulesFull() {
+	@Path("/loadrulesfull/{realm}")
+	public Response reloadRulesFull(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
-
-			RulesLoader.loadRules(securityService.getRealm(), GennySettings.rulesDir);
+			if (realm == null) {
+				realm = securityService.getRealm();
+			}
+// Ideally we use the token realm , but it ois not working for me ACC
+			RulesLoader.loadRules(realm, GennySettings.rulesDir);
 			RulesLoader.triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir, eventBus);
 			return Response.status(200).entity("Loaded").build();
 		} else {
