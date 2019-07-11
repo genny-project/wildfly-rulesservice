@@ -1,6 +1,5 @@
 package life.genny.qwanda.endpoint;
 
-
 import org.apache.logging.log4j.Logger;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -51,45 +50,58 @@ import javax.inject.Inject;
 
 @Stateless
 public class ServiceEndpoint {
-  /**
-   * Stores logger object.
-   */
-  protected static final Logger log = org.apache.logging.log4j.LogManager
-      .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
-  
+	/**
+	 * Stores logger object.
+	 */
+	protected static final Logger log = org.apache.logging.log4j.LogManager
+			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+
 	@Inject
 	private SecurityService securityService;
 
 	@Inject
 	EventBusBean eventBus;
 
-
-  
 	@GET
 	@Path("/loadrules")
 	public Response reloadRules() {
-		RulesLoader.loadRules(GennySettings.rulesDir);
-		return Response.status(200).entity("Loaded").build();
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+
+			RulesLoader.loadRules(securityService.getRealm(), GennySettings.rulesDir);
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
 	}
 
 	@GET
 	@Path("/loadrulesfull")
 	public Response reloadRulesFull() {
-		RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir);
-		RulesLoader.triggerStartupRules(securityService.getRealm(),GennySettings.rulesDir,eventBus);
-		return Response.status(200).entity("Loaded").build();
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+
+			RulesLoader.loadRules(securityService.getRealm(), GennySettings.rulesDir);
+			RulesLoader.triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir, eventBus);
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
+
 	}
 
-	
 	@POST
 	@Consumes("application/json")
 	@Path("/signals")
 
 	public Response sendSignal(final QEventMessage message) {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
 
-		return Response.status(200).entity("Sent").build();
-	}
-
-
+				
+				return Response.status(200).entity("Sent Signal").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}	}
 
 }
