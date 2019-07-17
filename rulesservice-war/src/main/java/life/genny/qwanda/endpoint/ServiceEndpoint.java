@@ -76,7 +76,7 @@ public class ServiceEndpoint {
 	}
 
 	@GET
-	@Path("/loadrulesfull/{realm}")
+	@Path("/loadrules/full/{realm}")
 	public Response reloadRulesFull(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
@@ -86,6 +86,23 @@ public class ServiceEndpoint {
 // Ideally we use the token realm , but it ois not working for me ACC
 			RulesLoader.loadRules(realm, GennySettings.rulesDir);
 			RulesLoader.triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir, eventBus);
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
+
+	}
+	
+	@GET
+	@Path("/loadrules/skipinit/{realm}")
+	public Response reloadRulesSkip(@PathParam("realm") String realm) {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+			if (realm == null) {
+				realm = securityService.getRealm();
+			}
+// Ideally we use the token realm , but it ois not working for me ACC
+			RulesLoader.loadRules(realm, GennySettings.rulesDir);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
