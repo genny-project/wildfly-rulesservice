@@ -76,7 +76,7 @@
 		<properties>
 			<property name="hibernate.dialect"
 				value="life.genny.qwanda.util.MySQLDialect2" />
-			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.max_fetch_depth" value="3" />
 			<property name="hibernate.generate_statistics" value="false" />
 			<property name="hibernate.show_sql" value="false" />
