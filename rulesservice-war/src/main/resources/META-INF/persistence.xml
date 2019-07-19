@@ -4,62 +4,84 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 	version="2.1">
-	
- 	<persistence-unit name="genny-persistence-jbpm-jpa"
+
+	<persistence-unit name="genny-persistence-jbpm-jpa"
 		transaction-type="JTA">
 		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 		<jta-data-source>java:jboss/datasources/gennyDS</jta-data-source>
-		<!-- <mapping-file>ormap.xml</mapping-file> -->
+
+		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 
 
-    
-        <class>org.drools.persistence.info.SessionInfo</class>
-    <class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
-    <class>org.drools.persistence.info.WorkItemInfo</class>
-    <class>org.jbpm.process.audit.ProcessInstanceLog</class>
-    <class>org.jbpm.process.audit.NodeInstanceLog</class>
-    
 
+		<!-- task service -->
+		<class>org.jbpm.services.task.impl.model.AttachmentImpl</class>
+		<class>org.jbpm.services.task.impl.model.ContentImpl</class>
+		<class>org.jbpm.services.task.impl.model.BooleanExpressionImpl</class>
+		<class>org.jbpm.services.task.impl.model.CommentImpl</class>
+		<class>org.jbpm.services.task.impl.model.DeadlineImpl</class>
+		<class>org.jbpm.services.task.impl.model.CommentImpl</class>
+		<class>org.jbpm.services.task.impl.model.DeadlineImpl</class>
+		<class>org.jbpm.services.task.impl.model.DelegationImpl</class>
+		<class>org.jbpm.services.task.impl.model.EscalationImpl</class>
+		<class>org.jbpm.services.task.impl.model.GroupImpl</class>
+		<class>org.jbpm.services.task.impl.model.I18NTextImpl</class>
+		<class>org.jbpm.services.task.impl.model.NotificationImpl</class>
+		<class>org.jbpm.services.task.impl.model.EmailNotificationImpl</class>
+		<class>org.jbpm.services.task.impl.model.EmailNotificationHeaderImpl</class>
+		<class>org.jbpm.services.task.impl.model.PeopleAssignmentsImpl</class>
+		<class>org.jbpm.services.task.impl.model.ReassignmentImpl</class>
+		<class>org.jbpm.services.task.impl.model.TaskImpl</class>
+		<class>org.jbpm.services.task.impl.model.TaskDefImpl</class>
+		<class>org.jbpm.services.task.impl.model.TaskDataImpl</class>
+		<class>org.jbpm.services.task.impl.model.UserImpl</class>
+		<!-- Event Classes -->
+		<class>org.jbpm.services.task.audit.impl.model.TaskEventImpl</class>
 
-		
-		<shared-cache-mode>ALL</shared-cache-mode>
+		<!-- Task Audit Classes -->
+		<class>org.jbpm.services.task.audit.impl.model.AuditTaskImpl</class>
+		<class>org.jbpm.services.task.audit.impl.model.TaskVariableImpl</class>
+
+		<!--BAM for task service -->
+		<class>org.jbpm.services.task.audit.impl.model.BAMTaskSummaryImpl</class>
+
+		<!-- engine -->
+		<class>org.drools.persistence.info.SessionInfo</class>
+		<class>org.jbpm.persistence.processinstance.ProcessInstanceInfo</class>
+		<class>org.drools.persistence.info.WorkItemInfo</class>
+		<class>org.jbpm.persistence.correlation.CorrelationKeyInfo</class>
+		<class>org.jbpm.persistence.correlation.CorrelationPropertyInfo</class>
+		<!-- manager -->
+		<class>org.jbpm.runtime.manager.impl.jpa.ContextMappingInfo</class>
+
+		<!-- bam -->
+		<class>org.jbpm.process.audit.ProcessInstanceLog</class>
+		<class>org.jbpm.process.audit.NodeInstanceLog</class>
+		<class>org.jbpm.process.audit.VariableInstanceLog</class>
+
+		<!-- deployment store -->
+		<class>org.jbpm.kie.services.impl.store.DeploymentStoreEntry</class>
+		<!-- query service storage -->
+		<class>org.jbpm.kie.services.impl.query.persistence.QueryDefinitionEntity</class>
+
+		<!-- case id generation -->
+		<class>org.jbpm.casemgmt.impl.generator.CaseIdInfo</class>
+		<class>org.jbpm.casemgmt.impl.audit.CaseRoleAssignmentLog</class>
+		<class>org.jbpm.casemgmt.impl.audit.CaseFileDataLog</class>
+
+		<!-- error handling -->
+		<class>org.jbpm.runtime.manager.impl.jpa.ExecutionErrorInfo</class>
+
 		<properties>
 			<property name="hibernate.dialect"
 				value="life.genny.qwanda.util.MySQLDialect2" />
-			<property name="hibernate.hbm2ddl.auto" value="update" />
-			<property
-				name="hibernate.discriminator.ignore_explicit_for_joined"
-				value="true" />
-				<property name="hibernate.max_fetch_depth" value="3"/>
+			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="hibernate.max_fetch_depth" value="3" />
 			<property name="hibernate.generate_statistics" value="false" />
 			<property name="hibernate.show_sql" value="false" />
-			<!-- <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.MySQLSpatial56Dialect" 
-				/> -->
-			<!-- Infinispan -->
-			<property name="hibernate.cache.infinispan.statistics"
-				value="false" />
-			<property name="hibernate.cache.use_structured_entries"
-				value="true" />
-            <property name="javax.persistence.lock.timeout" value="100"/>
-            <property name="javax.persistence.query.timeout" value="100"/>
 
-			<!-- 2LC -->
-			<property name="hibernate.cache.use_second_level_cache"
-				value="true" />
-			<property name="hibernate.cache.use_query_cache"
-				value="true" />
-				
-		<!-- 	<property name="cache.provider_class" value="org.hibernate.cache.NoCacheProvider" />  -->
-		<!--  <property name="hibernate.cache.region.factory_class"
-				value="com.hazelcast.hibernate.HazelcastCacheRegionFactory" /> -->
-			<property name="hibernate.connection.pool_size" value="100" />
-			<property name="hibernate.c3p0.min_size" value="15" />
-			<property name="hibernate.c3p0.max_size" value="75" />
-			<property name="hibernate.c3p0.timeout" value="600" />
-			<property name="hibernate.c3p0.max_statements" value="75" />
-			<property name="hibernate.c3p0.idle_test_period"
-				value="5000" />
+
 		</properties>
 	</persistence-unit>
 </persistence>

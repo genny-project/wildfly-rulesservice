@@ -33,6 +33,10 @@
 		<vertx.version>3.5.1</vertx.version>
 
 		<genny-rules.version>${revision}</genny-rules.version>
+		<drools.version>7.23.0.Final</drools.version>
+		<jbpm.version>7.23.0.Final</jbpm.version>
+		<kie.version>7.23.0.Final</kie.version>
+		
 
 		<version.org.wildfly>17.0.1.Final</version.org.wildfly>
 		<version.jboss.bom>17.0.1.Final</version.jboss.bom>
@@ -56,9 +60,6 @@
 		<project.http.version>1.19.0</project.http.version>
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<drools.version>7.22.0.Final</drools.version>
-		<jbpm.version>7.22.0.Final</jbpm.version>
-		<kie.version>7.22.0.Final</kie.version>
 
 		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
 		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
