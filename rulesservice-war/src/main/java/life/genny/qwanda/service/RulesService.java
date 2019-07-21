@@ -95,9 +95,12 @@ public class RulesService {
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
+		RulesLoader.init();
+	    System.out.println("Loading Rules");
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
  	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
+		    System.out.println("triggering rules");
  	    	RulesLoader.triggerStartupRules(GennySettings.rulesDir);
  	    } else {
  	    	log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
