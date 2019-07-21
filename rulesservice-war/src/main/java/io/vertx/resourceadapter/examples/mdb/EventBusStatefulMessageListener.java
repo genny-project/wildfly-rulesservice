@@ -45,6 +45,8 @@ import life.genny.models.GennyToken;
 
 public class EventBusStatefulMessageListener implements VertxListener {
 
+	@Inject
+	EventBusBean eventBus;
 
 	@Inject
 	RulesService rulesService;

@@ -59,6 +59,9 @@ public class ServiceEndpoint {
 	@Inject
 	private SecurityService securityService;
 
+	@Inject
+	EventBusBean eventBus;
+
 	@GET
 	@Path("/loadrules")
 	public Response reloadRules() {
@@ -82,7 +85,7 @@ public class ServiceEndpoint {
 			}
 // Ideally we use the token realm , but it ois not working for me ACC
 			RulesLoader.loadRules(realm, GennySettings.rulesDir);
-			RulesLoader.triggerStartupRules(GennySettings.rulesDir);
+			RulesLoader.triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();

@@ -103,7 +103,7 @@ RulesService rulesService;
 		log.info("DATA Msg :");;
 		try {
 			dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
-			RulesLoader.processMsg(dataMsg,  payload.getString("token"));
+			RulesLoader.processMsg(dataMsg, payload.getString("token"));
 		} catch (com.google.gson.JsonSyntaxException e) {
 			log.error("BAD Syntax converting to json from " + dataMsg);
 			JsonObject json = new JsonObject(payload.toString());
@@ -120,7 +120,7 @@ RulesService rulesService;
 		QDataGPSMessage dataGPSMsg = null;
 		try {
 			dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
-			RulesLoader.processMsg(dataGPSMsg, payload.getString("token"));
+			RulesLoader.processMsg( dataGPSMsg, payload.getString("token"));
 		}
 		catch (com.google.gson.JsonSyntaxException e) {
 
@@ -137,14 +137,14 @@ RulesService rulesService;
 		QDataPaymentsCallbackMessage dataCallbackMsg = null;
 		try {
 			dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
-			RulesLoader.processMsg(dataCallbackMsg,  payload.getString("token"));
+			RulesLoader.processMsg( dataCallbackMsg,  payload.getString("token"));
 		}
 		catch (com.google.gson.JsonSyntaxException e) {
 
 			log.error("BAD Syntax converting to json from " + dataCallbackMsg);
 			JsonObject json = new JsonObject(payload.toString());
 			dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
-			RulesLoader.processMsg( dataCallbackMsg, payload.getString("token"));
+			RulesLoader.processMsg( dataCallbackMsg,  payload.getString("token"));
 		}
 	}
   }

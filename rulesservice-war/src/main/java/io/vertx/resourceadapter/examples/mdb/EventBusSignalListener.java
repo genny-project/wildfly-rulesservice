@@ -96,7 +96,6 @@ public class EventBusSignalListener implements VertxListener {
 				}
 			}
 
-
 			
 			RulesLoader.processMsg(eventMsg,token);
 		}
