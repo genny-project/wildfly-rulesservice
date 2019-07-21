@@ -103,7 +103,7 @@ RulesService rulesService;
 		log.info("DATA Msg :");;
 		try {
 			dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
-			RulesLoader.processMsg("Data:"+dataMsg.getData_type(), payload.getString("ruleGroup"),dataMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg(dataMsg,  payload.getString("token"));
 		} catch (com.google.gson.JsonSyntaxException e) {
 			log.error("BAD Syntax converting to json from " + dataMsg);
 			JsonObject json = new JsonObject(payload.toString());
@@ -112,7 +112,7 @@ RulesService rulesService;
 			jsonArray.add(answerData);
 			json.put("items", jsonArray);
 			dataMsg = JsonUtils.fromJson(json.toString(), QDataAnswerMessage.class);
-			RulesLoader.processMsg("Data:"+dataMsg.getData_type(), payload.getString("ruleGroup"), dataMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg( dataMsg,  payload.getString("token"));
 		}
 	}
 	else if (payload.getString("data_type").equals(GPS.class.getSimpleName())) {
@@ -120,7 +120,7 @@ RulesService rulesService;
 		QDataGPSMessage dataGPSMsg = null;
 		try {
 			dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
-			RulesLoader.processMsg("GPS", payload.getString("ruleGroup"), dataGPSMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg(dataGPSMsg, payload.getString("token"));
 		}
 		catch (com.google.gson.JsonSyntaxException e) {
 
@@ -131,20 +131,20 @@ RulesService rulesService;
 			jsonArray.add(answerData);
 			json.put("items", jsonArray);
 			dataGPSMsg = JsonUtils.fromJson(json.toString(), QDataGPSMessage.class);
-			RulesLoader.processMsg("GPS:"+dataGPSMsg.getData_type(), payload.getString("ruleGroup"), dataGPSMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg( dataGPSMsg,  payload.getString("token"));
 		}
 	} else if(payload.getString("data_type").equals(QDataPaymentsCallbackMessage.class.getSimpleName())) {
 		QDataPaymentsCallbackMessage dataCallbackMsg = null;
 		try {
 			dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
-			RulesLoader.processMsg("Data:"+dataCallbackMsg.getData_type(), payload.getString("ruleGroup"), dataCallbackMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg(dataCallbackMsg,  payload.getString("token"));
 		}
 		catch (com.google.gson.JsonSyntaxException e) {
 
 			log.error("BAD Syntax converting to json from " + dataCallbackMsg);
 			JsonObject json = new JsonObject(payload.toString());
 			dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
-			RulesLoader.processMsg("Callback:"+dataCallbackMsg.getData_type(), payload.getString("ruleGroup"), dataCallbackMsg, eventBus, payload.getString("token"));
+			RulesLoader.processMsg( dataCallbackMsg, payload.getString("token"));
 		}
 	}
   }

@@ -85,7 +85,7 @@ RulesService rulesService;
 	
 	log.info("********* THIS IS WILDFLY EVENT LISTENER!!!! *******************");
 	
-	RulesLoader.processMsg("Event:"+payload.getString("event_type"), payload.getString("ruleGroup"),eventMsg, eventBus, payload.getString("token"));
+	RulesLoader.processMsg(eventMsg, payload.getString("token"));
   }
 
   

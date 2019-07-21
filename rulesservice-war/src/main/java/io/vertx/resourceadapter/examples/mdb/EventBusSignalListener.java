@@ -76,7 +76,6 @@ public class EventBusSignalListener implements VertxListener {
 		final JsonObject payload = new JsonObject(message.body().toString());
 
 		String token = payload.getString("token"); // GODO, this should be grabbed from header
-		GennyToken userToken = new GennyToken(token);
 		if (token != null /* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
 
 //			log.info("Roles from this token are allow and authenticated "
@@ -97,9 +96,9 @@ public class EventBusSignalListener implements VertxListener {
 				}
 			}
 
-			GennyToken gennyToken = new GennyToken(token);
+
 			
-			RulesLoader.processStatefulMessage(eventMsg,gennyToken);
+			RulesLoader.processMsg(eventMsg,token);
 		}
 	}
 
