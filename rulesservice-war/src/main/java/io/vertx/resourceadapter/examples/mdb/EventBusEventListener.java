@@ -35,6 +35,8 @@ import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
 import life.genny.models.GennyToken;
 
+import javax.transaction.Transactional;
+
 
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
@@ -64,6 +66,7 @@ RulesService rulesService;
   }
 
   @Override
+  @Transactional
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
