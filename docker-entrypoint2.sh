@@ -47,6 +47,10 @@ if [ $XMX ] ; then
   echo "JVM XMX = "$XMX
   sed -i 's,-Xmx512m,-Xmx'"$XMX"',g' /opt/jboss/wildfly/bin/standalone.conf
 fi
+if [ $XMS ] ; then
+  echo "JVM XMS = "$XMS
+  sed -i 's,-Xms256m,-Xms'"$XMS"',g' /opt/jboss/wildfly/bin/standalone.conf
+fi
 
     /opt/jboss/wildfly/bin/add-user.sh  jmsuser jmspassword1
 
