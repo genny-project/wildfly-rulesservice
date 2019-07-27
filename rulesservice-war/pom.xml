@@ -61,8 +61,8 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<keycloak-core.version>3.4.0.Final</keycloak-core.version>
-		<keycloak-adapter-core.version>3.4.0.Final</keycloak-adapter-core.version>
+		<keycloak-core.version>6.0.1</keycloak-core.version>
+		<keycloak-adapter-core.version>6.0.1</keycloak-adapter-core.version>
 
 		<version.ee7>1.0.2.Final</version.ee7>
 		<version.resteasy>3.0.10.Final</version.resteasy>
