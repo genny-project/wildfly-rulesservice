@@ -64,7 +64,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 					}
 					try {
 						username = (String) jsonObj.get("preferred_username");
-						realm = (String) jsonObj.get("aud");
+						realm = (String) jsonObj.get("azp");
 						key = realm + ".json";
 					} catch (final JSONException e1) {
 						log.error("no customercode incuded with token for " + username + ":" + decodedJson);
@@ -77,18 +77,18 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 					if (request.getURI().equals("http://localhost:8080/version")) {
 						realm = GennySettings.mainrealm;
 					} else {
-						aURL = new URL(request.getURI());
-						final String url = aURL.getHost();
-						final String keycloakJsonText = SecureResources.getKeycloakJson(url + ".json");
-						if (keycloakJsonText == null) {
-							log.error(url + ".json is NOT in qwanda-service Keycloak Map!");
-
-						} else {
-							// extract realm
-							final JSONObject json = new JSONObject(keycloakJsonText);
-							realm = json.getString("realm");
-							key = realm + ".json";
-						}
+					aURL = new URL(request.getURI());
+					final String url = aURL.getHost();
+					final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(url + ".json");
+					if (keycloakJsonText==null) {
+						log.error(url + ".json is NOT in qwanda-service Keycloak Map!");
+						
+					} else {
+					// extract realm
+					final JSONObject json = new JSONObject(keycloakJsonText);
+					realm = json.getString("realm");
+					key = realm + ".json";
+					}
 					}
 				}
 
@@ -100,7 +100,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		// don't bother showing Docker health checks
 		if (!request.getURI().equals("http://localhost:8080/version")) {
 			String logtext = ">>>>> INCOMING REALM IS " + realm + " :" + request.getURI() + ":" + request.getMethod()
-					+ ":" + request.getRemoteAddr();
+			+ ":" + request.getRemoteAddr();
 			if (!logtext.equals(lastlog)) {
 				log.debug(logtext);
 				lastlog = logtext;
@@ -121,20 +121,22 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			}
 		}
 
-		KeycloakDeployment deployment = cache.get(realm); // just get one
+		KeycloakDeployment deployment = cache.get(realm);  // just get one
 		key = realm;
 
 		if (null == deployment) {
 			InputStream is;
 			try {
 				String keycloakJson = SecureResources.getKeycloakJsonMap().get(key);
-				is = new ByteArrayInputStream(keycloakJson.getBytes(StandardCharsets.UTF_8.name()));
+				is = new ByteArrayInputStream(
+						keycloakJson.getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);
 				cache.put(realm, deployment);
-
+				
 			} catch (final java.lang.RuntimeException ce) {
-				log.debug("Connection Refused:" + username + ":" + realm + " :" + request.getURI() + ":"
-						+ request.getMethod() + ":" + request.getRemoteAddr() + " ->" + ce.getMessage());
+				ce.printStackTrace();
+				log.debug("Connection Refused:"+username+":"+ realm + " :" + request.getURI() + ":" + request.getMethod()
+				+ ":" + request.getRemoteAddr()+" ->"+ce.getMessage());
 			} catch (final UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
