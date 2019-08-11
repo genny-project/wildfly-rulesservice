@@ -80,7 +80,10 @@ RulesService rulesService;
   @Override
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
+	  String token = payload.getString("token");
+	  payload.remove("token");
     log.info("Get a data message from Vert.x: " + payload);
+    payload.put("token",token);
 	log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *******************");
 
 	QDataAnswerMessage dataMsg = null;
