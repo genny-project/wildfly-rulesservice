@@ -41,6 +41,9 @@ import life.genny.qwandautils.KeycloakUtils;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
 
+import javax.transaction.Transactional;
+import javax.ejb.Asynchronous;
+
 
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
@@ -77,7 +80,12 @@ RulesService rulesService;
     //log.info("EventBusDataListener started.");
   }
 
+  
+ 
+  
   @Override
+  @Transactional
+  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 	  String token = payload.getString("token");

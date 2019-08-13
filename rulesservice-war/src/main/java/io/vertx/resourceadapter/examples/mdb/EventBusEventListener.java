@@ -36,6 +36,7 @@ import life.genny.rules.RulesLoader;
 import life.genny.models.GennyToken;
 
 import javax.transaction.Transactional;
+import javax.ejb.Asynchronous;
 
 
 /**
@@ -65,18 +66,30 @@ RulesService rulesService;
    // log.info("EventBusEventListener started.");
   }
 
+  
+  
+//  @Override
+//  public <T> void onMessage(Message<T> message) {
+//	  doProcessing(message);
+//  }
+  
   @Override
   @Transactional
+  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
+	  String logMessage = "********* THIS IS WILDFLY EVENT LISTENER!!!! ******************* ";
+	  
 	QEventMessage eventMsg = null;
 	if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
+		logMessage += " EVT_ATTRIBUTE_VALUE_CHANGE ";
 	} else if (payload.getString("event_type").equals("BTN_CLICK")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
 	} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
+		logMessage += " EVT_LINK_CHANGE ";
 	} else {
 		try {
 			eventMsg = JsonUtils.fromJson(payload.toString(), QEventMessage.class);
@@ -86,7 +99,7 @@ RulesService rulesService;
 	}
 	
 	
-	log.info("********* THIS IS WILDFLY EVENT LISTENER!!!! *******************");
+	log.info(logMessage);
 	
 	RulesLoader.processMsg(eventMsg, payload.getString("token"));
   }
