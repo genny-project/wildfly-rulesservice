@@ -33,7 +33,7 @@
 		<vertx.version>3.5.1</vertx.version>
 
 		<genny-rules.version>${revision}</genny-rules.version>
-		<kie.version>7.26.0-SNAPSHOT</kie.version>
+		<kie.version>7.24.0.Final</kie.version>
 		
 
 		<version.org.wildfly>17.0.1.Final</version.org.wildfly>
