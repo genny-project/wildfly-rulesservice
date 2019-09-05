@@ -20,6 +20,8 @@ import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.QwandaUtils;
 import life.genny.qwandautils.JsonUtils;
 import java.lang.invoke.MethodHandles;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
 @ApplicationScoped
@@ -36,7 +38,7 @@ public class EventBusBean implements EventBusInterface {
 	{
 		String json = msg.toString();
 		JsonObject event = new JsonObject(json);
-		
+		if (!StringUtils.isBlank(event.getString("token"))) {
 		   javax.naming.InitialContext ctx = null;
 		    io.vertx.resourceadapter.VertxConnection conn = null;
 		    try {
@@ -63,7 +65,9 @@ public class EventBusBean implements EventBusInterface {
 		    	  }
 		      }
 		    }
-
+		} else {
+			log.error("No token set for message");
+		}
 	}
   
 
