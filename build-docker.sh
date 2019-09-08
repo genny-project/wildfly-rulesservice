@@ -20,7 +20,7 @@ then
 
   echo "git.commit.id = " $(prop 'git.commit.id')
   echo "git.build.version = " $(prop 'git.build.version')
-  docker build  -t gennyproject/${project}:${version} .
+  docker build  -t gennyproject/${project}:${version} --network host .
   docker tag gennyproject/${project}:${version} gennyproject/${project}:$(prop 'git.commit.id')
   docker tag gennyproject/${project}:${version} gennyproject/${project}:$(prop 'git.build.version')
 else
