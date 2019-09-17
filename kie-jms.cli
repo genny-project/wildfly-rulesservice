@@ -1,0 +1,2 @@
+/subsystem=messaging-activemq/server=default/jms-queue=KIE.SERVER.EXECUTOR/:add(entries=["java:/jboss/exported/jms/queue/KIE.SERVER.EXECUTOR"])
+:reload
