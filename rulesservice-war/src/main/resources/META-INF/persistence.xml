@@ -15,8 +15,8 @@
 		<mapping-file>META-INF/Servicesorm.xml</mapping-file>
  		<mapping-file>META-INF/Taskorm.xml</mapping-file>
 		<mapping-file>META-INF/TaskAuditorm.xml</mapping-file> 
-<!-- 		<mapping-file>META-INF/Executor-orm.xml</mapping-file> 
-		<mapping-file>META-INF/CaseMgmtorm.xml</mapping-file> 
+		<mapping-file>META-INF/Executor-orm.xml</mapping-file> 
+	<!--  <mapping-file>META-INF/CaseMgmtorm.xml</mapping-file> 
 				-->
 				
 				<!-- Genny RulesEngine Simple workflow status  -->
@@ -79,6 +79,10 @@
 
 		<!-- error handling -->
 		<class>org.jbpm.runtime.manager.impl.jpa.ExecutionErrorInfo</class>
+		
+		<!--  executorservice -->
+		<class>org.jbpm.executor.entities.ErrorInfo</class>
+    	<class>org.jbpm.executor.entities.RequestInfo</class>
 
 		<properties>
 			<property name="hibernate.dialect"
