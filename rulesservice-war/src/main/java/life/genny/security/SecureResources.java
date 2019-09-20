@@ -42,9 +42,15 @@ public class SecureResources {
 	private static Map<String, String> keycloakJsonMap = new ConcurrentHashMap<String, String>();
 
 	public void init(@Observes @Initialized(ApplicationScoped.class) final Object init) {
-		// readFilenamesFromDirectory(GennySettings.realmDir);
-		// read all services from api
+		if (keycloakJsonMap.isEmpty()) {
+			setup();
+		}
 
+	}
+	
+	public void setup()
+	{
+		
 		Set<String> realmsSet = VertxUtils.fetchRealmsFromApi();
 
 		// Now fetch all the Realms for keycloak json
@@ -52,7 +58,6 @@ public class SecureResources {
 			log.info("Loaded realm is "+realm);
 			getKeycloakJson("http://"+realm + ".genny.life");
 		}
-
 	}
 
 	public static String getKeycloakJson(String fullurl) {
@@ -194,4 +199,9 @@ public class SecureResources {
 
 		return ret;
 	}
+	
+	public void info()
+	{
+		log.info("Secure Resources Loading");
+	}	
 }

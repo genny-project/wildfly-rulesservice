@@ -89,38 +89,25 @@ public class RulesService {
 
 	WildflyCache cacheInterface;
 
-//	@PostConstruct
+
 	public void init() {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
 		RulesLoader.init();
-	    System.out.println("Loading Rules");
+	    log.info("Loading Rules");
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
  	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
-		    System.out.println("triggering rules");
+		    log.info("triggering rules");
  	    	RulesLoader.triggerStartupRules(GennySettings.rulesDir);
  	    } else {
  	    	log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
  	    }
 	}
 
-//	public void executeStateless(final String rulesGroup, final EventBusInterface bus,
-//			final List<Tuple2<String, Object>> globals, final List<Object> facts,
-//			final Map<String, String> keyValueMap, final GennyToken gennyToken) {
-//		
-//		RulesLoader.executeStateless(rulesGroup, bus, globals, facts,gennyToken);
-//	}
-//	
-//	public Map<String, Object> getDecodedTokenMap(final String token) {
-//		return RulesLoader.getDecodedTokenMap(token);
-//	}
-//	
-//	public List<Tuple2<String, Object>> getStandardGlobals() {
-//		return RulesLoader.getStandardGlobals();
-//	}
+
 	
 	public void info()
 	

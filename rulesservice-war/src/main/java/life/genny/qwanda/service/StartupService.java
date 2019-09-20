@@ -18,6 +18,7 @@ import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
+import life.genny.security.SecureResources;
 
 
 /**
@@ -28,7 +29,7 @@ import life.genny.qwandautils.JsonUtils;
 @Singleton
 @Startup
 @Transactional
-@TransactionTimeout(value=1500, unit=TimeUnit.SECONDS)
+@TransactionTimeout(value=4500, unit=TimeUnit.SECONDS)
 public class StartupService {
 
 	/**
@@ -39,16 +40,22 @@ public class StartupService {
 
 	@Inject
 	private SecurityService securityService;
+	
+	@Inject
+	private SecureResources secureResources;
 
 	@Inject
 	private RulesService rulesservice;
 	
 	@PostConstruct
 	@Transactional
-	@TransactionTimeout(value=3000, unit=TimeUnit.SECONDS)
+	@TransactionTimeout(value=4500, unit=TimeUnit.SECONDS)
 	public void init() {
 
 		rulesservice.init();
+		securityService.setImportMode(false); // force this to start up
+		secureResources.setup(); // force start up
+		
 		log.info("---------------- Completed Startup ----------------");
 	}
 
