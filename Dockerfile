@@ -1,15 +1,10 @@
 #FROM gennyproject/wildfly:16.0.0.Final 
-FROM gennyproject/wildfly:v3.0.0 
+FROM gennyproject/wildfly:v3.1.0 
 
 RUN apk add --no-cache libc6-compat
 
 USER root
 
-#ADD kie-jms.cli /
-#ADD configure-jms.cli /
-##RUN /execute.sh
-#RUN /opt/jboss/wildfly/bin/jboss-cli.sh --connect --file=/kie-jms.cli
-#RUN /opt/jboss/wildfly/bin/jboss-cli.sh --connect --file=/configure-jms.cli
 
 RUN wget https://www.yourkit.com/download/docker/YourKit-JavaProfiler-2019.8-docker.zip -P /tmp/ && \
   unzip /tmp/YourKit-JavaProfiler-2019.8-docker.zip -d /usr/local && \
