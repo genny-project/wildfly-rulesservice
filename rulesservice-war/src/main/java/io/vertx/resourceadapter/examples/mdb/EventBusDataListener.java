@@ -43,14 +43,14 @@ import life.genny.rules.RulesLoader;
 
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
-
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
 
 @MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "data"), })
-
+@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar")
 public class EventBusDataListener implements VertxListener {
 	
 

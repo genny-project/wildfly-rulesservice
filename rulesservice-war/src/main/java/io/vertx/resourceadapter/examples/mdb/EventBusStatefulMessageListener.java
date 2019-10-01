@@ -34,6 +34,7 @@ import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
 import life.genny.security.TokenIntrospection;
 import life.genny.models.GennyToken;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
 /**
  * Message-Driven Bean implementation class for: EventBusMessageListener -
@@ -42,7 +43,7 @@ import life.genny.models.GennyToken;
 
 @MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
 		@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"), })
-
+@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar")
 public class EventBusStatefulMessageListener implements VertxListener {
 
 	@Inject

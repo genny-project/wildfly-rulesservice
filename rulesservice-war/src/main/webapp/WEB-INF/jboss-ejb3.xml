@@ -6,13 +6,14 @@
 	xmlns:r="urn:resource-adapter-binding"
 	xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee http://www.jboss.org/j2ee/schema/jboss-ejb3.2.1.xsd http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
 	version="3.1" impl-version="2.0">
-	<assembly-descriptor>
+<assembly-descriptor>
 		<r:resource-adapter-binding>
 			<ejb-name>*</ejb-name>
 			<r:resource-adapter-name>rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar
 			</r:resource-adapter-name>
 		</r:resource-adapter-binding>
 	</assembly-descriptor>
+	
 	<enterprise-beans>
 		<message-driven>
 			<activation-config>
@@ -109,5 +110,6 @@
 			<ejb-class>io.vertx.resourceadapter.examples.mdb.EventBusCmdListener</ejb-class>
 			<messaging-type>io.vertx.resourceadapter.inflow.VertxListener</messaging-type>
 		</message-driven>
+
 	</enterprise-beans>
 </jboss:ejb-jar>

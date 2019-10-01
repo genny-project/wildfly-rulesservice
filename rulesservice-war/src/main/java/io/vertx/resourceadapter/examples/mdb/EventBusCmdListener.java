@@ -19,14 +19,14 @@ import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.service.RulesService;
 import life.genny.rules.RulesLoader;
-
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
 
 @MessageDriven(name = "EventBusCmdListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "cmds"), })
-
+@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar")
 public class EventBusCmdListener implements VertxListener {
 	
 
