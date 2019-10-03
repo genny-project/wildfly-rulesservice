@@ -46,7 +46,7 @@
 
 		<version.h2>1.4.195</version.h2>
 		<version.postgresql>9.4.1207</version.postgresql>
-		<version.mysql>6.0.6</version.mysql>
+		<version.mysql-connector-java>8.0.17</version.mysql-connector-java>
 
 		<version.jodatime>2.7</version.jodatime>
 
@@ -59,8 +59,7 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<keycloak-core.version>7.0.0</keycloak-core.version>
-		<keycloak-adapter-core.version>7.0.0</keycloak-adapter-core.version>
+		<version.keycloak>7.0.0</version.keycloak>
 
 		<version.ee7>1.0.2.Final</version.ee7>
 		<version.resteasy>3.0.10.Final</version.resteasy>
@@ -139,10 +138,6 @@
 		<dependency>
 			<groupId>org.jboss.ejb3</groupId>
 			<artifactId>jboss-ejb3-ext-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.vertx</groupId>
@@ -294,7 +289,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.22</version>
+			<version>${version.mysql-connector-java}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
@@ -304,13 +299,13 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-adapter-core</artifactId>
-			<version>${keycloak-core.version}</version>
+			<version>${version.keycloak}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-adapter-spi</artifactId>
-			<version>${keycloak-core.version}</version>
+			<version>${version.keycloak}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -318,13 +313,13 @@
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-core</artifactId>
-			<version>${keycloak-core.version}</version>
+			<version>${version.keycloak}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-admin-client</artifactId>
-			<version>${keycloak-core.version}</version>
+			<version>${version.keycloak}</version>
 		</dependency>
 
 		<dependency>
