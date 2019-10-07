@@ -111,7 +111,7 @@ RulesService rulesService;
 
 		RulesLoader.addRules(rulesGroup, rules);
 	} else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
-		log.info("DATA Msg :");;
+		//log.info("DATA Msg :");;
 		try {
 			dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
 			RulesLoader.processMsg(dataMsg, payload.getString("token"));
