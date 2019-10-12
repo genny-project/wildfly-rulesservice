@@ -88,6 +88,9 @@ public class RulesService {
 	
 
 	WildflyCache cacheInterface;
+	
+	@Inject  
+    private RuntimeDataService rds;
 
 
 	public void init() {
@@ -95,7 +98,7 @@ public class RulesService {
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
-		RulesLoader.init();
+		RulesLoader.init(rds);
 	    log.info("Loading Rules");
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
