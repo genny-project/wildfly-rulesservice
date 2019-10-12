@@ -89,16 +89,13 @@ public class RulesService {
 
 	WildflyCache cacheInterface;
 	
-	@Inject  
-    private RuntimeDataService rds;
-
 
 	public void init() {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus,cacheInterface);
 		// Load in Rules
-		RulesLoader.init(rds);
+		RulesLoader.init();
 	    log.info("Loading Rules");
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
