@@ -37,7 +37,6 @@
 		
 
 		<version.org.wildfly>17.0.1.Final</version.org.wildfly>
-		<version.jboss.bom>17.0.1.Final</version.jboss.bom>
 
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
