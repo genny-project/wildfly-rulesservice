@@ -20,7 +20,8 @@
 				-->
 				
 				<!-- Genny RulesEngine Simple workflow status  -->
-		<class>life.genny.model.NodeStatus</class>		
+		<class>life.genny.rules.listeners.NodeStatusLog</class>
+		<class>life.genny.model.NodeStatus</class>
 				
 		<!-- task service -->
 		<class>org.jbpm.services.task.impl.model.AttachmentImpl</class>
