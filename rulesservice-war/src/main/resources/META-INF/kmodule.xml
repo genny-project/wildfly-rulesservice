@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE project>
-<kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://jboss.org/kie/6.0.0/kmodule">
-    <kbase name="life.genny.rules" packages="life.genny.rules">
-        <ksession name="ksession-life.genny.rules"/>
-    </kbase>
+<kmodule xmlns="jboss.org/kie/6.0.0/kmodule" xmlns:xsi="w3.org/2001/XMLSchema-instance">
+    <kbase name="defaultKieBase" default="true" eventProcessingMode="stream" equalsBehavior="identity" packages="*"> 
+      	<ksession name="defaultKieSession" type="stateful" default="true" clockType="realtime" scope="javax.enterprise.context.ApplicationScoped"/> 
+		<ksession name="defaultStatelessKieSession" type="stateless" default="true" clockType="realtime" scope="javax.enterprise.context.ApplicationScoped"/> 
+	</kbase> 
 </kmodule>
