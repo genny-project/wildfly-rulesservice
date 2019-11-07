@@ -47,10 +47,10 @@ public class SecureResources {
 		}
 
 	}
-	
+
 	public void setup()
 	{
-		
+
 		Set<String> realmsSet = VertxUtils.fetchRealmsFromApi();
 
 		// Now fetch all the Realms for keycloak json
@@ -67,7 +67,7 @@ public class SecureResources {
 		if ( keycloakJson != null) {
 			return keycloakJson;
 		}
-		
+
 		URL aURL = null;
 		try {
 			if (!fullurl.startsWith("http")) {
@@ -109,10 +109,10 @@ public class SecureResources {
 			}
 		} catch (Exception e)
 		{
-					log.error("KeycloakJson not available for "+fullurl);
+					log.error("KeycloakJson not available for:: "+fullurl);
 		}
 		return null;
-				
+
 	}
 
 	public void destroy(@Observes @Destroyed(ApplicationScoped.class) final Object init) {
@@ -199,9 +199,9 @@ public class SecureResources {
 
 		return ret;
 	}
-	
+
 	public void info()
 	{
 		log.info("Secure Resources Loading");
-	}	
+	}
 }
