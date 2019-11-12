@@ -35,6 +35,8 @@ import life.genny.rules.RulesLoader;
 import life.genny.security.TokenIntrospection;
 import life.genny.models.GennyToken;
 import org.jboss.ejb3.annotation.ResourceAdapter;
+import javax.transaction.Transactional;
+import javax.ejb.Asynchronous;
 
 /**
  * Message-Driven Bean implementation class for: EventBusMessageListener -
@@ -70,7 +72,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
   }
 
   @Override
-  @Transactional(rollbackFor=Exception.class)
+  @Transactional
   @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 

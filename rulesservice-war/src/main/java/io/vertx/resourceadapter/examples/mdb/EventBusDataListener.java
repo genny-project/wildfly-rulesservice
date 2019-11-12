@@ -84,7 +84,7 @@ RulesService rulesService;
  
   
   @Override
-  @Transactional(propagation = Propagation.REQUIRED, readOnly = false,rollbackFor=Exception.class)
+  @Transactional
   @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());

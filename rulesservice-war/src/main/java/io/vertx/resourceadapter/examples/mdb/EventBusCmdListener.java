@@ -21,6 +21,9 @@ import life.genny.qwanda.service.RulesService;
 import life.genny.rules.RulesLoader;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
+import javax.ejb.Asynchronous;
+import javax.transaction.Transactional;
+
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
@@ -57,7 +60,7 @@ RulesService rulesService;
   }
 
   @Override
-  @Transactional(rollbackFor=Exception.class)
+  @Transactional
   @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
