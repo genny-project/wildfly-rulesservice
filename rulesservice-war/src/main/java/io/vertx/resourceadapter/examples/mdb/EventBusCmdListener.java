@@ -57,6 +57,8 @@ RulesService rulesService;
   }
 
   @Override
+  @Transactional(rollbackFor=Exception.class)
+  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
     log.info("Get a data message from Vert.x: " + payload);

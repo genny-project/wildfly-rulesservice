@@ -69,7 +69,9 @@ public class EventBusStatefulMessageListener implements VertxListener {
     //log.info("EventBusStatefulMessageListener started.");
   }
 
-	@Override
+  @Override
+  @Transactional(rollbackFor=Exception.class)
+  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 
 		log.info("********* THIS IS WILDFLY STATEFUL MESSGE LISTENER!!!! *******************");
