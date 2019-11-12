@@ -36,8 +36,8 @@
 		<kie.version>7.28.0.Final</kie.version>
 		
 
-		<version.org.wildfly>17.0.1.Final</version.org.wildfly>
-
+		<version.org.wildfly>18.0.0.Final</version.org.wildfly>
+		<version.keycloak>7.0.1</version.keycloak>
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -58,7 +58,7 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<version.keycloak>7.0.0</version.keycloak>
+		
 
 		<version.ee7>1.0.2.Final</version.ee7>
 		<version.resteasy>3.0.10.Final</version.resteasy>

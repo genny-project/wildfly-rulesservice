@@ -54,8 +54,6 @@ import life.genny.qwanda.entity.User;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
 
-
-
 import life.genny.utils.RulesUtils;
 import life.genny.utils.VertxUtils;
 
@@ -63,10 +61,10 @@ import life.genny.eventbus.EventBusInterface;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import io.vertx.resourceadapter.examples.mdb.WildflyCache;
 import javax.inject.Inject;
+import javax.annotation.PreDestroy;
 import life.genny.qwanda.message.QEventMessage;
 
 import life.genny.rules.RulesLoader;
-
 
 /**
  * @author acrow
@@ -76,7 +74,7 @@ import life.genny.rules.RulesLoader;
 @ApplicationScoped
 
 public class RulesService {
-	
+
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
@@ -85,32 +83,33 @@ public class RulesService {
 
 	@Inject
 	EventBusBean eventBus;
-	
 
 	WildflyCache cacheInterface;
-	
 
 	public void init() {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
-		VertxUtils.init(eventBus,cacheInterface);
+		VertxUtils.init(eventBus, cacheInterface);
 		// Load in Rules
 		RulesLoader.init();
-	    log.info("Loading Rules");
+		log.info("Loading Rules");
 		RulesLoader.loadRules(GennySettings.rulesDir);
 
- 	    if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
-		    log.info("triggering rules");
- 	    	RulesLoader.triggerStartupRules(GennySettings.rulesDir);
- 	    } else {
- 	    	log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
- 	    }
+		if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
+			log.info("triggering rules");
+			RulesLoader.triggerStartupRules(GennySettings.rulesDir);
+		} else {
+			log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
+		}
 	}
 
+	@PreDestroy
+	public void shutdown() {
+		RulesLoader.shutdown();
+	}
 
-	
 	public void info()
-	
+
 	{
 		log.info("Rules info");
 	}

@@ -6,9 +6,9 @@ RUN apk add --no-cache libc6-compat
 USER root
 
 
-RUN wget https://www.yourkit.com/download/docker/YourKit-JavaProfiler-2019.8-docker.zip -P /tmp/ && \
-  unzip /tmp/YourKit-JavaProfiler-2019.8-docker.zip -d /usr/local && \
-  rm /tmp/YourKit-JavaProfiler-2019.8-docker.zip
+#RUN wget https://www.yourkit.com/download/docker/YourKit-JavaProfiler-2019.8-docker.zip -P /tmp/ && \
+#  unzip /tmp/YourKit-JavaProfiler-2019.8-docker.zip -d /usr/local && \
+#  rm /tmp/YourKit-JavaProfiler-2019.8-docker.zip
 
 ADD docker-entrypoint.sh /opt/jboss/docker-entrypoint.sh
 ADD docker-entrypoint2.sh /opt/jboss/
