@@ -45,7 +45,7 @@ import javax.ejb.Asynchronous;
 
 @MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
 		@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"), })
-@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar")
+@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 public class EventBusStatefulMessageListener implements VertxListener {
 
 	@Inject

@@ -44,7 +44,7 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
  */
 
 @MessageDriven(name = "EventBusEventListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
-@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.1.rar")
+@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 public class EventBusEventListener implements VertxListener {
 	
 
