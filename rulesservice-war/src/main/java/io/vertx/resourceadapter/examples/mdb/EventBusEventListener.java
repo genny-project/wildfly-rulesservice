@@ -48,11 +48,11 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 public class EventBusEventListener implements VertxListener {
 	
 
-@Inject
-EventBusBean eventBus;
+//@Inject
+//EventBusBean eventBus;
 
-@Inject
-RulesService rulesService;
+//@Inject
+//RulesService rulesService;
 
  	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
