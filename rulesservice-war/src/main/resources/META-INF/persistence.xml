@@ -96,19 +96,19 @@
       <property name="hibernate.max_fetch_depth" value="3" />
       <property name="hibernate.hbm2ddl.auto" value="update" />
       <property name="hibernate.show_sql" value="false" />
-    <!--   <property name="hibernate.connection.release_mode" value="after_transaction"/> -->
-    <!--  <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossStandAloneJtaPlatform"/>  --> 
+  <property name="hibernate.connection.release_mode" value="after_transaction"/> 
 
     
    <!--    <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" /> -->
 
       <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->      
-      <property name="hibernate.id.new_generator_mappings" value="false" />
-      <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
-      
+        <property name="hibernate.id.new_generator_mappings" value="true" />
+    <!--    <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
+      -->
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
 		<property name="hibernate.order_updates" value="true"/>
 		<property name="hibernate.connection.isolation" value="2"/>
+		
 
 		</properties>
 	</persistence-unit>
