@@ -37,7 +37,7 @@
 		
 
 		<version.org.wildfly>18.0.1.Final</version.org.wildfly>
-		<version.keycloak>7.0.1</version.keycloak>
+		<version.keycloak>8.0.0</version.keycloak>
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -45,7 +45,7 @@
 
 		<version.h2>1.4.195</version.h2>
 		<version.postgresql>9.4.1207</version.postgresql>
-		<version.mysql-connector-java>8.0.17</version.mysql-connector-java>
+		<version.mysql-connector-java>8.0.18</version.mysql-connector-java>
 
 		<version.jodatime>2.7</version.jodatime>
 
