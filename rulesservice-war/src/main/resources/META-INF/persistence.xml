@@ -87,7 +87,7 @@
 
 		<properties>
 			<property name="hibernate.dialect"
-				value="life.genny.qwanda.util.MySQLDialect2" />
+				value="org.hibernate.dialect.MySQL8Dialect" />
 		<!-- <property name="hibernate.transaction.jta.platform"
       value="org.hibernate.service.jta.platform.internal.BitronixJtaPlatform"/>-->
 
