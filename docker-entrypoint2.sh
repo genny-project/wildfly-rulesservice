@@ -39,37 +39,37 @@ myip=
 while IFS=$': \t' read -a line ;do
     [ -z "${line%inet}" ] && ip=${line[${#line[1]}>4?1:2]} &&
         [ "${ip#127.0.0.1}" ] && myip=$ip
-        done< <(LANG=C /sbin/ifconfig eth0)
+done< <(LANG=C /sbin/ifconfig eth0)
 
-        export IPMY=$myip
+export IPMY=$myip
 
-        if [ "$ADMIN_USERNAME" ] && [ "$ADMIN_PASSWORD" ]; then
-            /opt/jboss/wildfly/bin/add-user.sh  "$ADMIN_USERNAME"  "$ADMIN_PASSWORD"
-        fi
+if [ "$ADMIN_USERNAME" ] && [ "$ADMIN_PASSWORD" ]; then
+    /opt/jboss/wildfly/bin/add-user.sh  "$ADMIN_USERNAME"  "$ADMIN_PASSWORD"
+fi
 
-        if [ "$XMS" ] ; then
-            echo "SET JVM XMS = ""$XMS"
-            export JAVA_OPTS="${JAVA_OPTS} -Xms${XMS}"
-            # won't work if JAVA_OPTS set
-            sed -i 's,-Xms256m,-Xms'"$XMS"',g' /opt/jboss/wildfly/bin/standalone.conf
-        else
-            echo "SET DEFAULT JVM XMS = ""$XMS"
-            export JAVA_OPTS="${JAVA_OPTS} ${JVM_MIN_MEMORY}"
-        fi
+if [ "$XMS" ] ; then
+    echo "SET JVM XMS = ""$XMS"
+    export JAVA_OPTS="${JAVA_OPTS} -Xms${XMS}"
+    # won't work if JAVA_OPTS set
+    sed -i 's,-Xms256m,-Xms'"$XMS"',g' /opt/jboss/wildfly/bin/standalone.conf
+else
+    echo "SET DEFAULT JVM XMS = ""$XMS"
+    export JAVA_OPTS="${JAVA_OPTS} ${JVM_MIN_MEMORY}"
+fi
 
-        if [ "$XMX" ] ; then
-            echo "SET JVM XMX = ""$XMX"
-            export JAVA_OPTS="${JAVA_OPTS} -Xmx${XMX}"
-            # won't work if JAVA_OPTS set
-            sed -i 's,-Xmx512m,-Xmx'"$XMX"',g' /opt/jboss/wildfly/bin/standalone.conf
-        else
-            echo "SET DEFAULT JVM XMX = ""$XMX"
-            export JAVA_OPTS="${JAVA_OPTS} ${JVM_MAX_MEMORY}"
-        fi
+if [ "$XMX" ] ; then
+    echo "SET JVM XMX = ""$XMX"
+    export JAVA_OPTS="${JAVA_OPTS} -Xmx${XMX}"
+    # won't work if JAVA_OPTS set
+    sed -i 's,-Xmx512m,-Xmx'"$XMX"',g' /opt/jboss/wildfly/bin/standalone.conf
+else
+    echo "SET DEFAULT JVM XMX = ""$XMX"
+    export JAVA_OPTS="${JAVA_OPTS} ${JVM_MAX_MEMORY}"
+fi
 
-        /opt/jboss/wildfly/bin/add-user.sh  jmsuser jmspassword1
+/opt/jboss/wildfly/bin/add-user.sh  jmsuser jmspassword1
 
-        rm -Rf /opt/jboss/wildfly/data/*
+rm -Rf /opt/jboss/wildfly/data/*
 
 #/subsystem=transactions:write-attribute(name=node-identifier,value=MyNode)
 
