@@ -18,7 +18,7 @@ import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.service.RulesService;
-import life.genny.rules.RulesLoader;
+import life.genny.rules.RulesLoader2;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
 import javax.ejb.Asynchronous;
@@ -79,7 +79,7 @@ RulesService rulesService;
 		if (payload.getString("msg_type").equals("CMD_MSG")) {
 			if (payload.getString("cmd_type").equals("CMD_RELOAD_RULES")) {
 				if (payload.getString("code").equals("RELOAD_RULES_FROM_FILES")) {
-					RulesLoader.loadRules(gennyToken.getRealm(),"/rules");
+					RulesLoader2.loadRules(gennyToken.getRealm(),"/rules");
 				}
 			}
 		}

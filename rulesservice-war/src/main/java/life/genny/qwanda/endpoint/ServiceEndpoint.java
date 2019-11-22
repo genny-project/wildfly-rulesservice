@@ -14,7 +14,7 @@ import io.swagger.annotations.Api;
 import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.GitUtils;
-import life.genny.rules.RulesLoader;
+import life.genny.rules.RulesLoader2;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -68,7 +68,7 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			RulesLoader.loadRules(securityService.getRealm(), GennySettings.rulesDir);
+			RulesLoader2.loadRules(securityService.getRealm(), GennySettings.rulesDir);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -84,8 +84,8 @@ public class ServiceEndpoint {
 				realm = securityService.getRealm();
 			}
 // Ideally we use the token realm , but it ois not working for me ACC
-			RulesLoader.loadRules(realm, GennySettings.rulesDir);
-			RulesLoader.triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
+			RulesLoader2.loadRules(realm, GennySettings.rulesDir);
+			(new RulesLoader2()).triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -102,7 +102,7 @@ public class ServiceEndpoint {
 				realm = securityService.getRealm();
 			}
 // Ideally we use the token realm , but it ois not working for me ACC
-			RulesLoader.loadRules(realm, GennySettings.rulesDir);
+			RulesLoader2.loadRules(realm, GennySettings.rulesDir);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();

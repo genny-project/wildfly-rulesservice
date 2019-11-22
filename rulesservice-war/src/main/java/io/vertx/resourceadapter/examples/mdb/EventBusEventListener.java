@@ -32,7 +32,8 @@ import life.genny.qwandautils.KeycloakUtils;
 
 
 import life.genny.eventbus.EventBusInterface;
-import life.genny.rules.RulesLoader;
+
+import life.genny.rules.RulesLoader2;
 import life.genny.models.GennyToken;
 
 import javax.transaction.Transactional;
@@ -75,7 +76,7 @@ public class EventBusEventListener implements VertxListener {
   
   @Override
   @Transactional
-  @Asynchronous
+//  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
@@ -101,7 +102,7 @@ public class EventBusEventListener implements VertxListener {
 	
 	log.info(logMessage);
 	
-	RulesLoader.processMsg(eventMsg, payload.getString("token"));
+	(new RulesLoader2()).processMsg(eventMsg, payload.getString("token"));
   }
 
   

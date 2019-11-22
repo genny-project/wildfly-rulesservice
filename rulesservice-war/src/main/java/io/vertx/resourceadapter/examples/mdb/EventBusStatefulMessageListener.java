@@ -31,7 +31,7 @@ import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
 
 import life.genny.eventbus.EventBusInterface;
-import life.genny.rules.RulesLoader;
+import life.genny.rules.RulesLoader2;
 import life.genny.security.TokenIntrospection;
 import life.genny.models.GennyToken;
 import org.jboss.ejb3.annotation.ResourceAdapter;
@@ -103,7 +103,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
 			}
 
 			
-			RulesLoader.processMsg(eventMsg,token);
+			(new RulesLoader2()).processMsg(eventMsg,token);
 		}
 	}
 
