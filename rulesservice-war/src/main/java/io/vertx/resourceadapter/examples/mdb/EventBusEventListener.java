@@ -33,7 +33,7 @@ import life.genny.qwandautils.KeycloakUtils;
 
 import life.genny.eventbus.EventBusInterface;
 
-import life.genny.rules.RulesLoader2;
+import life.genny.rules.RulesLoader;
 import life.genny.models.GennyToken;
 
 import javax.transaction.Transactional;
@@ -102,7 +102,7 @@ public class EventBusEventListener implements VertxListener {
 	
 	log.info(logMessage);
 	
-	(new RulesLoader2()).processMsg(eventMsg, payload.getString("token"));
+	(new RulesLoader()).processMsg(eventMsg, payload.getString("token"));
   }
 
   

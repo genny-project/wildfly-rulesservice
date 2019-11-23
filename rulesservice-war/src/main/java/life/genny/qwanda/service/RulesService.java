@@ -65,7 +65,7 @@ import javax.annotation.PreDestroy;
 import life.genny.qwanda.message.QEventMessage;
 
 
-import life.genny.rules.RulesLoader2;
+import life.genny.rules.RulesLoader;
 
 /**
  * @author acrow
@@ -92,13 +92,13 @@ public class RulesService {
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus, cacheInterface);
 		// Load in Rules
-		RulesLoader2.init();
+		RulesLoader.init();
 		log.info("Loading Rules");
-		RulesLoader2.loadRules(GennySettings.rulesDir);
+		RulesLoader.loadRules(GennySettings.rulesDir);
 
 		if (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))) {
 			log.info("triggering rules");
-			(new RulesLoader2()).triggerStartupRules(GennySettings.rulesDir);
+			(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
 		} else {
 			log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
 		}
@@ -106,7 +106,7 @@ public class RulesService {
 
 	@PreDestroy
 	public void shutdown() {
-		RulesLoader2.shutdown();
+		RulesLoader.shutdown();
 	}
 
 	public void info()

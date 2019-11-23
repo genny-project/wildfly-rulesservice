@@ -45,7 +45,7 @@ import life.genny.utils.BaseEntityUtils;
 import life.genny.models.GennyToken;
 
 import life.genny.eventbus.EventBusInterface;
-import life.genny.rules.RulesLoader2;
+import life.genny.rules.RulesLoader;
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
 import org.jboss.ejb3.annotation.ResourceAdapter;
@@ -112,7 +112,7 @@ public class EventBusDataListener implements VertxListener {
 			List<Tuple3<String, String, String>> rules = new ArrayList<Tuple3<String, String, String>>();
 			rules.add(Tuple.of(ruleGroup, ruleCode, ruleText));
 
-			RulesLoader2.addRules(rulesGroup, rules);
+			RulesLoader.addRules(rulesGroup, rules);
 		} else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
 			// log.info("DATA Msg :");;
 			try {
@@ -148,7 +148,7 @@ public class EventBusDataListener implements VertxListener {
 				}
 
 				if (!answers.isEmpty()) {
-					(new RulesLoader2()).processMsg(dataMsg, payload.getString("token"));
+					(new RulesLoader()).processMsg(dataMsg, payload.getString("token"));
 				}
 			} catch (com.google.gson.JsonSyntaxException e) {
 				log.error("BAD Syntax converting to json from " + dataMsg);
@@ -158,14 +158,14 @@ public class EventBusDataListener implements VertxListener {
 				jsonArray.add(answerData);
 				json.put("items", jsonArray);
 				dataMsg = JsonUtils.fromJson(json.toString(), QDataAnswerMessage.class);
-				(new RulesLoader2()).processMsg(dataMsg, payload.getString("token"));
+				(new RulesLoader()).processMsg(dataMsg, payload.getString("token"));
 			}
 		} else if (payload.getString("data_type").equals(GPS.class.getSimpleName())) {
 
 			QDataGPSMessage dataGPSMsg = null;
 			try {
 				dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
-				(new RulesLoader2()).processMsg(dataGPSMsg, payload.getString("token"));
+				(new RulesLoader()).processMsg(dataGPSMsg, payload.getString("token"));
 			} catch (com.google.gson.JsonSyntaxException e) {
 
 				log.error("BAD Syntax converting to json from " + dataGPSMsg);
@@ -175,19 +175,19 @@ public class EventBusDataListener implements VertxListener {
 				jsonArray.add(answerData);
 				json.put("items", jsonArray);
 				dataGPSMsg = JsonUtils.fromJson(json.toString(), QDataGPSMessage.class);
-				(new RulesLoader2()).processMsg(dataGPSMsg, payload.getString("token"));
+				(new RulesLoader()).processMsg(dataGPSMsg, payload.getString("token"));
 			}
 		} else if (payload.getString("data_type").equals(QDataPaymentsCallbackMessage.class.getSimpleName())) {
 			QDataPaymentsCallbackMessage dataCallbackMsg = null;
 			try {
 				dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
-				(new RulesLoader2()).processMsg(dataCallbackMsg, payload.getString("token"));
+				(new RulesLoader()).processMsg(dataCallbackMsg, payload.getString("token"));
 			} catch (com.google.gson.JsonSyntaxException e) {
 
 				log.error("BAD Syntax converting to json from " + dataCallbackMsg);
 				JsonObject json = new JsonObject(payload.toString());
 				dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
-				(new RulesLoader2()).processMsg(dataCallbackMsg, payload.getString("token"));
+				(new RulesLoader()).processMsg(dataCallbackMsg, payload.getString("token"));
 			}
 		}
 	}

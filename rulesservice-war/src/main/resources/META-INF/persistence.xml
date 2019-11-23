@@ -66,7 +66,7 @@
 		<!-- bam -->
 		<class>org.jbpm.process.audit.ProcessInstanceLog</class>
 		<class>org.jbpm.process.audit.NodeInstanceLog</class>
-		<class>org.jbpm.process.audit.VariableInstanceLog</class>
+		 <class>org.jbpm.process.audit.VariableInstanceLog</class> 
 
 		<!-- deployment store -->
 		<class>org.jbpm.kie.services.impl.store.DeploymentStoreEntry</class>
@@ -103,7 +103,7 @@
 
       <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->      
         <property name="hibernate.id.new_generator_mappings" value="true" />
-       <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/>
+     <!--  <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/> -->
       
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
 		<property name="hibernate.order_updates" value="true"/>
