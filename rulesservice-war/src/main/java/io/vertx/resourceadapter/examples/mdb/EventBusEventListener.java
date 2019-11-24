@@ -19,8 +19,9 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.inflow.VertxListener;
 import io.vertx.rxjava.core.Vertx;
-
+import life.genny.qwanda.Answer;
 import life.genny.qwanda.entity.User;
+import life.genny.qwanda.message.QDataAnswerMessage;
 import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
 import life.genny.qwanda.message.QEventBtnClickMessage;
 import life.genny.qwanda.message.QEventLinkChangeMessage;
@@ -34,11 +35,13 @@ import life.genny.qwandautils.KeycloakUtils;
 import life.genny.eventbus.EventBusInterface;
 
 import life.genny.rules.RulesLoader;
+import life.genny.utils.SessionFacts;
 import life.genny.models.GennyToken;
 
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
 import org.jboss.ejb3.annotation.ResourceAdapter;
+import life.genny.utils.VertxUtils;
 
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
@@ -54,6 +57,10 @@ public class EventBusEventListener implements VertxListener {
 
 //@Inject
 //RulesService rulesService;
+	
+	@Inject
+	RulesEngineBean rulesEngineBean;
+
 
  	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -75,7 +82,7 @@ public class EventBusEventListener implements VertxListener {
 //  }
   
   @Override
-  @Transactional
+//  @Transactional
 //  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
@@ -102,7 +109,24 @@ public class EventBusEventListener implements VertxListener {
 	
 	log.info(logMessage);
 	
-	(new RulesLoader()).processMsg(eventMsg, payload.getString("token"));
+	if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().equals("QUE_SUBMIT"))) {
+		String token =  payload.getString("token");
+		GennyToken userToken = new GennyToken(token);
+			Answer dataAnswer = new Answer(userToken.getUserCode(),
+					userToken.getUserCode(), "PRI_SUBMIT", "QUE_SUBMIT");
+			dataAnswer.setChangeEvent(false);
+			QDataAnswerMessage dataMsg = new QDataAnswerMessage(dataAnswer);
+			dataMsg.setToken(token);
+//			SessionFacts sessionFactsData = new SessionFacts(facts.getServiceToken(),
+//					userToken, dataMsg);
+			log.info("QUE_SUBMIT event to 'data' for "
+					+ userToken.getUserCode());
+			//rulesEngineBean.processMsg(dataMsg, token);
+			VertxUtils.writeMsg("data",JsonUtils.toJson(dataMsg));
+			//kieSession.signalEvent("data", sessionFactsData, processId);
+	} else {
+		rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
+	}
   }
 
   

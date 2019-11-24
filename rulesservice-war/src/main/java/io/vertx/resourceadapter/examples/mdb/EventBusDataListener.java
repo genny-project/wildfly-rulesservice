@@ -67,8 +67,8 @@ public class EventBusDataListener implements VertxListener {
 //@Inject
 //EventBusBean eventBus;
 
-//@Inject
-//RulesService rulesService;
+@Inject
+RulesEngineBean rulesEngineBean;
 
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -87,7 +87,6 @@ public class EventBusDataListener implements VertxListener {
 	}
 
 	@Override
-	@Transactional
 //  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 		final JsonObject payload = new JsonObject(message.body().toString());
@@ -148,7 +147,7 @@ public class EventBusDataListener implements VertxListener {
 				}
 
 				if (!answers.isEmpty()) {
-					(new RulesLoader()).processMsg(dataMsg, payload.getString("token"));
+					rulesEngineBean.processMsg(dataMsg, payload.getString("token"));
 				}
 			} catch (com.google.gson.JsonSyntaxException e) {
 				log.error("BAD Syntax converting to json from " + dataMsg);
