@@ -87,7 +87,7 @@ RulesEngineBean rulesEngineBean;
 	}
 
 	@Override
-//  @Asynchronous
+  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 		final JsonObject payload = new JsonObject(message.body().toString());
 		String token = payload.getString("token");
