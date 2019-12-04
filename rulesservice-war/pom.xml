@@ -37,7 +37,7 @@
 		
 
 		<version.org.wildfly>18.0.1.Final</version.org.wildfly>
-		<version.keycloak>8.0.0</version.keycloak>
+		<version.keycloak>8.0.1</version.keycloak>
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
