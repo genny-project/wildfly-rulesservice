@@ -51,12 +51,15 @@ public class StartupService {
 	@Transactional
 	@TransactionTimeout(value=4500, unit=TimeUnit.SECONDS)
 	public void init() {
+		long startTime = System.nanoTime();
 
 		rulesservice.init();
 		securityService.setImportMode(false); // force this to start up
 		secureResources.setup(); // force start up
 		
-		log.info("---------------- Completed Startup ----------------");
+		double difference = ( System.nanoTime() - startTime) / 1e9; // get s
+
+		log.info("---------------- Completed Startup in "+difference+" sec ----------------");
 	}
 
 
