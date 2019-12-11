@@ -51,6 +51,7 @@ public class StartupService {
 	@Transactional
 	@TransactionTimeout(value=4500, unit=TimeUnit.SECONDS)
 	public void init() {
+		log.info("---------------- Commencing Startup - v 3.1.0  ----------------");
 		long startTime = System.nanoTime();
 
 		rulesservice.init();
