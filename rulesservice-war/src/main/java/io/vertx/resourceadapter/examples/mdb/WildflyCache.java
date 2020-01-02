@@ -33,7 +33,7 @@ public class WildflyCache implements WildflyCacheInterface {
 
 	@Override
 	public Object readCache(String realm, String key, String token) {
-
+		log.info("WildflyCache read:"+realm+":"+key);
 		Object ret = inDb.getMapBaseEntitys(realm).get(key);
 
 		return ret;
