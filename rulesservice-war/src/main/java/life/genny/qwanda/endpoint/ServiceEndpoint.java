@@ -37,6 +37,7 @@ import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import life.genny.qwanda.service.SecurityService;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ejb.Asynchronous;
 
 /**
  * VService endpoint
@@ -83,9 +84,7 @@ public class ServiceEndpoint {
 			if (realm == null) {
 				realm = securityService.getRealm();
 			}
-// Ideally we use the token realm , but it ois not working for me ACC
-			RulesLoader.loadRules(realm, GennySettings.rulesDir);
-			(new RulesLoader()).triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
+			loadRulesFull(realm);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -102,11 +101,25 @@ public class ServiceEndpoint {
 				realm = securityService.getRealm();
 			}
 // Ideally we use the token realm , but it ois not working for me ACC
-			RulesLoader.loadRules(realm, GennySettings.rulesDir);
-			return Response.status(200).entity("Loaded").build();
+			loadRules(realm);
+			return Response.status(200).entity("Load Process Begun").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
 		}
+
+	}
+	
+	@Asynchronous
+	private void loadRules(final String realm)
+	{
+		RulesLoader.loadRules(realm, GennySettings.rulesDir);
+	}
+	
+	@Asynchronous
+	private void loadRulesFull(final String realm)
+	{
+		RulesLoader.loadRules(realm, GennySettings.rulesDir);
+		(new RulesLoader()).triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
 
 	}
 
