@@ -48,6 +48,10 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 					// extract the token
 					final String authTokenHeader = request.getHeader("Authorization");
+					if ((authTokenHeader == null)||(authTokenHeader.length()<7))
+					{
+						return null;
+					}
 					final String bearerToken = authTokenHeader.substring(7);
 					// now extract the realm
 					JSONObject jsonObj = null;

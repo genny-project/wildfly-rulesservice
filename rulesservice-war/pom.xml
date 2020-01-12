@@ -33,8 +33,8 @@
 		<vertx.version>3.5.4</vertx.version>
 
 		<genny-rules.version>${revision}</genny-rules.version>
-		<kie.version>7.30.0.Final</kie.version>
-		
+		<kie.version>7.31.0.Final</kie.version>
+
 
 		<version.org.wildfly>18.0.1.Final</version.org.wildfly>
 		<version.keycloak>8.0.1</version.keycloak>
@@ -58,7 +58,7 @@
 		<project.oauth.version>1.19.0</project.oauth.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		
+
 
 		<version.ee7>1.0.2.Final</version.ee7>
 		<version.resteasy>3.0.10.Final</version.resteasy>
@@ -203,6 +203,9 @@
 			</exclusions>
 
 		</dependency>
+
+
+
 		<!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf -->
 		<dependency>
 			<groupId>org.wildfly</groupId>

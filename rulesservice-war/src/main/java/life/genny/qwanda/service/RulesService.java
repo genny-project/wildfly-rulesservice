@@ -48,6 +48,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.eventbus.EventBus;
+import life.genny.bootxport.bootx.DataKeyColumn;
+import life.genny.bootxport.bootx.GoogleImportService;
+import life.genny.bootxport.bootx.Realm;
+import life.genny.bootxport.bootx.XlsxImport;
+import life.genny.bootxport.bootx.XlsxImportOnline;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.User;
@@ -62,6 +67,8 @@ import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import io.vertx.resourceadapter.examples.mdb.WildflyCache;
 import javax.inject.Inject;
 import javax.annotation.PreDestroy;
+import javax.ejb.Asynchronous;
+
 import life.genny.qwanda.message.QEventMessage;
 
 
@@ -104,6 +111,42 @@ public class RulesService {
 		}
 	}
 
+	public Integer importGoogleDoc(final String id, Map<String,String> fieldMapping)
+	{		
+		log.info("Importing "+id);
+		Integer count = 0;
+		   try {
+			   GoogleImportService gs = GoogleImportService.getInstance();
+			    XlsxImport xlsImport = new XlsxImportOnline(gs.getService());
+			    Realm realm = new Realm(xlsImport,id);
+//			    realm.getDataUnits().stream()
+//			        .forEach(data -> System.out.println(data.questions.size()));
+			    Set<String> keys = new HashSet<String>();
+			    for (String field : fieldMapping.keySet()) {
+			    	keys.add(field);
+			    }
+			      Map<String, Map<String,String>> mapData = xlsImport.mappingRawToHeaderAndValuesFmt(id, "Sheet1", keys);
+			      Integer rowIndex = 0;
+			      for (Map<String,String> row : mapData.values()) 
+			      {
+			    	  String rowStr = "Row:"+rowIndex+"->";
+			    	  for (String col : row.keySet()) {
+			    		  String val = row.get(col);
+			    		  rowStr += fieldMapping.get(col)+"="+val + ",";
+			    	  }
+			    	  rowIndex++;
+			    	  log.info(rowStr);
+			      }
+			      
+			    } catch (Exception e1) {
+			      return 0;
+			    }
+
+		
+		return count;
+	}
+	
+	
 	@PreDestroy
 	public void shutdown() {
 		RulesLoader.shutdown();

@@ -24,9 +24,15 @@
 	
 
 
+<!-- Already in RestApplication	<context-param>
+    <param-name>resteasy.providers</param-name>
+    <param-value>life.genny.qwanda.providers.CORSFilter</param-value>
+</context-param>
+
+-->
 
 	<filter>
-        <filter-name>Rules Service</filter-name>
+        <filter-name>RulesService</filter-name>
         <filter-class>
             org.jboss.resteasy.plugins.server.servlet.FilterDispatcher
         </filter-class>
@@ -37,7 +43,7 @@
     </filter>
     
     <filter-mapping>
-        <filter-name>Rules Service</filter-name>
+        <filter-name>RulesService</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 	
@@ -73,7 +79,7 @@
 	        <url-pattern>/api-docs/*</url-pattern>
 	    </web-resource-collection>
 	<auth-constraint>
-        <role-name>user</role-name>
+        <role-name>dev</role-name>
 
     </auth-constraint>
 	</security-constraint>
@@ -82,17 +88,17 @@
 	
 		<security-constraint>
 		<web-resource-collection>
-		<web-resource-name>Rules Service</web-resource-name>
-			<url-pattern>/life.genny.rules/*</url-pattern>
+		<web-resource-name>RulesService</web-resource-name>
+			<url-pattern>/qwanda/*</url-pattern>
 		</web-resource-collection>
 	<auth-constraint>
         <role-name>user</role-name>
     </auth-constraint>
 	</security-constraint>
 	
-		<security-constraint>
+	<security-constraint>
 		<web-resource-collection>
-		<web-resource-name>Rules Service</web-resource-name>
+		<web-resource-name>RulesService</web-resource-name>
 			<url-pattern>/service/*</url-pattern>
 		</web-resource-collection>
 	<auth-constraint>
@@ -101,7 +107,6 @@
     </auth-constraint>
 	</security-constraint>
 	
-
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
 	</login-config>
@@ -118,5 +123,7 @@
   		<security-role>
 		<role-name>test</role-name>
 	</security-role>
+ 
+  
 	
 </web-app>
