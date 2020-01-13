@@ -25,6 +25,8 @@ import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.GitUtils;
 import life.genny.rules.RulesLoader;
+import life.genny.utils.ImportUtils;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -230,8 +232,9 @@ public class ServiceEndpoint {
 				String mapField = qparams.get(attributeCode).get(0);
 				log.info("AttributeCode:"+attributeCode+" <= "+mapField);
 			}
-
-			Integer count = this.ruleService.importGoogleDoc(googleId, fieldMapping);
+			Integer count = qparams.keySet().size();
+			
+	//		Integer count = ImportUtils.importGoogleDoc(googleId, fieldMapping);
 
 			return Response.status(200).entity(googleId+":"+count+" items loaded").build();
 		} else {
