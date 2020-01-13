@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.swagger.annotations.Api;
+import life.genny.models.BaseEntityImport;
 import life.genny.qwanda.Ask;
 import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwandautils.GennySettings;
@@ -229,13 +230,19 @@ public class ServiceEndpoint {
 			final String googleId = params.getFirst("googleid");
 			Map<String,String> fieldMapping = new ConcurrentHashMap<String,String>();
 			for (String attributeCode : qparams.keySet()) {
-				String mapField = qparams.get(attributeCode).get(0);
-				log.info("AttributeCode:"+attributeCode+" <= "+mapField);
+				String mapFieldValue = qparams.get(attributeCode).get(0);
+				log.info("AttributeCode:"+attributeCode+" <= "+mapFieldValue);
+				fieldMapping.put(attributeCode, mapFieldValue);
 			}
 			Integer count = qparams.keySet().size();
+			String sheetName = "Sheet1"; // default
+			List<String> sheets = qparams.get("sheet_name");
+			if ((sheets != null) && (!sheets.isEmpty())) {
+				sheetName = sheets.get(0);
+			}
 			
-	//		Integer count = ImportUtils.importGoogleDoc(googleId, fieldMapping);
-
+			List<BaseEntityImport> beImports =ImportUtils.importGoogleDoc(googleId, sheetName, fieldMapping);
+			log.info(beImports);
 			return Response.status(200).entity(googleId+":"+count+" items loaded").build();
 		} else {
 			return Response.status(503).build();
