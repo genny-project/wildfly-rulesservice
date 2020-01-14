@@ -120,6 +120,10 @@ RulesEngineBean rulesEngineBean;
 				dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
 				List<Answer> answers = new ArrayList<Answer>();
 				for (Answer answer : dataMsg.getItems()) {
+					if ("PRI_SEARCH_TEXT".equals(answer.getAttributeCode())) {
+						answers.add(answer);
+						continue;
+					}
 					BaseEntity target = beUtils.getBaseEntityByCode(answer.getTargetCode());
 					Optional<EntityAttribute> optea = target.findEntityAttribute(answer.getAttributeCode());
 					Boolean changed = true;
