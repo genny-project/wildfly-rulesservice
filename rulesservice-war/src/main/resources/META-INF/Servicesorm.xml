@@ -1199,7 +1199,7 @@
       ns.realm,
       ns.status,
       ns.userCode,
-      ns.workflowStatus,
+      ns.workflowStage,
       ns.workflowBeCode
       )
       from
