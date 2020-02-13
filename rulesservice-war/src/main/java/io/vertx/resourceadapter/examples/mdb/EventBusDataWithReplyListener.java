@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import javax.ejb.ActivationConfigProperty;
@@ -29,13 +31,17 @@ import life.genny.qwanda.GPS;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
+import life.genny.qwanda.message.QBulkMessage;
+import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.message.QDataAnswerMessage;
+import life.genny.qwanda.message.QDataBaseEntityMessage;
 import life.genny.qwanda.message.QDataGPSMessage;
 import life.genny.qwanda.message.QDataPaymentsCallbackMessage;
 import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
 import life.genny.qwanda.message.QEventBtnClickMessage;
 import life.genny.qwanda.message.QEventLinkChangeMessage;
 import life.genny.qwanda.message.QEventMessage;
+import life.genny.qwanda.message.QMessage;
 import life.genny.qwanda.rule.Rule;
 import life.genny.qwanda.service.RulesService;
 import life.genny.qwandautils.GennySettings;
@@ -45,6 +51,7 @@ import life.genny.utils.BaseEntityUtils;
 import life.genny.models.GennyToken;
 
 import life.genny.eventbus.EventBusInterface;
+import life.genny.jbpm.customworkitemhandlers.RuleFlowGroupWorkItemHandler;
 import life.genny.rules.RulesLoader;
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
@@ -79,6 +86,8 @@ RulesEngineBean rulesEngineBean;
 	private static Map<String, User> usersSession = new HashMap<String, User>();
 
 	static String token;
+	
+	
 
 	/**
 	 * Default constructor.
@@ -103,14 +112,59 @@ RulesEngineBean rulesEngineBean;
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
 
 		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
-	    List<Object> facts = new ArrayList<Object>();
-	    facts.add(dataMsg);
-	    facts.add(userToken);
-	    facts.add(serviceToken);
-	    RulesLoader.executeStateless(globals, facts, serviceToken, userToken);
+		
+	    Map<String, Object> facts = new ConcurrentHashMap<String,Object>();
+	    facts.put("serviceToken",serviceToken);
+	    facts.put("userToken",userToken);
+	    facts.put("data",dataMsg);
+	    RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();	 
+	    
+	    ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing", "DataWithReply:DataProcessing");
+	    
+	    
+	    Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless", "DataWithReply:Stateless");
+	    
+	    JsonObject ret = new JsonObject();
+	    
+	    
+	    if ((results==null) || results.get("payload")==null ) {
+	    	ret.put("status", "ERROR");
+	    } else {
+	    	ret.put("status", "OK");
+	    	Object obj = results.get("payload");
+	    	String retPayload  = null;
+	    	if (obj instanceof QBulkMessage) {
+	    		QBulkMessage msg = (QBulkMessage) results.get("payload");
+//				String projectCode = "PRJ_"+userToken.getRealm().toUpperCase();
+//				BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
+//				BaseEntity project = beUtils.getBaseEntityByCode(projectCode); 
+//
+//				
+//				QDataBaseEntityMessage prjMsg = new QDataBaseEntityMessage(project);
+//				prjMsg.setAliasCode("PROJECT");
+//				msg.add(prjMsg);
 
-        System.out.println("here is the payload::::::::"+payload);
-        message.reply(payload);
+	    		retPayload = JsonUtils.toJson(msg);
+	    	} else 	if (obj instanceof QDataBaseEntityMessage) {
+	    		QDataBaseEntityMessage msg = (QDataBaseEntityMessage) results.get("payload");
+	    		retPayload = JsonUtils.toJson(msg);
+	    	} else 	if (obj instanceof QCmdMessage) {
+	    		QCmdMessage msg = (QCmdMessage) results.get("payload");
+	    		retPayload = JsonUtils.toJson(msg);
+	    	} else 	if (obj instanceof String) {
+	    		String msg = (String) results.get("payload");
+	    		ret.put("value", msg);
+	    	}
+
+	    	System.out.println("here is the payload::::::::"+retPayload);
+	    	JsonObject valueJson = new JsonObject(retPayload);
+	    	
+	    	
+	    	ret.put("value",valueJson);
+
+		}
+        
+        message.reply(ret);
 	}
 
 }
