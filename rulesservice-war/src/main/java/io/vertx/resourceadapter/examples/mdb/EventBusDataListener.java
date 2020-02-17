@@ -87,7 +87,7 @@ RulesEngineBean rulesEngineBean;
 	}
 
 	@Override
-	@Transactional
+//	@Transactional
   @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 		final JsonObject payload = new JsonObject(message.body().toString());
