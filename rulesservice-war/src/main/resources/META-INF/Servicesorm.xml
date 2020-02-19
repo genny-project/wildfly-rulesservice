@@ -1186,30 +1186,5 @@
     </query>
     <!-- hint name="org.hibernate.timeout" value="200"/ -->
   </named-query>   
-    <named-query name="getAllNodeStatuses">
-    <query>
-     select
-      new life.genny.model.NodeStatus(
-      ns.id,
-      ns.date,
-      ns.nodeId,
-      ns.nodeName,
-      ns.processId,
-      ns.processInstanceId,
-      ns.realm,
-      ns.status,
-      ns.userCode,
-      ns.workflowStage,
-      ns.workflowBeCode
-      )
-      from
-        NodeStatus ns
-      where
-        ns.realm= 'internmatch' and
-        ns.workflowBeCode=: workflowBeCode 
-      order by 
-        ns.id DESC
-    </query>
-    <!-- hint name="org.hibernate.timeout" value="200"/ -->
-  </named-query>      
+   
 </entity-mappings>

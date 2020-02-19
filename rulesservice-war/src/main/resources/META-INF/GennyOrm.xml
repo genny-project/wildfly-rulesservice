@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+  version="2.0">
+
+    <named-query name="getAllNodeStatuses">
+    <query>
+     select
+      new life.genny.model.NodeStatus(
+      ns.id,
+      ns.date,
+      ns.nodeId,
+      ns.nodeName,
+      ns.processId,
+      ns.processInstanceId,
+      ns.realm,
+      ns.status,
+      ns.userCode,
+      ns.workflowStage,
+      ns.workflowBeCode
+      )
+      from
+        NodeStatus ns
+      where
+        ns.realm= 'internmatch' and
+        ns.workflowBeCode=: workflowBeCode 
+      order by 
+        ns.id DESC
+    </query>
+    <!-- hint name="org.hibernate.timeout" value="200"/ -->
+  </named-query>    
+  <named-query name="getAllSessionPids">
+    <query>
+     select
+      new life.genny.model.SessionPid(
+      ns.id,
+      ns.date,
+      ns.sessionCode,
+      ns.realm,
+      ns.processInstanceId
+      )
+      from
+        SessionPid ns
+      where
+        ns.sessionCode=: sessionCode 
+      order by 
+        ns.id DESC
+    </query>
+    <!-- hint name="org.hibernate.timeout" value="200"/ -->
+  </named-query>        
+</entity-mappings>
