@@ -23,7 +23,7 @@
       from
         NodeStatus ns
       where
-        ns.realm= 'internmatch' and
+        ns.realm=: realm and
         ns.workflowBeCode=: workflowBeCode 
       order by 
         ns.id DESC
