@@ -33,28 +33,15 @@ public class Hazel {
 	  }
 
  
-    public static HazelcastInstance getHazelcastClientInstance(){
-        ClientConfig cfg = new ClientConfig();
-        cfg.addAddress(GennySettings.cacheServerName);
-        cfg.getGroupConfig().setName(GennySettings.username);
-        cfg.getGroupConfig().setPassword(GennySettings.username);
-        HazelcastInstance haInst = HazelcastClient.newHazelcastClient(cfg);
-        return haInst;
-    }
 
-    @PostConstruct
-    public void init() {
+  @PostConstruct
+  public void init() {
+	log.info("Initialising Hazel ");
+    Config cfg = new Config();
+    cfg.getGroupConfig().setName(GennySettings.username);
+    cfg.getGroupConfig().setPassword(GennySettings.username);
 
-        if(GennySettings.isCacheServer){
-        	log.info("Is A Cache Server");
-            instance = getHazelcastServerInstance();
-        }else{
-        	log.info("This service is configured to run only as a client Server");
-            instance = getHazelcastClientInstance();
-//
-        }
-
- //       mapBaseEntitys = instance.getMap(GennySettings.mainrealm); // To fix
-    }
+    instance = Hazelcast.newHazelcastInstance(cfg);
+  }
 
 }
