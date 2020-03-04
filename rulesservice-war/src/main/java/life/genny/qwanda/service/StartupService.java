@@ -19,6 +19,7 @@ import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.security.SecureResources;
+import life.genny.utils.FrameUtils2;
 
 
 /**
@@ -58,6 +59,16 @@ public class StartupService {
 		securityService.setImportMode(false); // force this to start up
 		secureResources.setup(); // force start up
 		
+		// Now check if themes and frames loaded up
+		log.info("Checking "+FrameUtils2.ruleFires.keySet().size()+" rules for unfired rules ...");
+		
+		for (String rule : FrameUtils2.ruleFires.keySet()) {
+			if ( !FrameUtils2.ruleFires.get(rule)) {
+				log.error(rule+" DID NOT FIRE!!");
+			}
+		}
+		log.info("Rule checks done. ");
+
 		double difference = ( System.nanoTime() - startTime) / 1e9; // get s
 
 		log.info("---------------- Completed Startup in "+difference+" sec ----------------");
