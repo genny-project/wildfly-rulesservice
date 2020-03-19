@@ -1,47 +1,20 @@
 package io.vertx.resourceadapter.examples.mdb;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.inject.Inject;
-import java.lang.invoke.MethodHandles;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.naming.NamingException;
-import javax.resource.ResourceException;
-import org.apache.logging.log4j.Logger;
-
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.inflow.VertxListener;
-import io.vertx.rxjava.core.Vertx;
-import life.genny.qwanda.Answer;
-import life.genny.qwanda.entity.User;
-import life.genny.qwanda.message.QDataAnswerMessage;
-import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
-import life.genny.qwanda.message.QEventBtnClickMessage;
-import life.genny.qwanda.message.QEventLinkChangeMessage;
-import life.genny.qwanda.message.QEventMessage;
-import life.genny.qwanda.service.RulesService;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.JsonUtils;
-import life.genny.qwandautils.KeycloakUtils;
-
-
-import life.genny.eventbus.EventBusInterface;
-
-import life.genny.rules.RulesLoader;
-import life.genny.utils.SessionFacts;
 import life.genny.models.GennyToken;
-
-import javax.transaction.Transactional;
-import javax.ejb.Asynchronous;
-import org.jboss.ejb3.annotation.ResourceAdapter;
+import life.genny.qwanda.Answer;
+import life.genny.qwanda.message.*;
+import life.genny.qwandautils.JsonUtils;
 import life.genny.utils.VertxUtils;
+import org.apache.logging.log4j.Logger;
+import org.jboss.ejb3.annotation.ResourceAdapter;
+
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.inject.Inject;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
@@ -108,7 +81,11 @@ public class EventBusEventListener implements VertxListener {
 	
 	
 	log.info(logMessage);
-	
+	if (eventMsg == null) {
+		log.error("Can't get eventMsg from payload:" + message.body().toString());
+		return;
+	}
+
 	if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().equals("QUE_SUBMIT"))) {
 		String token =  payload.getString("token");
 		GennyToken userToken = new GennyToken(token);
