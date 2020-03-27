@@ -72,8 +72,8 @@ public class EventBusSignalListener implements VertxListener {
   }
 
   @Override
-  @Transactional
-  @Asynchronous
+ // @Transactional
+ // @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 
 		log.info("********* THIS IS WILDFLY SIGNAL LISTENER!!!! *******************");

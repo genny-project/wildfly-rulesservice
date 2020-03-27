@@ -16,6 +16,8 @@ import javax.ejb.MessageDriven;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 
+import javax.ejb.Asynchronous;
+import javax.transaction.Transactional;
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
  */
@@ -55,8 +57,8 @@ public class EventBusEventListener implements VertxListener {
 //  }
   
   @Override
-  @Transactional
-  @Asynchronous
+//  @Transactional
+//  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
