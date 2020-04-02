@@ -11,6 +11,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
+
 import org.apache.logging.log4j.Logger;
 
 import io.vavr.Tuple;
@@ -35,6 +36,7 @@ import life.genny.rules.RulesLoader;
 import life.genny.security.TokenIntrospection;
 import life.genny.models.GennyToken;
 import org.jboss.ejb3.annotation.ResourceAdapter;
+
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
 
@@ -44,67 +46,78 @@ import javax.ejb.Asynchronous;
  */
 
 @MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
-		@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"), })
-@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+        @ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"),})
+@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 public class EventBusStatefulMessageListener implements VertxListener {
 
-	@Inject
-	EventBusBean eventBus;
+    @Inject
+    EventBusBean eventBus;
 
-	@Inject
-	RulesService rulesService;
+    @Inject
+    RulesService rulesService;
 
-	protected static final Logger log = org.apache.logging.log4j.LogManager
-			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+    protected static final Logger log = org.apache.logging.log4j.LogManager
+            .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
 
-	private static final List<String> roles;
+    private static final List<String> roles;
 
-	static {
-		roles = TokenIntrospection.setRoles("user");
-	}
+    static {
+        roles = TokenIntrospection.setRoles("user");
+    }
 
-	/**
-   * Default constructor.
-   */
-  public EventBusStatefulMessageListener() {
-    //log.info("EventBusStatefulMessageListener started.");
-  }
+    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
 
-  @Override
-  @Transactional
-  @Asynchronous
-	public <T> void onMessage(Message<T> message) {
 
-		log.info("********* THIS IS WILDFLY STATEFUL MESSGE LISTENER!!!! *******************");
+    /**
+     * Default constructor.
+     */
+    public EventBusStatefulMessageListener() {
+        //log.info("EventBusStatefulMessageListener started.");
+    }
 
-		final JsonObject payload = new JsonObject(message.body().toString());
+    private RulesLoader getRulesLoader(String token) {
+        String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
+        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
+        if (rulesLoader == null) {
+            rulesLoader = new RulesLoader();
+            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
+        }
+        return rulesLoader;
+    }
 
-		String token = payload.getString("token"); // TODO, this should be grabbed from header
+    @Override
+    @Transactional
+    @Asynchronous
+    public <T> void onMessage(Message<T> message) {
 
-		if (token != null/* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
+        log.info("********* THIS IS WILDFLY STATEFUL MESSGE LISTENER!!!! *******************");
+
+        final JsonObject payload = new JsonObject(message.body().toString());
+
+        String token = payload.getString("token"); // TODO, this should be grabbed from header
+
+        if (token != null/* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
 
 //			log.info("Roles from this token are allow and authenticated "
 //					+ TokenIntrospection.checkAuthForRoles(roles, token));
-			
-			QEventMessage eventMsg = null;
-			if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
-				eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
-			} else if (payload.getString("event_type").equals("BTN_CLICK")) {
-				eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
-			} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
-				eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
-			} else {
-				try {
-					eventMsg = JsonUtils.fromJson(payload.toString(), QEventMessage.class);
-				} catch (NoClassDefFoundError e) {
-					log.error("No class def found ["+payload.toString()+"]");
-				}
-			}
 
-			
-			(new RulesLoader()).processMsg(eventMsg,token);
-		}
-	}
+            QEventMessage eventMsg = null;
+            if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
+                eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
+            } else if (payload.getString("event_type").equals("BTN_CLICK")) {
+                eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
+            } else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
+                eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
+            } else {
+                try {
+                    eventMsg = JsonUtils.fromJson(payload.toString(), QEventMessage.class);
+                } catch (NoClassDefFoundError e) {
+                    log.error("No class def found [" + payload.toString() + "]");
+                }
+            }
+            getRulesLoader(token).processMsg(eventMsg, token);
+        }
+    }
 
 }
