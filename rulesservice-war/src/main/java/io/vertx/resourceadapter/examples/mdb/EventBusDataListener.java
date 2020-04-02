@@ -46,8 +46,10 @@ import life.genny.models.GennyToken;
 
 import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
+
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
+
 import org.jboss.ejb3.annotation.ResourceAdapter;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.Answers;
@@ -60,140 +62,152 @@ import life.genny.qwanda.entity.BaseEntity;
  */
 
 @MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = {
-		@ActivationConfigProperty(propertyName = "address", propertyValue = "data"), })
+        @ActivationConfigProperty(propertyName = "address", propertyValue = "data"),})
 @ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 public class EventBusDataListener implements VertxListener {
 
 //@Inject
 //EventBusBean eventBus;
 
-@Inject
-RulesEngineBean rulesEngineBean;
+    @Inject
+    RulesEngineBean rulesEngineBean;
 
-	protected static final Logger log = org.apache.logging.log4j.LogManager
-			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+    protected static final Logger log = org.apache.logging.log4j.LogManager
+            .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
-	static Map<String, Object> decodedToken = null;
-	static Set<String> userRoles = null;
-	private static Map<String, User> usersSession = new HashMap<String, User>();
+    static Map<String, Object> decodedToken = null;
+    static Set<String> userRoles = null;
+    private static Map<String, User> usersSession = new HashMap<String, User>();
 
-	static String token;
+    static String token;
+    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
 
-	/**
-	 * Default constructor.
-	 */
-	public EventBusDataListener() {
-		// log.info("EventBusDataListener started.");
-	}
 
-	@Override
+    /**
+     * Default constructor.
+     */
+    public EventBusDataListener() {
+        // log.info("EventBusDataListener started.");
+    }
+
+    private RulesLoader getRulesLoader(String token) {
+        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(token);
+        if (rulesLoader == null) {
+            rulesLoader = new RulesLoader();
+            tokeRulesLoaderMapping.put(token, rulesLoader);
+        }
+        return rulesLoader;
+    }
+
+    @Override
 //	@Transactional
 //  @Asynchronous
-	public <T> void onMessage(Message<T> message) {
-		final JsonObject payload = new JsonObject(message.body().toString());
-		String token = payload.getString("token");
-		payload.remove("token");
-		log.info("Get a data message from Vert.x: " + payload);
-		payload.put("token", token);
-		log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *******************");
+    public <T> void onMessage(Message<T> message) {
+        final JsonObject payload = new JsonObject(message.body().toString());
+        String token = payload.getString("token");
+        payload.remove("token");
+        log.info("Get a data message from Vert.x: " + payload);
+        payload.put("token", token);
+        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *******************");
 
-		QDataAnswerMessage dataMsg = null;
+        QDataAnswerMessage dataMsg = null;
 
-		// Is it a Rule?
-		if (payload.getString("data_type").equals(Rule.class.getSimpleName())) {
-			JsonArray ja = payload.getJsonArray("items");
-			String ruleGroup = ja.getJsonObject(0).getString("ruleGroup");
-			String ruleText = ja.getJsonObject(0).getString("rule");
-			String ruleCode = ja.getJsonObject(0).getString("code");
-			// QDataRuleMessage ruleMsg = gson3.fromJson(json, QDataRuleMessage.class);
-			log.info("Incoming Rule :" + ruleText);
+        // Is it a Rule?
+        if (payload.getString("data_type").equals(Rule.class.getSimpleName())) {
+            JsonArray ja = payload.getJsonArray("items");
+            String ruleGroup = ja.getJsonObject(0).getString("ruleGroup");
+            String ruleText = ja.getJsonObject(0).getString("rule");
+            String ruleCode = ja.getJsonObject(0).getString("code");
+            // QDataRuleMessage ruleMsg = gson3.fromJson(json, QDataRuleMessage.class);
+            log.info("Incoming Rule :" + ruleText);
 
-			String rulesGroup = GennySettings.rulesDir;
-			List<Tuple3<String, String, String>> rules = new ArrayList<Tuple3<String, String, String>>();
-			rules.add(Tuple.of(ruleGroup, ruleCode, ruleText));
+            String rulesGroup = GennySettings.rulesDir;
+            List<Tuple3<String, String, String>> rules = new ArrayList<Tuple3<String, String, String>>();
+            rules.add(Tuple.of(ruleGroup, ruleCode, ruleText));
 
-			RulesLoader.addRules(rulesGroup, rules);
-		} else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
-			// log.info("DATA Msg :");;
-			try {
-				BaseEntityUtils beUtils = new BaseEntityUtils(new GennyToken(token));
-				dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
-				List<Answer> answers = new ArrayList<Answer>();
-				for (Answer answer : dataMsg.getItems()) {
-					if ("PRI_SEARCH_TEXT".equals(answer.getAttributeCode())) {
-						answers.add(answer);
-						continue;
-					}
-					BaseEntity target = beUtils.getBaseEntityByCode(answer.getTargetCode());
-					Optional<EntityAttribute> optea = target.findEntityAttribute(answer.getAttributeCode());
-					Boolean changed = true;
-					if (optea.isPresent()) {
-						EntityAttribute ea = optea.get();
-						Boolean equaled = false;
-						String valueObj = ea.getAsString();
-						if (valueObj instanceof String) {
-							if (!StringUtils.isBlank(valueObj)) {
-								if (valueObj.equals(answer.getValue())) {
-									equaled = true;
-								}
-							}
-						}
-						if (equaled) {
-							log.info("This Already exists! " + answer.getAttributeCode() + ":" + answer.getValue());
-							changed = false;
-						}
-					}
+            RulesLoader.addRules(rulesGroup, rules);
+        } else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
+            // log.info("DATA Msg :");;
+            try {
+                BaseEntityUtils beUtils = new BaseEntityUtils(new GennyToken(token));
+                dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
+                List<Answer> answers = new ArrayList<Answer>();
+                for (Answer answer : dataMsg.getItems()) {
+                    if ("PRI_SEARCH_TEXT".equals(answer.getAttributeCode())) {
+                        answers.add(answer);
+                        continue;
+                    }
+                    BaseEntity target = beUtils.getBaseEntityByCode(answer.getTargetCode());
+                    Optional<EntityAttribute> optea = target.findEntityAttribute(answer.getAttributeCode());
+                    Boolean changed = true;
+                    if (optea.isPresent()) {
+                        EntityAttribute ea = optea.get();
+                        Boolean equaled = false;
+                        String valueObj = ea.getAsString();
+                        if (valueObj instanceof String) {
+                            if (!StringUtils.isBlank(valueObj)) {
+                                if (valueObj.equals(answer.getValue())) {
+                                    equaled = true;
+                                }
+                            }
+                        }
+                        if (equaled) {
+                            log.info("This Already exists! " + answer.getAttributeCode() + ":" + answer.getValue());
+                            changed = false;
+                        }
+                    }
 
-					if (changed) {
-						String key = answer.getSourceCode() + ":" + answer.getTargetCode() + ":"
-								+ answer.getAttributeCode();
-						answers.add(answer);
-					}
-				}
+                    if (changed) {
+                        String key = answer.getSourceCode() + ":" + answer.getTargetCode() + ":"
+                                + answer.getAttributeCode();
+                        answers.add(answer);
+                    }
+                }
 
-				if (!answers.isEmpty()) {
-					rulesEngineBean.processMsg(dataMsg, payload.getString("token"));
-				}
-			} catch (com.google.gson.JsonSyntaxException e) {
-				log.error("BAD Syntax converting to json from " + dataMsg);
-				JsonObject json = new JsonObject(payload.toString());
-				JsonObject answerData = json.getJsonObject("items");
-				JsonArray jsonArray = new JsonArray();
-				jsonArray.add(answerData);
-				json.put("items", jsonArray);
-				dataMsg = JsonUtils.fromJson(json.toString(), QDataAnswerMessage.class);
-				(new RulesLoader()).processMsg(dataMsg, payload.getString("token"));
-			}
-		} else if (payload.getString("data_type").equals(GPS.class.getSimpleName())) {
+                if (!answers.isEmpty()) {
+                    rulesEngineBean.processMsg(dataMsg, payload.getString("token"));
+                }
+            } catch (com.google.gson.JsonSyntaxException e) {
+                log.error("BAD Syntax converting to json from " + dataMsg);
+                JsonObject json = new JsonObject(payload.toString());
+                JsonObject answerData = json.getJsonObject("items");
+                JsonArray jsonArray = new JsonArray();
+                jsonArray.add(answerData);
+                json.put("items", jsonArray);
+                dataMsg = JsonUtils.fromJson(json.toString(), QDataAnswerMessage.class);
 
-			QDataGPSMessage dataGPSMsg = null;
-			try {
-				dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
-				(new RulesLoader()).processMsg(dataGPSMsg, payload.getString("token"));
-			} catch (com.google.gson.JsonSyntaxException e) {
+                getRulesLoader(payload.getString("token")).processMsg(dataMsg, payload.getString("token"));
+            }
+        } else if (payload.getString("data_type").equals(GPS.class.getSimpleName())) {
 
-				log.error("BAD Syntax converting to json from " + dataGPSMsg);
-				JsonObject json = new JsonObject(payload.toString());
-				JsonObject answerData = json.getJsonObject("items");
-				JsonArray jsonArray = new JsonArray();
-				jsonArray.add(answerData);
-				json.put("items", jsonArray);
-				dataGPSMsg = JsonUtils.fromJson(json.toString(), QDataGPSMessage.class);
-				(new RulesLoader()).processMsg(dataGPSMsg, payload.getString("token"));
-			}
-		} else if (payload.getString("data_type").equals(QDataPaymentsCallbackMessage.class.getSimpleName())) {
-			QDataPaymentsCallbackMessage dataCallbackMsg = null;
-			try {
-				dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
-				(new RulesLoader()).processMsg(dataCallbackMsg, payload.getString("token"));
-			} catch (com.google.gson.JsonSyntaxException e) {
+            QDataGPSMessage dataGPSMsg = null;
+            try {
+                dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
+                getRulesLoader(payload.getString("token")).processMsg(dataGPSMsg, payload.getString("token"));
+            } catch (com.google.gson.JsonSyntaxException e) {
 
-				log.error("BAD Syntax converting to json from " + dataCallbackMsg);
-				JsonObject json = new JsonObject(payload.toString());
-				dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
-				(new RulesLoader()).processMsg(dataCallbackMsg, payload.getString("token"));
-			}
-		}
-	}
+                log.error("BAD Syntax converting to json from " + dataGPSMsg);
+                JsonObject json = new JsonObject(payload.toString());
+                JsonObject answerData = json.getJsonObject("items");
+                JsonArray jsonArray = new JsonArray();
+                jsonArray.add(answerData);
+                json.put("items", jsonArray);
+                dataGPSMsg = JsonUtils.fromJson(json.toString(), QDataGPSMessage.class);
+                getRulesLoader(payload.getString("token")).processMsg(dataGPSMsg, payload.getString("token"));
+            }
+        } else if (payload.getString("data_type").equals(QDataPaymentsCallbackMessage.class.getSimpleName())) {
+            QDataPaymentsCallbackMessage dataCallbackMsg = null;
+            try {
+                dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
+                getRulesLoader(payload.getString("token")).processMsg(dataCallbackMsg, payload.getString("token"));
+            } catch (com.google.gson.JsonSyntaxException e) {
+
+                log.error("BAD Syntax converting to json from " + dataCallbackMsg);
+                JsonObject json = new JsonObject(payload.toString());
+                dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
+                getRulesLoader(payload.getString("token")).processMsg(dataCallbackMsg, payload.getString("token"));
+            }
+        }
+    }
 
 }
