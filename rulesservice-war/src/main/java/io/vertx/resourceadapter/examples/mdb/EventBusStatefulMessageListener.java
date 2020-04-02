@@ -77,14 +77,14 @@ public class EventBusStatefulMessageListener implements VertxListener {
     }
 
     private RulesLoader getRulesLoader(String token) {
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(token);
+        String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
+        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
         if (rulesLoader == null) {
             rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(token, rulesLoader);
+            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
         }
         return rulesLoader;
     }
-
 
     @Override
     @Transactional

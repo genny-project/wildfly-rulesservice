@@ -76,10 +76,11 @@ public class EventBusSignalListener implements VertxListener {
     private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
 
     private RulesLoader getRulesLoader(String token) {
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(token);
+        String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
+        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
         if (rulesLoader == null) {
             rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(token, rulesLoader);
+            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
         }
         return rulesLoader;
     }
