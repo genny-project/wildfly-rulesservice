@@ -139,6 +139,7 @@ public class EventBusDataListener implements VertxListener {
                         continue;
                     }
                     BaseEntity target = beUtils.getBaseEntityByCode(answer.getTargetCode());
+                    if (target != null) {
                     Optional<EntityAttribute> optea = target.findEntityAttribute(answer.getAttributeCode());
                     Boolean changed = true;
                     if (optea.isPresent()) {
@@ -162,6 +163,9 @@ public class EventBusDataListener implements VertxListener {
                         String key = answer.getSourceCode() + ":" + answer.getTargetCode() + ":"
                                 + answer.getAttributeCode();
                         answers.add(answer);
+                    }
+                    } else {
+                    	log.warn(answer.getTargetCode()+" is not present in the system");
                     }
                 }
 
