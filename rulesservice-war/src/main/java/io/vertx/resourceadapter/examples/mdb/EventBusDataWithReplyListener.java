@@ -144,6 +144,30 @@ RulesEngineBean rulesEngineBean;
 //				prjMsg.setAliasCode("PROJECT");
 //				msg.add(prjMsg);
 
+	    		// How many journals?
+	    		
+	    		
+	    		Integer unapproved = 0;
+	    		Integer approved = 0;
+	    		Integer rejected = 0;
+	    		
+	    		for (QDataBaseEntityMessage mg : msg.getMessages()) {
+	    			for (BaseEntity be : mg.getItems()) {
+	    				if (be.getCode().startsWith("JNL_")) {
+	    					String status = be.getValue("PRI_STATUS", "UNAPPROVED");
+	    					if ("UNAPPROVED".equals(status)) {
+	    						unapproved++;
+	    					} else if ("APPROVED".equals(status)) {
+	    						approved++;
+	    					} else  {
+	    						rejected++;
+	    					}
+	    				}
+	    			}
+	    		}
+	    		
+	    		log.info("unapproved = "+unapproved+" , approved = "+approved+" rejected = "+rejected, message);
+	    		
 	    		retPayload = JsonUtils.toJson(msg);
 	    	} else 	if (obj instanceof QDataBaseEntityMessage) {
 	    		QDataBaseEntityMessage msg = (QDataBaseEntityMessage) results.get("payload");
