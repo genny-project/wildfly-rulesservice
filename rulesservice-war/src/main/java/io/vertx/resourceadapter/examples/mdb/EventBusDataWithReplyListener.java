@@ -104,6 +104,26 @@ RulesEngineBean rulesEngineBean;
 		QDataAnswerMessage dataMsg = null;
 	    dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
         dataMsg.setAliasCode("STATELESS");
+        
+        
+        // Extract eexisting codes
+        Answer existingCodes = null;
+        List<String> existingCodesList = new ArrayList<String>();
+        List<Answer> normalAnswers = new ArrayList<Answer>();
+        for (Answer ans : dataMsg.getItems()) {
+        	if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
+        		existingCodes = ans;
+        	} else {
+        		normalAnswers.add(ans);
+        	}
+        }
+        if (existingCodes != null) {
+        	for (String existingCode : existingCodes.getValue().split(","))
+        	{
+        		existingCodesList.add(existingCode);
+        	}
+        }
+        dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
 
         String token = payload.getString("token");
 
@@ -151,7 +171,11 @@ RulesEngineBean rulesEngineBean;
 	    		Integer approved = 0;
 	    		Integer rejected = 0;
 	    		
+	    		List<QDataBaseEntityMessage> distinctMessages = new ArrayList<QDataBaseEntityMessage>();
+	    		
+	    		
 	    		for (QDataBaseEntityMessage mg : msg.getMessages()) {
+	    			List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
 	    			for (BaseEntity be : mg.getItems()) {
 	    				if (be.getCode().startsWith("JNL_")) {
 	    					String status = be.getValue("PRI_STATUS", "UNAPPROVED");
@@ -162,9 +186,22 @@ RulesEngineBean rulesEngineBean;
 	    					} else  {
 	    						rejected++;
 	    					}
+	    					
+	    					String synced = be.getValue("PRI_SYNC","FALSE");
+	    					if (!existingCodesList.contains(be.getCode()) ) {
+	    						normalBes.add(be);
+	    					}
 	    				}
 	    			}
+	    			if (!normalBes.isEmpty()) {
+	    				// update the msg
+	    				mg.setItems(normalBes.toArray(new BaseEntity[0]));
+	    				distinctMessages.add(mg);
+	    			}
 	    		}
+	    		
+	    		msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
+
 	    		
 	    		log.info("unapproved = "+unapproved+" , approved = "+approved+" rejected = "+rejected, message);
 	    		
