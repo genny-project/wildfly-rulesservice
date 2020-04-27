@@ -28,9 +28,11 @@ import io.vertx.resourceadapter.inflow.VertxListener;
 import io.vertx.rxjava.core.Vertx;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
+import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
+import life.genny.qwanda.exception.BadDataException;
 import life.genny.qwanda.message.QBulkMessage;
 import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.message.QDataAnswerMessage;
@@ -48,6 +50,7 @@ import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
 import life.genny.utils.BaseEntityUtils;
+import life.genny.utils.RulesUtils;
 import life.genny.models.GennyToken;
 
 import life.genny.eventbus.EventBusInterface;
@@ -106,7 +109,7 @@ RulesEngineBean rulesEngineBean;
         dataMsg.setAliasCode("STATELESS");
         
         
-        // Extract eexisting codes
+        // Extract existing codes
         Answer existingCodes = null;
         List<String> existingCodesList = new ArrayList<String>();
         List<Answer> normalAnswers = new ArrayList<Answer>();
@@ -115,6 +118,7 @@ RulesEngineBean rulesEngineBean;
         		existingCodes = ans;
         	} else {
         		normalAnswers.add(ans);
+        		log.info(ans.getSourceCode()+":"+ans.getTargetCode()+":"+ans.getAttributeCode()+":"+ans.getValue());
         	}
         }
         if (existingCodes != null) {
@@ -193,6 +197,17 @@ RulesEngineBean rulesEngineBean;
 	    					
 	    					String synced = be.getValue("PRI_SYNC","FALSE");
 	    					if (!existingCodesList.contains(be.getCode()) ) {
+	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
+	    						try {
+									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
+								} catch (BadDataException e) {
+									// TODO Auto-generated catch block
+									//e.printStackTrace();
+								}
+	    						log.info("RETURN "+be.getCode()+":"+be.getName()+"  - alias :"+mg.getAliasCode());
+	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
+	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
+	    						}
 	    						normalBes.add(be);
 	    					}
 	    				} else {
@@ -209,6 +224,7 @@ RulesEngineBean rulesEngineBean;
 	    		msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
 
 	    		
+	    		
 	    		log.info("unapproved = "+unapproved+" , approved = "+approved+" rejected = "+rejected, message);
 	    		
 	    		retPayload = JsonUtils.toJson(msg);
@@ -223,7 +239,7 @@ RulesEngineBean rulesEngineBean;
 	    		ret.put("value", msg);
 	    	}
 
-	    	System.out.println("here is the payload::::::::"+retPayload);
+	    	//System.out.println("here is the payload::::::::"+retPayload);
 	    	JsonObject valueJson = new JsonObject(retPayload);
 	    	
 	    	
