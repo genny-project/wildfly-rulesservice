@@ -107,13 +107,17 @@ RulesEngineBean rulesEngineBean;
 		QDataAnswerMessage dataMsg = null;
 	    dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
         dataMsg.setAliasCode("STATELESS");
+        Boolean deviceRegister = false;
         
         
         // Extract existing codes
         Answer existingCodes = null;
         List<String> existingCodesList = new ArrayList<String>();
         List<Answer> normalAnswers = new ArrayList<Answer>();
-        for (Answer ans : dataMsg.getItems()) {
+        for (Answer ans : dataMsg.getItems())  {
+        	if ("PRI_DEVICE_CODE".equals(ans.getAttributeCode())) {
+        		deviceRegister = true;
+        	}
         	if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
         		existingCodes = ans;
         	} else {
@@ -208,7 +212,9 @@ RulesEngineBean rulesEngineBean;
 	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
 	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
 	    						}
-	    						normalBes.add(be);
+	    						if (!deviceRegister) {  // don't send back data if just a device registration
+	    							normalBes.add(be);
+	    						}
 	    					}
 	    				} else {
 	    					
