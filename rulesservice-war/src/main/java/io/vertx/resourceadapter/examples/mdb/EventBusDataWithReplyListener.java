@@ -175,6 +175,10 @@ RulesEngineBean rulesEngineBean;
 	    		
 	    		
 	    		for (QDataBaseEntityMessage mg : msg.getMessages()) {
+	    			if (mg.getAliasCode()!=null) {
+	    				distinctMessages.add(mg);
+	    				continue;
+	    			}
 	    			List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
 	    			for (BaseEntity be : mg.getItems()) {
 	    				if (be.getCode().startsWith("JNL_")) {
@@ -191,6 +195,8 @@ RulesEngineBean rulesEngineBean;
 	    					if (!existingCodesList.contains(be.getCode()) ) {
 	    						normalBes.add(be);
 	    					}
+	    				} else {
+	    					
 	    				}
 	    			}
 	    			if (!normalBes.isEmpty()) {
