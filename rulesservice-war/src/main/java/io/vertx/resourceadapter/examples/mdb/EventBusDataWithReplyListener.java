@@ -103,6 +103,7 @@ RulesEngineBean rulesEngineBean;
 //	@Transactional
 //  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
+		GennyToken userToken  = null;
 		final JsonObject payload = new JsonObject(message.body().toString());
 		QDataAnswerMessage dataMsg = null;
 	    dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
@@ -131,7 +132,7 @@ RulesEngineBean rulesEngineBean;
 
         String token = payload.getString("token");
 
-		GennyToken userToken = new GennyToken("userToken", token);
+		userToken = new GennyToken("userToken", token);
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
 
@@ -249,6 +250,9 @@ RulesEngineBean rulesEngineBean;
 		}
         
         message.reply(ret);
+        if (userToken != null) {
+        	log.info("App api call completed for "+userToken.getUserCode());
+        }
 	}
 
 }
