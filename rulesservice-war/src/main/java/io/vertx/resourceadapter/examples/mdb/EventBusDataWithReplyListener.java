@@ -108,31 +108,34 @@ RulesEngineBean rulesEngineBean;
 		QDataAnswerMessage dataMsg = null;
 	    dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
         dataMsg.setAliasCode("STATELESS");
-        
+        String token = payload.getString("token");
+
+		userToken = new GennyToken("userToken", token);
         
         // Extract existing codes
         Answer existingCodes = null;
         List<String> existingCodesList = new ArrayList<String>();
         List<Answer> normalAnswers = new ArrayList<Answer>();
         for (Answer ans : dataMsg.getItems())  {
-          	if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
-        		existingCodes = ans;
-        	} else {
-        		normalAnswers.add(ans);
-        		log.info(ans.getSourceCode()+":"+ans.getTargetCode()+":"+ans.getAttributeCode()+":"+ans.getValue());
+        	if (ans != null) {
+        		if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
+        			existingCodes = ans;
+        		} else {
+        			normalAnswers.add(ans);
+        			log.info("INCOMING ANSWER: "+ans.getSourceCode()+":"+ans.getTargetCode()+":"+ans.getAttributeCode()+":"+ans.getValue());
+        		}
         	}
         }
         if (existingCodes != null) {
         	for (String existingCode : existingCodes.getValue().split(","))
         	{
         		existingCodesList.add(existingCode);
+        		log.info("EXISTING BE FOR "+userToken.getUserCode()+" --> "+existingCode);
         	}
         }
         dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
 
-        String token = payload.getString("token");
 
-		userToken = new GennyToken("userToken", token);
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
 
