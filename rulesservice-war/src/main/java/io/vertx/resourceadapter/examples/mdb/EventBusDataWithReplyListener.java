@@ -132,8 +132,9 @@ RulesEngineBean rulesEngineBean;
         		existingCodesList.add(existingCode);
         		log.info("EXISTING BE FOR "+userToken.getUserCode()+" --> "+existingCode);
         	}
+        	dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
         }
-        dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
+        
 
 
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
