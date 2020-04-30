@@ -227,23 +227,24 @@ RulesEngineBean rulesEngineBean;
 	    						beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_LAST_UPDATED_BY",lastChangedBy+":DONE"));
 	    					}
 	    					
-	    					if ((!existingCodesList.contains(be.getCode()) )||sendSyncTrueBackToUser || sendChangedToNewUser) {
-	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
-	    						try {
-									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
-								} catch (BadDataException e) {
-									// TODO Auto-generated catch block
-									//e.printStackTrace();
-								}
-	    						log.info("RETURN "+be.getCode()+":"+be.getName()+"  - alias :"+mg.getAliasCode());
-	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
-	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
-	    						}
-	    						normalBes.add(be);
-	    						if (changed) {	    							
-	    							beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_UPDATED",false));
-	    						}
-	    					} 
+	    					normalBes.add(be);
+//	    					if ((!existingCodesList.contains(be.getCode()) )||sendSyncTrueBackToUser || sendChangedToNewUser) {
+//	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
+//	    						try {
+//									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
+//								} catch (BadDataException e) {
+//									// TODO Auto-generated catch block
+//									//e.printStackTrace();
+//								}
+//	    						log.info("RETURN "+be.getCode()+":"+be.getName()+"  - alias :"+mg.getAliasCode());
+//	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
+//	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
+//	    						}
+//	    						normalBes.add(be);
+//	    						if (changed) {	    							
+//	    							beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_UPDATED",false));
+//	    						}
+//	    					} 
 	    				} else {
 	    					
 	    				}
