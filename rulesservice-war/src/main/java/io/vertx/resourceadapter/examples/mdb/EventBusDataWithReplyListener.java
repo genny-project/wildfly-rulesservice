@@ -2,6 +2,7 @@ package io.vertx.resourceadapter.examples.mdb;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
+
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
@@ -115,6 +118,7 @@ RulesEngineBean rulesEngineBean;
         // Extract existing codes
         Answer existingCodes = null;
         List<String> existingCodesList = new ArrayList<String>();
+        Set<String> updatedCodesList = new HashSet<String>();
         List<Answer> normalAnswers = new ArrayList<Answer>();
         for (Answer ans : dataMsg.getItems())  {
         	if (ans != null) {
@@ -122,6 +126,13 @@ RulesEngineBean rulesEngineBean;
         			existingCodes = ans;
         		} else {
         			normalAnswers.add(ans);
+        			if (!updatedCodesList.contains(ans.getTargetCode())) {
+        				Answer updatedAns = new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_UPDATED",true); // used in sync
+        				LocalDateTime now = LocalDateTime.now();
+        				normalAnswers.add(new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_LAST_UPDATED",now));
+        				normalAnswers.add(updatedAns);
+        				updatedCodesList.add(ans.getTargetCode());
+        			}
         			log.info("INCOMING ANSWER: "+ans.getSourceCode()+":"+ans.getTargetCode()+":"+ans.getAttributeCode()+":"+ans.getValue());
         		}
         	}
@@ -139,6 +150,7 @@ RulesEngineBean rulesEngineBean;
 
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
+		BaseEntityUtils beUtils = new BaseEntityUtils(serviceToken);
 
 		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
 		
@@ -201,7 +213,8 @@ RulesEngineBean rulesEngineBean;
 	    					}
 	    					
 	    					String synced = be.getValue("PRI_SYNC","FALSE");
-	    					if (!existingCodesList.contains(be.getCode()) ) {
+	    					Boolean changed = be.getValue("PRI_UPDATED",true);
+	    					if ((!existingCodesList.contains(be.getCode()) )||(changed)) {
 	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 	    						try {
 									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
@@ -213,9 +226,11 @@ RulesEngineBean rulesEngineBean;
 	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
 	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
 	    						}
-	    							normalBes.add(be);
-
-	    					}
+	    						normalBes.add(be);
+	    						if (changed) {	    							
+	    							beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_UPDATED",false));
+	    						}
+	    					} 
 	    				} else {
 	    					
 	    				}
