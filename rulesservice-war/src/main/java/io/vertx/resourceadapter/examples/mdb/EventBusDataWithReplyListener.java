@@ -130,6 +130,7 @@ RulesEngineBean rulesEngineBean;
         				Answer updatedAns = new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_UPDATED",true); // used in sync
         				LocalDateTime now = LocalDateTime.now();
         				normalAnswers.add(new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_LAST_UPDATED",now));
+        				normalAnswers.add(new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_LAST_CHANGED_BY",userToken.getUserCode()));
         				normalAnswers.add(updatedAns);
         				updatedCodesList.add(ans.getTargetCode());
         			}
@@ -213,8 +214,20 @@ RulesEngineBean rulesEngineBean;
 	    					}
 	    					
 	    					String synced = be.getValue("PRI_SYNC","FALSE");
+	    					String lastChangedBy = be.getValue("PRI_LAST_CHANGED_BY",userToken.getUserCode());
+	    					Boolean sendSyncTrueBackToUser = (synced.equals("FALSE")) && (userToken.getUserCode().equals(lastChangedBy));
+	    					Boolean sendChangedToNewUser = (!userToken.getUserCode().equals(lastChangedBy)) && (!existingCodesList.contains(be.getCode())) && (!lastChangedBy.contains("DONE"));
 	    					Boolean changed = be.getValue("PRI_UPDATED",true);
-	    					if ((!existingCodesList.contains(be.getCode()) )||(changed)) {
+	    					
+	    					if (sendSyncTrueBackToUser) {
+	    						beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_SYNC","TRUE"));
+	    					}
+	    					
+	    					if (sendChangedToNewUser) {
+	    						beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_LAST_UPDATED_BY",lastChangedBy+":DONE"));
+	    					}
+	    					
+	    					if ((!existingCodesList.contains(be.getCode()) )||sendSyncTrueBackToUser || sendChangedToNewUser) {
 	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 	    						try {
 									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
