@@ -81,8 +81,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 //@Inject
 //EventBusBean eventBus;
 
-@Inject
-RulesEngineBean rulesEngineBean;
+	@Inject
+	RulesEngineBean rulesEngineBean;
 
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -92,8 +92,6 @@ RulesEngineBean rulesEngineBean;
 	private static Map<String, User> usersSession = new HashMap<String, User>();
 
 	static String token;
-	
-	
 
 	/**
 	 * Default constructor.
@@ -106,77 +104,97 @@ RulesEngineBean rulesEngineBean;
 //	@Transactional
 //  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
-		GennyToken userToken  = null;
+		GennyToken userToken = null;
 		final JsonObject payload = new JsonObject(message.body().toString());
 		QDataAnswerMessage dataMsg = null;
-	    dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
-        dataMsg.setAliasCode("STATELESS");
-        String token = payload.getString("token");
+		dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
+		dataMsg.setAliasCode("STATELESS");
+		String token = payload.getString("token");
 
 		userToken = new GennyToken("userToken", token);
-        
-        // Extract existing codes
-        Answer existingCodes = null;
-        List<String> existingCodesList = new ArrayList<String>();
-        Set<String> updatedCodesList = new HashSet<String>();
-        List<Answer> normalAnswers = new ArrayList<Answer>();
-        for (Answer ans : dataMsg.getItems())  {
-        	if (ans != null) {
-        		if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
-        			existingCodes = ans;
-        		} else {
-        			normalAnswers.add(ans);
-        			if (!updatedCodesList.contains(ans.getTargetCode())) {
-        				Answer updatedAns = new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_UPDATED",true); // used in sync
-        				LocalDateTime now = LocalDateTime.now();
-        				normalAnswers.add(new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_LAST_UPDATED",now));
-        				normalAnswers.add(new Answer(userToken.getUserCode(),ans.getTargetCode(),"PRI_LAST_CHANGED_BY",userToken.getUserCode()));
-        				normalAnswers.add(updatedAns);
-        				updatedCodesList.add(ans.getTargetCode());
-        			}
-        			log.info("INCOMING ANSWER: "+ans.getSourceCode()+":"+ans.getTargetCode()+":"+ans.getAttributeCode()+":"+ans.getValue());
-        		}
-        	}
-        }
-        if (existingCodes != null) {
-        	for (String existingCode : existingCodes.getValue().split(","))
-        	{
-        		existingCodesList.add(existingCode);
-        		log.info("EXISTING BE FOR "+userToken.getUserCode()+" --> "+existingCode);
-        	}
-        	dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
-        }
-        
-
-
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
 		BaseEntityUtils beUtils = new BaseEntityUtils(serviceToken);
 
+		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
+		Boolean isIntern = user.is("PRI_IS_INTERN");
+		Boolean isSupervisor = user.is("PRI_IS_SUPERVISOR");
+		Boolean isHCR = user.is("PRI_IS_HOST_COMPANY_REP");
+		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
+
+		// Extract existing codes
+		Answer existingCodes = null;
+		List<String> existingCodesList = new ArrayList<String>();
+		Set<String> updatedCodesList = new HashSet<String>();
+		List<Answer> normalAnswers = new ArrayList<Answer>();
+		for (Answer ans : dataMsg.getItems()) {
+			if (ans != null) {
+				if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
+					existingCodes = ans;
+				} else {
+					normalAnswers.add(ans);
+					if (ans.getTargetCode().startsWith("JNL_")) {
+						if (!updatedCodesList.contains(ans.getTargetCode())) {
+							Answer updatedAns = new Answer(userToken.getUserCode(), ans.getTargetCode(), "PRI_UPDATED",
+									true); // used in sync
+							LocalDateTime now = LocalDateTime.now();
+							normalAnswers.add(
+									new Answer(userToken.getUserCode(), ans.getTargetCode(), "PRI_LAST_UPDATED", now));
+							normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+									"PRI_LAST_CHANGED_BY", userToken.getUserCode()));
+							if (isIntern) {
+								normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+										"PRI_INTERN_LAST_UPDATE", now));
+							}
+							if (isSupervisor) {
+								normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+										"PRI_SUPERVISOR_LAST_UPDATE", now));
+							}
+							if (isHCR) {
+								normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+										"PRI_HCR_LAST_UPDATE", now));
+							}
+							normalAnswers.add(updatedAns);
+							updatedCodesList.add(ans.getTargetCode());
+						}
+					}
+					log.info("INCOMING ANSWER: " + ans.getSourceCode() + ":" + ans.getTargetCode() + ":"
+							+ ans.getAttributeCode() + ":" + ans.getValue());
+				}
+			}
+		}
+		if (existingCodes != null) {
+			for (String existingCode : existingCodes.getValue().split(",")) {
+				existingCodesList.add(existingCode);
+				log.info("EXISTING BE FOR " + userToken.getUserCode() + " --> " + existingCode);
+			}
+			dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
+		}
+
 		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
-		
-	    Map<String, Object> facts = new ConcurrentHashMap<String,Object>();
-	    facts.put("serviceToken",serviceToken);
-	    facts.put("userToken",userToken);
-	    facts.put("data",dataMsg);
-	    RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();	 
-	    
-	    ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing", "DataWithReply:DataProcessing");
-	    
-	    
-	    Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless", "DataWithReply:Stateless");
-	    
-	    JsonObject ret = new JsonObject();
-	    
-	    
-	    if ((results==null) || results.get("payload")==null ) {
-	    	ret.put("status", "ERROR");
-	    } else {
-	    	ret.put("status", "OK");
-	    	Object obj = results.get("payload");
-	    	String retPayload  = null;
-	    	if (obj instanceof QBulkMessage) {
-	    		QBulkMessage msg = (QBulkMessage) results.get("payload");
+
+		Map<String, Object> facts = new ConcurrentHashMap<String, Object>();
+		facts.put("serviceToken", serviceToken);
+		facts.put("userToken", userToken);
+		facts.put("data", dataMsg);
+		RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
+
+		ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
+				"DataWithReply:DataProcessing");
+
+		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
+				"DataWithReply:Stateless");
+
+		JsonObject ret = new JsonObject();
+
+		if ((results == null) || results.get("payload") == null) {
+			ret.put("status", "ERROR");
+		} else {
+			ret.put("status", "OK");
+			Object obj = results.get("payload");
+			String retPayload = null;
+			if (obj instanceof QBulkMessage) {
+				QBulkMessage msg = (QBulkMessage) results.get("payload");
 //				String projectCode = "PRJ_"+userToken.getRealm().toUpperCase();
 //				BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
 //				BaseEntity project = beUtils.getBaseEntityByCode(projectCode); 
@@ -186,106 +204,136 @@ RulesEngineBean rulesEngineBean;
 //				prjMsg.setAliasCode("PROJECT");
 //				msg.add(prjMsg);
 
-	    		// How many journals?
-	    		
-	    		
-	    		Integer unapproved = 0;
-	    		Integer approved = 0;
-	    		Integer rejected = 0;
-	    		
-	    		List<QDataBaseEntityMessage> distinctMessages = new ArrayList<QDataBaseEntityMessage>();
-	    		
-	    		
-	    		for (QDataBaseEntityMessage mg : msg.getMessages()) {
-	    			if (mg.getAliasCode()!=null) {
-	    				distinctMessages.add(mg);
-	    				continue;
-	    			}
-	    			List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
-	    			for (BaseEntity be : mg.getItems()) {
-	    				if (be.getCode().startsWith("JNL_")) {
-	    					String status = be.getValue("PRI_STATUS", "UNAPPROVED");
-	    					if ("UNAPPROVED".equals(status)) {
-	    						unapproved++;
-	    					} else if ("APPROVED".equals(status)) {
-	    						approved++;
-	    					} else  {
-	    						rejected++;
-	    					}
-	    					
-	    					String synced = be.getValue("PRI_SYNC","FALSE");
-	    					String lastChangedBy = be.getValue("PRI_LAST_CHANGED_BY",userToken.getUserCode());
-	    					Boolean sendSyncTrueBackToUser = (synced.equals("FALSE")) && (userToken.getUserCode().equals(lastChangedBy));
-	    					Boolean sendChangedToNewUser = (!userToken.getUserCode().equals(lastChangedBy)) && (!existingCodesList.contains(be.getCode())) && (!lastChangedBy.contains("DONE"));
-	    					Boolean changed = be.getValue("PRI_UPDATED",true);
-	    					
-	    					if (sendSyncTrueBackToUser) {
-	    						beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_SYNC","TRUE"));
-	    					}
-	    					
-	    					if (sendChangedToNewUser) {
-	    						beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_LAST_UPDATED_BY",lastChangedBy+":DONE"));
-	    					}
-	    					
-	    					
-	    					if (true || (!existingCodesList.contains(be.getCode()) )||sendSyncTrueBackToUser || sendChangedToNewUser) {
-	    						Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
-	    						try {
+				// How many journals?
+
+				Integer unapproved = 0;
+				Integer approved = 0;
+				Integer rejected = 0;
+
+				List<QDataBaseEntityMessage> distinctMessages = new ArrayList<QDataBaseEntityMessage>();
+
+				for (QDataBaseEntityMessage mg : msg.getMessages()) {
+					if (mg.getAliasCode() != null) {
+						distinctMessages.add(mg);
+						continue;
+					}
+					List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
+					for (BaseEntity be : mg.getItems()) {
+						if (be.getCode().startsWith("JNL_")) {
+							String status = be.getValue("PRI_STATUS", "UNAPPROVED");
+							if ("UNAPPROVED".equals(status)) {
+								unapproved++;
+							} else if ("APPROVED".equals(status)) {
+								approved++;
+							} else {
+								rejected++;
+							}
+
+							Boolean userHasExisting = existingCodesList.contains(be.getCode());
+
+							String internCode = be.getValue("LNK_INTERN", user.getCode());
+							internCode = internCode.substring(2, internCode.length() - 2);
+
+							LocalDateTime lastUpdated = be.getValue("PRI_LAST_UPDATED", be.getCreated());
+							String lastChangedBy = be.getValue("PRI_LAST_CHANGED_BY", internCode);
+
+							String synced = be.getValue("PRI_SYNC", "FALSE");
+							Boolean downloadBe = false;
+							Boolean didThisUserUpdateBe = (userToken.getUserCode().equals(lastChangedBy));
+
+							if (isIntern) {
+								LocalDateTime lastUpdatedByIntern = be.getValue("PRI_INTERN_LAST_UPDATE",
+										LocalDateTime.of(1970, 1, 1, 0, 0));
+								if (lastUpdated.isEqual(lastUpdatedByIntern)) { // This user uploaded it
+									if (didThisUserUpdateBe) {
+										if ("FALSE".equals(synced)) {
+											beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+													"PRI_SYNC", "TRUE"));
+											downloadBe = true;
+										}
+									}
+								} else {
+									beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+											"PRI_INTERN_LAST_UPDATE", lastUpdated));
+									downloadBe = true;
+								}
+							} else if (isSupervisor) {
+								LocalDateTime lastUpdatedBySupervisor = be.getValue("PRI_SUPERVISOR_LAST_UPDATE",
+										LocalDateTime.of(1970, 1, 1, 0, 0));
+								if (lastUpdated.isEqual(lastUpdatedBySupervisor)) { // This user uploaded it
+									if (didThisUserUpdateBe) {
+										if ("FALSE".equals(synced)) {
+											beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+													"PRI_SYNC", "TRUE"));
+											downloadBe = true;
+										}
+									}
+								} else {
+									beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+											"PRI_SUPERVISOR_LAST_UPDATE", lastUpdated));
+									downloadBe = true;
+								}
+							}
+
+							// If a user does not have it at all then download
+							if (!userHasExisting) {
+								downloadBe = true;
+							}
+
+							if (downloadBe) {
+								try {
 									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
 								} catch (BadDataException e) {
 									// TODO Auto-generated catch block
-									//e.printStackTrace();
+									// e.printStackTrace();
 								}
-	    						log.info("RETURN "+be.getCode()+":"+be.getName()+"  - alias :"+mg.getAliasCode());
-	    						for (EntityAttribute ea : be.getBaseEntityAttributes()) {
-	    							log.info("   "+ea.getAttributeCode()+"  -> "+ea.getAsString());
-	    						}
-	    						normalBes.add(be);
-	    						if (changed) {	    							
-	    							beUtils.saveAnswer(new Answer(serviceToken.getUserCode(),be.getCode(),"PRI_UPDATED",false));
-	    						}
-	    					} 
-	    				} else {
-	    					
-	    				}
-	    			}
-	    			if (!normalBes.isEmpty()) {
-	    				// update the msg
-	    				mg.setItems(normalBes.toArray(new BaseEntity[0]));
-	    				distinctMessages.add(mg);
-	    			}
-	    		}
-	    		
-	    		msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
+								log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :"
+										+ mg.getAliasCode());
+								for (EntityAttribute ea : be.getBaseEntityAttributes()) {
+									log.info("   " + ea.getAttributeCode() + "  -> " + ea.getAsString());
+								}
+								normalBes.add(be);
+							}
 
-	    		
-	    		
-	    		log.info("unapproved = "+unapproved+" , approved = "+approved+" rejected = "+rejected, message);
-	    		
-	    		retPayload = JsonUtils.toJson(msg);
-	    	} else 	if (obj instanceof QDataBaseEntityMessage) {
-	    		QDataBaseEntityMessage msg = (QDataBaseEntityMessage) results.get("payload");
-	    		retPayload = JsonUtils.toJson(msg);
-	    	} else 	if (obj instanceof QCmdMessage) {
-	    		QCmdMessage msg = (QCmdMessage) results.get("payload");
-	    		retPayload = JsonUtils.toJson(msg);
-	    	} else 	if (obj instanceof String) {
-	    		String msg = (String) results.get("payload");
-	    		ret.put("value", msg);
-	    	}
+						}
+					}
+					if (!normalBes.isEmpty()) {
+						// update the msg
+						mg.setItems(normalBes.toArray(new BaseEntity[0]));
+						distinctMessages.add(mg);
+					}
+				}
 
-	    	//System.out.println("here is the payload::::::::"+retPayload);
-	    	JsonObject valueJson = new JsonObject(retPayload);
-	    	
-	    	
-	    	ret.put("value",valueJson);
+				msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
+
+				log.info("unapproved = " + unapproved + " , approved = " + approved + " rejected = " + rejected,
+						message);
+
+				retPayload = JsonUtils.toJson(msg);
+			} else if (obj instanceof QDataBaseEntityMessage) {
+				QDataBaseEntityMessage msg = (QDataBaseEntityMessage) results.get("payload");
+				retPayload = JsonUtils.toJson(msg);
+			} else if (obj instanceof QCmdMessage) {
+				QCmdMessage msg = (QCmdMessage) results.get("payload");
+				retPayload = JsonUtils.toJson(msg);
+			} else if (obj instanceof String) {
+				String msg = (String) results.get("payload");
+				ret.put("value", msg);
+			}
+
+			// System.out.println("here is the payload::::::::"+retPayload);
+			JsonObject valueJson = new JsonObject(retPayload);
+
+			ret.put("value", valueJson);
 
 		}
-        
-        message.reply(ret);
-        if (userToken != null) {
-        	log.info("App api call completed for "+userToken.getUserCode());
-        }
+
+		message.reply(ret);
+		if (userToken != null)
+
+		{
+			log.info("App api call completed for " + userToken.getUserCode());
+		}
 	}
 
 }
