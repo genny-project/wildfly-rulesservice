@@ -104,6 +104,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 //	@Transactional
 //  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
+		
+		long starttime = System.currentTimeMillis();
+		
 		GennyToken userToken = null;
 		final JsonObject payload = new JsonObject(message.body().toString());
 		QDataAnswerMessage dataMsg = null;
@@ -112,11 +115,16 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		String token = payload.getString("token");
 
 		userToken = new GennyToken("userToken", token);
+		log.info("");
+		log.info("Incoming App API Call for "+userToken.getUserCode());
+		
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
-		BaseEntityUtils beUtils = new BaseEntityUtils(serviceToken);
-
+		BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
+		beUtils.setServiceToken(serviceToken);
 		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
+
+
 		Boolean isIntern = user.is("PRI_IS_INTERN");
 		Boolean isSupervisor = user.is("PRI_IS_SUPERVISOR");
 		Boolean isHCR = user.is("PRI_IS_HOST_COMPANY_REP");
@@ -127,6 +135,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		List<String> existingCodesList = new ArrayList<String>();
 		Set<String> updatedCodesList = new HashSet<String>();
 		List<Answer> normalAnswers = new ArrayList<Answer>();
+		
+		LocalDateTime now = LocalDateTime.now();
+		
 		for (Answer ans : dataMsg.getItems()) {
 			if (ans != null) {
 				if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
@@ -137,7 +148,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						if (!updatedCodesList.contains(ans.getTargetCode())) {
 							Answer updatedAns = new Answer(userToken.getUserCode(), ans.getTargetCode(), "PRI_UPDATED",
 									true); // used in sync
-							LocalDateTime now = LocalDateTime.now();
+							
 							normalAnswers.add(
 									new Answer(userToken.getUserCode(), ans.getTargetCode(), "PRI_LAST_UPDATED", now));
 							normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
@@ -179,12 +190,16 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		facts.put("data", dataMsg);
 		RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
 
+		
+		log.info("Executing Rules ");
+		long startrulestime = System.currentTimeMillis();
 		ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
 				"DataWithReply:DataProcessing");
+		long midrulestime = System.currentTimeMillis();
 
 		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
-
+		long endrulestime = System.currentTimeMillis();
 		JsonObject ret = new JsonObject();
 
 		if ((results == null) || results.get("payload") == null) {
@@ -218,6 +233,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						continue;
 					}
 					List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
+					List<Answer> answers = new ArrayList<Answer>();
+					
 					for (BaseEntity be : mg.getItems()) {
 						if (be.getCode().startsWith("JNL_")) {
 							String status = be.getValue("PRI_STATUS", "UNAPPROVED");
@@ -247,13 +264,13 @@ public class EventBusDataWithReplyListener implements VertxListener {
 								if (lastUpdated.isEqual(lastUpdatedByIntern)) { // This user uploaded it
 									if (didThisUserUpdateBe) {
 										if ("FALSE".equals(synced)) {
-											beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+											answers.add(new Answer(serviceToken.getUserCode(), be.getCode(),
 													"PRI_SYNC", "TRUE"));
 											downloadBe = true;
 										}
 									}
 								} else {
-									beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+									answers.add(new Answer(serviceToken.getUserCode(), be.getCode(),
 											"PRI_INTERN_LAST_UPDATE", lastUpdated));
 									downloadBe = true;
 								}
@@ -263,13 +280,13 @@ public class EventBusDataWithReplyListener implements VertxListener {
 								if (lastUpdated.isEqual(lastUpdatedBySupervisor)) { // This user uploaded it
 									if (didThisUserUpdateBe) {
 										if ("FALSE".equals(synced)) {
-											beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+											answers.add(new Answer(serviceToken.getUserCode(), be.getCode(),
 													"PRI_SYNC", "TRUE"));
 											downloadBe = true;
 										}
 									}
 								} else {
-									beUtils.saveAnswer(new Answer(serviceToken.getUserCode(), be.getCode(),
+									answers.add(new Answer(serviceToken.getUserCode(), be.getCode(),
 											"PRI_SUPERVISOR_LAST_UPDATE", lastUpdated));
 									downloadBe = true;
 								}
@@ -289,9 +306,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 								}
 								log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :"
 										+ mg.getAliasCode());
-								for (EntityAttribute ea : be.getBaseEntityAttributes()) {
-									log.info("   " + ea.getAttributeCode() + "  -> " + ea.getAsString());
-								}
+//								for (EntityAttribute ea : be.getBaseEntityAttributes()) {
+//									log.info("   " + ea.getAttributeCode() + "  -> " + ea.getAsString());
+//								}
 								normalBes.add(be);
 							}
 
@@ -301,6 +318,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						// update the msg
 						mg.setItems(normalBes.toArray(new BaseEntity[0]));
 						distinctMessages.add(mg);
+						beUtils.saveAnswers(answers);
 					}
 				}
 
@@ -332,7 +350,14 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		if (userToken != null)
 
 		{
-			log.info("App api call completed for " + userToken.getUserCode());
+			long endtime = System.currentTimeMillis();
+			log.info("Time to process incoming Data for Rules = "+(startrulestime-starttime)+"ms");
+			log.info("Time to run  Data Processing Rules      = "+(midrulestime-startrulestime)+"ms");
+			log.info("Time to run  Stateless Rules            = "+(endrulestime-midrulestime)+"ms");
+			log.info("Time to run  Post Processing            = "+(endtime-startrulestime)+"ms");
+			log.info("Time to run everything                  = "+(endtime-starttime)+"ms");
+			
+			log.info("App api call completed for " + userToken.getUserCode()+"\n");
 		}
 	}
 
