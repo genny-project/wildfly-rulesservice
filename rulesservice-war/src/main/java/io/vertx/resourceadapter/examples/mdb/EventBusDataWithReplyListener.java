@@ -124,7 +124,6 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		beUtils.setServiceToken(serviceToken);
 		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
 
-
 		Boolean isIntern = user.is("PRI_IS_INTERN");
 		Boolean isSupervisor = user.is("PRI_IS_SUPERVISOR");
 		Boolean isHCR = user.is("PRI_IS_HOST_COMPANY_REP");
