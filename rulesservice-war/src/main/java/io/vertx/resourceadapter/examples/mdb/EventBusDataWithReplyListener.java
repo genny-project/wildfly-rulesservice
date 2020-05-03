@@ -102,7 +102,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 	@Override
 //	@Transactional
-//  @Asynchronous
+  @Asynchronous
 	public <T> void onMessage(Message<T> message) {
 		
 		long starttime = System.currentTimeMillis();
