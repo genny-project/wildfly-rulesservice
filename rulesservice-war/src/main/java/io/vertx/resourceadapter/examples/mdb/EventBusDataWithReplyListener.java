@@ -195,6 +195,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
 				"DataWithReply:DataProcessing");
 		long midrulestime = System.currentTimeMillis();
+		
+		
+		
 
 		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
