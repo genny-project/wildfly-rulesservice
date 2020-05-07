@@ -115,8 +115,19 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 				String kcStr = firstRealm.get();
 				final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(kcStr);
 
-				final JSONObject json = new JSONObject(keycloakJsonText);
-				realm = json.getString("realm");
+				JSONObject json = null;
+				try {
+					json = new JSONObject(keycloakJsonText);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					realm = json.getString("realm");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				key = realm + ".json";
 
 			} else {

@@ -21,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
 import org.javamoney.moneta.Money;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -82,8 +83,20 @@ public class ApiTest {
 				e1.printStackTrace();
 			}
 
-			JSONObject json = new JSONObject(accessTokenResponse);
-			String token = json.getString("access_token");
+			JSONObject json = null;
+			try {
+				json = new JSONObject(accessTokenResponse);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String token = null;
+			try {
+				token = json.getString("access_token");
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			log.info("Token =" + token);
 			BaseEntity searchBE = new BaseEntity("SER_TEST_SEARCH", "Search test");
@@ -162,8 +175,20 @@ public class ApiTest {
 				e1.printStackTrace();
 			}
 
-			JSONObject json = new JSONObject(accessTokenResponse);
-			String token = json.getString("access_token");
+			JSONObject json=null;
+			try {
+				json = new JSONObject(accessTokenResponse);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String token=null;
+			try {
+				token = json.getString("access_token");
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try {
 				String ret = QwandaUtils.apiGet(
 						qwandaurl + "/qwanda/baseentitys/PER_USER1/asks2/QUE_OFFER_DETAILS_GRP/PER_USER1", token);
@@ -290,8 +315,20 @@ public class ApiTest {
 				e1.printStackTrace();
 			}
 
-			JSONObject json = new JSONObject(accessTokenResponse);
-			String token = json.getString("access_token");
+			JSONObject json = null;
+			try {
+				json = new JSONObject(accessTokenResponse);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			String token=null;
+			try {
+				token = json.getString("access_token");
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			try {
 				// Add a new Link
