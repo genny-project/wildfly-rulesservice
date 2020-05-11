@@ -62,7 +62,7 @@ public class EventBusEventListener implements VertxListener {
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
-	  String logMessage = "********* THIS IS WILDFLY EVENT LISTENER!!!! ******************* ";
+	  String logMessage = "********* THIS IS WILDFLY EVENT LISTENER!!!! ******************* ";	
 	  
 	QEventMessage eventMsg = null;
 	if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
@@ -73,9 +73,20 @@ public class EventBusEventListener implements VertxListener {
 	} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
 		logMessage += " EVT_LINK_CHANGE ";
+	} else if ((payload.getString("event_type").equals("AUTH_INIT"))){
+		JsonObject frontendData = payload.getJsonObject("data");
+		log.info("Incoming Frontend data is "+frontendData.toString());
+		try {
+			String payloadString = payload.toString();
+			eventMsg = JsonUtils.fromJson(payloadString, QEventMessage.class);
+			eventMsg.getData().setValue(frontendData.toString());
+		} catch (NoClassDefFoundError e) {
+			log.error("No class def found ["+payload.toString()+"]");
+		}
 	} else {
 		try {
-			eventMsg = JsonUtils.fromJson(payload.toString(), QEventMessage.class);
+			String payloadString = payload.toString();
+			eventMsg = JsonUtils.fromJson(payloadString, QEventMessage.class);
 		} catch (NoClassDefFoundError e) {
 			log.error("No class def found ["+payload.toString()+"]");
 		}

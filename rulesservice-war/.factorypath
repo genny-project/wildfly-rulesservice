@@ -107,6 +107,33 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/glassfish/javax.el/3.0.0/javax.el-3.0.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/el/javax.el-api/3.0.0/javax.el-api-3.0.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/carrotsearch/java-sizeof/0.0.5/java-sizeof-0.0.5.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/es/usc/citius/hipster/hipster-all/1.0.1/hipster-all-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/es/usc/citius/hipster/hipster-core/1.0.1/hipster-core-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/es/usc/citius/hipster/hipster-examples/1.0.1/hipster-examples-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/es/usc/citius/hipster/hipster-third-party-graphs/1.0.1/hipster-third-party-graphs-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/tinkerpop/blueprints/blueprints-graph-jung/2.4.0/blueprints-graph-jung-2.4.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jung/jung-api/2.0.1/jung-api-2.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jung/jung-visualization/2.0.1/jung-visualization-2.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jung/jung-graph-impl/2.0.1/jung-graph-impl-2.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jung/jung-algorithms/2.0.1/jung-algorithms-2.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/colt/colt/1.2.0/colt-1.2.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/jung/jung-io/2.0.1/jung-io-2.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/codehaus/woodstox/wstx-asl/3.2.6/wstx-asl-3.2.6.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/intellij/forms_rt/7.0.3/forms_rt-7.0.3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/asm/asm-commons/3.0/asm-commons-3.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/asm/asm-tree/3.0/asm-tree-3.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/asm/asm/3.0/asm-3.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/jgoodies/forms/1.1-preview/forms-1.1-preview.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/es/usc/citius/hipster/hipster-test/1.0.1/hipster-test-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/tinkerpop/blueprints/blueprints-core/2.6.0/blueprints-core-2.6.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/codehaus/jettison/jettison/1.3.3/jettison-1.3.3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/carrotsearch/hppc/0.6.0/hppc-0.6.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-configuration/commons-configuration/1.6/commons-configuration-1.6.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-digester/commons-digester/1.8/commons-digester-1.8.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/resource/javax.resource-api/1.7.1/javax.resource-api-1.7.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/transaction/javax.transaction-api/1.3/javax.transaction-api-1.3.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/kie/kie-ci/7.34.0.Final/kie-ci-7.34.0.Final.jar" enabled="true" runInBatchMode="false"/>
