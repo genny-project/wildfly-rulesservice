@@ -58,7 +58,7 @@ public class EventBusEventListener implements VertxListener {
   
   @Override
 //  @Transactional
-//  @Asynchronous
+  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 
