@@ -200,9 +200,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		BaseEntity device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 		List<Answer> deviceAnswers = new ArrayList<Answer>();
 
-		if ((device == null)||(loadAll)) {
+		if ((device == null)) {
 			String deviceName = userToken.getString("given_name")+"'s "+deviceType+" Phone";
-			if ((device == null)&&(loadAll)) {
 				beUtils.create(uniqueDeviceCode, deviceName);
 			
 				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"LNK_USER",userToken.getUserCode()));
@@ -211,10 +210,12 @@ public class EventBusDataWithReplyListener implements VertxListener {
 				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_VERSION",deviceVersion));
 				log.info("New device detected -> created "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode()+"->uniqueCode:"+uniqueDeviceCode);
 
-			}
+		}
+		if ((device == null)||loadAll) {
 			LocalDateTime veryearly = LocalDateTime.of(1970,01,01,0,0,0);
 			deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_LAST_UPDATED",veryearly));
 			beUtils.saveAnswers(deviceAnswers);
+
 		}
 		
 		
