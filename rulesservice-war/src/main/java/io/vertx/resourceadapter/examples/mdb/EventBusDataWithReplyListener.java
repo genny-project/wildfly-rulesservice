@@ -141,11 +141,10 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 
 		// Extract existing codes
-		List<String> existingCodesList = new ArrayList<String>();
 		Set<String> updatedCodesList = new HashSet<String>();
 		List<Answer> normalAnswers = new ArrayList<Answer>();
 		Map<String,BaseEntity> existingBEs = new ConcurrentHashMap<String,BaseEntity>();
-		
+		Boolean loadAll = false;
 		for (Answer ans : dataMsg.getItems()) {
 			if (ans != null) {
 				boolean newone = false;
@@ -157,7 +156,11 @@ public class EventBusDataWithReplyListener implements VertxListener {
 					} 
 				else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
 					deviceVersion = ans.getValue();
-				} 
+				} 	else	if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
+						if ("EMPTY".equals(ans.getValue())) {
+							loadAll = true;
+						}
+				}
 				else {
 					// check if no change
 					BaseEntity be = existingBEs.get(ans.getTargetCode());
@@ -192,53 +195,65 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			}
 		}
 		
+		String uniqueDeviceCode = "DEV_"+deviceCode.toUpperCase()+userToken.getString("sub").hashCode();
 
-		BaseEntity device = beUtils.getBaseEntityByCode("DEV_"+deviceCode.toUpperCase());
+		BaseEntity device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 		List<Answer> deviceAnswers = new ArrayList<Answer>();
 
-		if (device == null) {
+		if ((device == null)||(loadAll)) {
 			String deviceName = userToken.getString("given_name")+"'s "+deviceType+" Phone";
-			beUtils.create("DEV_"+deviceCode.toUpperCase(), deviceName);
+			if ((device == null)&&(loadAll)) {
+				beUtils.create(uniqueDeviceCode, deviceName);
 			
-			deviceAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"LNK_USER",userToken.getUserCode()));
-			deviceAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_DEVICE_CODE",deviceCode));
-			deviceAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_TYPE",deviceType));
-			deviceAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_VERSION",deviceVersion));
-			log.info("New device detected -> created "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode());
+				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"LNK_USER",userToken.getUserCode()));
+				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode));
+				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_TYPE",deviceType));
+				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_VERSION",deviceVersion));
+				log.info("New device detected -> created "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode()+"->uniqueCode:"+uniqueDeviceCode);
+
+			}
 			LocalDateTime veryearly = LocalDateTime.of(1970,01,01,0,0,0);
-			deviceAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_LAST_UPDATED",veryearly));
+			deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_LAST_UPDATED",veryearly));
 			beUtils.saveAnswers(deviceAnswers);
 		}
 		
-		log.info("Device identified  "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode());
+		
+		log.info("Device identified  "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode()+"->uniqueCode:"+uniqueDeviceCode);
 
 	
-		device = beUtils.getBaseEntityByCode("DEV_"+deviceCode.toUpperCase());
+		device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 		
 		if ((normalAnswers != null)&&(!normalAnswers.isEmpty())) {
 			/* normalAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_DEVICE_CODE",deviceCode));*/
 			dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
+		} else {
+			// Only supply device code
+			Answer[] defaultAnswerArray = new Answer[1];
+			defaultAnswerArray[0] = new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode);
+			dataMsg.setItems(defaultAnswerArray);
 		}
-
+		
 		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
 
 		Map<String, Object> facts = new ConcurrentHashMap<String, Object>();
 		facts.put("serviceToken", serviceToken);
 		facts.put("userToken", userToken);
 		facts.put("data", dataMsg);
-		facts.put("device", new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_DEVICE_CODE",deviceCode));
+		facts.put("device", new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode));
 		RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
 
 		
 		log.info("Executing Rules ");
 		long startrulestime = System.currentTimeMillis();
-		ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
+		if (dataMsg.getItems().length > 1) {	 // not just the device used for sync	
+			ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
 				"DataWithReply:DataProcessing");
+		}
 		long midrulestime = System.currentTimeMillis();
 		
 		
 		
-
+		// Now fetch any synced data
 		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
 		long endrulestime = System.currentTimeMillis();
@@ -327,7 +342,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		if (userToken != null)
 		{
 			// now update the latest sync time
-			beUtils.saveAnswer(new Answer(userToken.getUserCode(),"DEV_"+deviceCode.toUpperCase(),"PRI_LAST_UPDATED",now));
+			beUtils.saveAnswer(new Answer(userToken.getUserCode(),uniqueDeviceCode,"PRI_LAST_UPDATED",now));
 
 			long endtime = System.currentTimeMillis();
 			log.info("Time to process incoming Data for Rules = "+(startrulestime-starttime)+"ms");
