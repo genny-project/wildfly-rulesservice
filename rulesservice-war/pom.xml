@@ -36,9 +36,9 @@
 		<kie.version>7.34.0.Final</kie.version>
 
 
-		<version.org.wildfly>19.0.1.Final</version.org.wildfly>
-		<version.wildfly-jsf>19.0.0.Final</version.wildfly-jsf>
-		<version.wildfly-dist>19.0.0.Final</version.wildfly-dist>
+		<version.org.wildfly>19.1.0.Final</version.org.wildfly>
+		<version.wildfly-jsf>19.1.0.Final</version.wildfly-jsf>
+		<version.wildfly-dist>19.1.0.Final</version.wildfly-dist>
 		<version.keycloak>9.0.3</version.keycloak>
 		<version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
