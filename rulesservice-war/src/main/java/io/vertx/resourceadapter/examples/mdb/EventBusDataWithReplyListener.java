@@ -108,6 +108,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
         log.info("********* THIS IS WILDFLY DATA WITH REPLY LISTENER!!!! *******************");
 
 		long starttime = System.currentTimeMillis();
+		Boolean sendEventMessage = false;
 		
 		GennyToken userToken = null;
 		final JsonObject payload = new JsonObject(message.body().toString());
@@ -133,10 +134,6 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		String deviceCode = "UNKNOWN";
 		String deviceType = "UNKNOWN";
 		String deviceVersion = "UNKNOWN";
-		String deviceLastUpdate = "";
-		
-		
-		
 
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 
@@ -227,6 +224,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		if ((normalAnswers != null)&&(!normalAnswers.isEmpty())) {
 			/* normalAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_DEVICE_CODE",deviceCode));*/
 			dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
+			sendEventMessage = true;
 		} else {
 			// Only supply device code
 			Answer[] defaultAnswerArray = new Answer[1];
@@ -353,6 +351,10 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			log.info("Time to run everything                  = "+(endtime-starttime)+"ms");
 			
 			log.info("App api call completed for " + userToken.getUserCode()+"\n");
+			if (sendEventMessage) {
+				String updatedCodes = String.join(",", updatedCodesList);
+				VertxUtils.sendEvent("JOURNAL_ADD",userToken.getUserCode(),updatedCodes);
+			}
 		}
 	}
 
