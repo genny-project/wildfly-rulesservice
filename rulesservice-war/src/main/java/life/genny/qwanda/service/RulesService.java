@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.Logger;
 
 import org.kie.api.KieBase;
@@ -59,7 +60,7 @@ import life.genny.qwanda.Answer;
 import life.genny.qwanda.entity.User;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
-
+import life.genny.qwandautils.QwandaUtils;
 import life.genny.utils.RulesUtils;
 import life.genny.utils.VertxUtils;
 
@@ -105,9 +106,16 @@ public class RulesService {
 		Boolean rulesNeedInitialising = RulesLoader.loadRules(GennySettings.rulesDir);
 
 		
-		if ((rulesNeedInitialising) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {
+		if ((rulesNeedInitialising) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {			
 			log.info("Rulesservice triggering rules");
 			(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
+			
+			// Ok, now get a list of all frames that did not fire..
+			
+			
+			
+			
+			
 		} else {
 			log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
 		}
