@@ -102,10 +102,10 @@ public class RulesService {
 		// Load in Rules
 		RulesLoader.init();
 		log.info("Loading Rules");
-		Boolean noChangeInRules = RulesLoader.loadRules(GennySettings.rulesDir);
+		Boolean rulesNeedInitialising = RulesLoader.loadRules(GennySettings.rulesDir);
 
 		
-		if ((!noChangeInRules) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {
+		if ((rulesNeedInitialising) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {
 			log.info("Rulesservice triggering rules");
 			(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
 		} else {
