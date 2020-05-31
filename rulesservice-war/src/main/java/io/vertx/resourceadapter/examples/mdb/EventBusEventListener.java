@@ -6,7 +6,10 @@ import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.message.*;
+import life.genny.qwanda.service.TableService;
+import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
+import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.VertxUtils;
 import org.apache.logging.log4j.Logger;
 import org.jboss.ejb3.annotation.ResourceAdapter;
@@ -36,7 +39,9 @@ public class EventBusEventListener implements VertxListener {
 	@Inject
 	RulesEngineBean rulesEngineBean;
 
-
+	@Inject
+	TableService tableService;
+	
  	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
   
@@ -99,7 +104,26 @@ public class EventBusEventListener implements VertxListener {
 		return;
 	}
 
-	if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().equals("QUE_SUBMIT"))) {
+	
+	if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().startsWith("QUE_TREE_ITEM_"))) {
+		String token =  payload.getString("token");
+		GennyToken userToken = new GennyToken(token);
+		JsonObject tokenObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM, "TOKEN" + userToken.getRealm().toUpperCase());
+		String sToken = tokenObj.getString("value");
+		GennyToken serviceToken = new GennyToken("PER_SERVICE", sToken);
+
+		if ((serviceToken == null) || ("DUMMY".equalsIgnoreCase(serviceToken.getToken()))) {
+			log.error("NO SERVICE TOKEN FOR " + userToken.getRealm() + " IN CACHE");
+			return;
+		}
+
+		BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
+		beUtils.setServiceToken(serviceToken);
+		QDataBaseEntityMessage retMsg = tableService.getData(eventMsg, beUtils);
+		if (retMsg == null) {
+			rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
+		}
+	} else 	if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().equals("QUE_SUBMIT"))) {
 		String token =  payload.getString("token");
 		GennyToken userToken = new GennyToken(token);
 			Answer dataAnswer = new Answer(userToken.getUserCode(),
