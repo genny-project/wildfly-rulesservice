@@ -103,13 +103,13 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 	@Override
 //	@Transactional
-  @Asynchronous
+	@Asynchronous
 	public <T> void onMessage(Message<T> message) {
-        log.info("********* THIS IS WILDFLY DATA WITH REPLY LISTENER!!!! *******************");
+		log.info("********* THIS IS WILDFLY DATA WITH REPLY LISTENER!!!! *******************");
 
 		long starttime = System.currentTimeMillis();
 		Boolean sendEventMessage = false;
-		
+
 		GennyToken userToken = null;
 		final JsonObject payload = new JsonObject(message.body().toString());
 		QDataAnswerMessage dataMsg = null;
@@ -119,18 +119,16 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 		userToken = new GennyToken("userToken", token);
 		log.info("");
-		log.info("Incoming App API Call for "+userToken.getUserCode());
-		
+		log.info("Incoming App API Call for " + userToken.getUserCode());
+
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
 		BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
 		beUtils.setServiceToken(serviceToken);
-		
-		
-		
+
 		// Extract the device code
 		LocalDateTime now = LocalDateTime.now();
-		
+
 		String deviceCode = "UNKNOWN";
 		String deviceType = "UNKNOWN";
 		String deviceVersion = "UNKNOWN";
@@ -140,41 +138,38 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		// Extract existing codes
 		Set<String> updatedCodesList = new HashSet<String>();
 		List<Answer> normalAnswers = new ArrayList<Answer>();
-		Map<String,BaseEntity> existingBEs = new ConcurrentHashMap<String,BaseEntity>();
+		Map<String, BaseEntity> existingBEs = new ConcurrentHashMap<String, BaseEntity>();
 		Boolean loadAll = false;
 		for (Answer ans : dataMsg.getItems()) {
 			if (ans != null) {
 				boolean newone = false;
 				if ("PRI_DEVICE_CODE".equals(ans.getAttributeCode())) {
 					deviceCode = ans.getValue();
-				}
-				else if ("PRI_DEVICE_TYPE".equals(ans.getAttributeCode())) {
-						deviceType = ans.getValue();
-					} 
-				else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
+				} else if ("PRI_DEVICE_TYPE".equals(ans.getAttributeCode())) {
+					deviceType = ans.getValue();
+				} else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
 					deviceVersion = ans.getValue();
-				} 	else	if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
-						if ("EMPTY".equals(ans.getValue())) {
-							loadAll = true;
-						}
-				}
-				else {
+				} else if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
+					if ("EMPTY".equals(ans.getValue())) {
+						loadAll = true;
+					}
+				} else {
 					// check if no change
 					BaseEntity be = existingBEs.get(ans.getTargetCode());
-					if (be!=null) {
+					if (be != null) {
 						String existingAnswer = be.getValueAsString(ans.getAttributeCode());
-						if (existingAnswer!=null) {
+						if (existingAnswer != null) {
 							if (!ans.getValue().equals(existingAnswer)) {
 								normalAnswers.add(ans);
 								newone = true;
 							} else {
 								if (ans.getTargetCode().startsWith("JNL_")) {
-										normalAnswers.add(
-												new Answer(userToken.getUserCode(), ans.getTargetCode(), "PRI_LAST_UPDATED", now));
-										normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
-												"PRI_LAST_CHANGED_BY", userToken.getUserCode()));
-										updatedCodesList.add(ans.getTargetCode());
-										newone = true;
+									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+											"PRI_LAST_UPDATED", now));
+									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+											"PRI_LAST_CHANGED_BY", userToken.getUserCode()));
+									updatedCodesList.add(ans.getTargetCode());
+									newone = true;
 								}
 
 							}
@@ -191,67 +186,68 @@ public class EventBusDataWithReplyListener implements VertxListener {
 				}
 			}
 		}
-		
-		String uniqueDeviceCode = "DEV_"+deviceCode.toUpperCase()+userToken.getString("sub").hashCode();
+
+		String uniqueDeviceCode = "DEV_" + deviceCode.toUpperCase() + userToken.getString("sub").hashCode();
 
 		BaseEntity device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 		List<Answer> deviceAnswers = new ArrayList<Answer>();
 
 		if ((device == null)) {
-			String deviceName = userToken.getString("given_name")+"'s "+deviceType+" Phone";
-				beUtils.create(uniqueDeviceCode, deviceName);
-			
-				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"LNK_USER",userToken.getUserCode()));
-				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode));
-				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_TYPE",deviceType));
-				deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_VERSION",deviceVersion));
-				log.info("New device detected -> created "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode()+"->uniqueCode:"+uniqueDeviceCode);
+			String deviceName = userToken.getString("given_name") + "'s " + deviceType + " Phone";
+			beUtils.create(uniqueDeviceCode, deviceName);
+
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "LNK_USER", userToken.getUserCode()));
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_TYPE", deviceType));
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_VERSION", deviceVersion));
+			log.info("New device detected -> created " + deviceType + ":" + deviceVersion + ":" + deviceCode
+					+ "  associated " + userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode);
 
 		}
-		if ((device == null)||loadAll) {
-			LocalDateTime veryearly = LocalDateTime.of(1970,01,01,0,0,0);
-			deviceAnswers.add(new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_LAST_UPDATED",veryearly));
+		if ((device == null) || loadAll) {
+			LocalDateTime veryearly = LocalDateTime.of(1970, 01, 01, 0, 0, 0);
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_LAST_UPDATED", veryearly));
 			beUtils.saveAnswers(deviceAnswers);
 
 		}
-		
-		
-		log.info("Device identified  "+deviceType+":"+deviceVersion+":"+deviceCode+"  associated "+userToken.getUserCode()+"->uniqueCode:"+uniqueDeviceCode);
 
-	
+		log.info("Device identified  " + deviceType + ":" + deviceVersion + ":" + deviceCode + "  associated "
+				+ userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode);
+
 		device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
-		
-		if ((normalAnswers != null)&&(!normalAnswers.isEmpty())) {
-			/* normalAnswers.add(new Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),"PRI_DEVICE_CODE",deviceCode));*/
+
+		if ((normalAnswers != null) && (!normalAnswers.isEmpty())) {
+			/*
+			 * normalAnswers.add(new
+			 * Answer("DEV_"+deviceCode.toUpperCase(),"DEV_"+deviceCode.toUpperCase(),
+			 * "PRI_DEVICE_CODE",deviceCode));
+			 */
 			dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
 			sendEventMessage = true;
 		} else {
 			// Only supply device code
 			Answer[] defaultAnswerArray = new Answer[1];
-			defaultAnswerArray[0] = new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode);
+			defaultAnswerArray[0] = new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode);
 			dataMsg.setItems(defaultAnswerArray);
 		}
-		
+
 		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
 
 		Map<String, Object> facts = new ConcurrentHashMap<String, Object>();
 		facts.put("serviceToken", serviceToken);
 		facts.put("userToken", userToken);
 		facts.put("data", dataMsg);
-		facts.put("device", new Answer(uniqueDeviceCode,uniqueDeviceCode,"PRI_DEVICE_CODE",deviceCode));
+		facts.put("device", new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
 		RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
 
-		
 		log.info("Executing Rules ");
 		long startrulestime = System.currentTimeMillis();
-		if (dataMsg.getItems().length > 1) {	 // not just the device used for sync	
+		if (dataMsg.getItems().length > 1) { // not just the device used for sync
 			ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
-				"DataWithReply:DataProcessing");
+					"DataWithReply:DataProcessing");
 		}
 		long midrulestime = System.currentTimeMillis();
-		
-		
-		
+
 		// Now fetch any synced data
 		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
@@ -272,18 +268,21 @@ public class EventBusDataWithReplyListener implements VertxListener {
 				Integer unapproved = 0;
 				Integer approved = 0;
 				Integer rejected = 0;
+				Integer interns = 0;
 
-				List<QDataBaseEntityMessage> distinctMessages = new ArrayList<QDataBaseEntityMessage>();
+				Set<QDataBaseEntityMessage> distinctMessages = new HashSet<QDataBaseEntityMessage>();
 
 				for (QDataBaseEntityMessage mg : msg.getMessages()) {
-					if (mg.getAliasCode() != null) {
-						distinctMessages.add(mg);
-						continue;
-					}
-					List<BaseEntity> normalBes = new ArrayList<BaseEntity>();
-					
+
 					for (BaseEntity be : mg.getItems()) {
-						if (be.getCode().startsWith("JNL_")) {
+						if (be.getCode().startsWith("PER_")) {
+							Optional<Boolean> optInternCode = be.getValue("PRI_IS_INTERN");
+							if (optInternCode.isPresent()) {
+								if (optInternCode.get()) {
+									interns++;
+								}
+							}
+						} else if (be.getCode().startsWith("JNL_")) {
 							String status = be.getValue("PRI_STATUS", "UNAPPROVED");
 							if ("UNAPPROVED".equals(status)) {
 								unapproved++;
@@ -292,30 +291,27 @@ public class EventBusDataWithReplyListener implements VertxListener {
 							} else {
 								rejected++;
 							}
-
-								try {
-									be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
-								} catch (BadDataException e) {
-									// TODO Auto-generated catch block
-									// e.printStackTrace();
-								}
-								log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :"
-										+ mg.getAliasCode());
-								normalBes.add(be);
-						
-
 						}
+						try {
+							be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
+							be.setLinks(null);
+							be.setQuestions(null);
+							mg.getItems()[0] = be;
+						} catch (BadDataException e) {
+							// TODO Auto-generated catch block
+							// e.printStackTrace();
+						}
+						log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :" + mg.getAliasCode());
+
 					}
-					if (!normalBes.isEmpty()) {
-						// update the msg
-						mg.setItems(normalBes.toArray(new BaseEntity[0]));
+					if ((mg.getItems()!=null)&& (mg.getItems()[0]!=null)) {
 						distinctMessages.add(mg);
 					}
 				}
 
 				msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
 
-				log.info("unapproved = " + unapproved + " , approved = " + approved + " rejected = " + rejected,
+				log.info("interns = "+interns+", unapproved = " + unapproved + " , approved = " + approved + " rejected = " + rejected,
 						message);
 
 				retPayload = JsonUtils.toJson(msg);
@@ -338,22 +334,21 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		}
 
 		message.reply(ret);
-		if (userToken != null)
-		{
+		if (userToken != null) {
 			// now update the latest sync time
-			beUtils.saveAnswer(new Answer(userToken.getUserCode(),uniqueDeviceCode,"PRI_LAST_UPDATED",now));
+			beUtils.saveAnswer(new Answer(userToken.getUserCode(), uniqueDeviceCode, "PRI_LAST_UPDATED", now));
 
 			long endtime = System.currentTimeMillis();
-			log.info("Time to process incoming Data for Rules = "+(startrulestime-starttime)+"ms");
-			log.info("Time to run  Data Processing Rules      = "+(midrulestime-startrulestime)+"ms");
-			log.info("Time to run  Stateless Rules            = "+(endrulestime-midrulestime)+"ms");
-			log.info("Time to run  Post Processing            = "+(endtime-startrulestime)+"ms");
-			log.info("Time to run everything                  = "+(endtime-starttime)+"ms");
-			
-			log.info("App api call completed for " + userToken.getUserCode()+"\n");
+			log.info("Time to process incoming Data for Rules = " + (startrulestime - starttime) + "ms");
+			log.info("Time to run  Data Processing Rules      = " + (midrulestime - startrulestime) + "ms");
+			log.info("Time to run  Stateless Rules            = " + (endrulestime - midrulestime) + "ms");
+			log.info("Time to run  Post Processing            = " + (endtime - startrulestime) + "ms");
+			log.info("Time to run everything                  = " + (endtime - starttime) + "ms");
+
+			log.info("App api call completed for " + userToken.getUserCode() + "\n");
 			if (sendEventMessage) {
 				String updatedCodes = String.join(",", updatedCodesList);
-				VertxUtils.sendEvent("JOURNAL_ADD",userToken.getUserCode(),updatedCodes);
+				VertxUtils.sendEvent("JOURNAL_ADD", userToken.getUserCode(), updatedCodes);
 			}
 		}
 	}
