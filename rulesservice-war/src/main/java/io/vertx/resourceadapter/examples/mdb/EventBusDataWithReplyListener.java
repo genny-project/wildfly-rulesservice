@@ -296,6 +296,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 							be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
 							be.setLinks(null);
 							be.setQuestions(null);
+							
+							mg.setItems(new BaseEntity[1]);
 							mg.getItems()[0] = be;
 						} catch (BadDataException e) {
 							// TODO Auto-generated catch block
@@ -304,7 +306,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :" + mg.getAliasCode());
 
 					}
-					if ((mg.getItems()!=null)&& (mg.getItems()[0]!=null)) {
+					if ((mg.getItems()!=null)&& (mg.getItems().length>0)) {
+						
 						distinctMessages.add(mg);
 					}
 				}
