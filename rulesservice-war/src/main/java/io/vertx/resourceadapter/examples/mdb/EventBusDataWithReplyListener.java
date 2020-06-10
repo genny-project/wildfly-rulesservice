@@ -1,5 +1,8 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,65 +12,36 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
-import java.lang.invoke.MethodHandles;
-import java.time.LocalDateTime;
-
 import javax.ejb.ActivationConfigProperty;
+import javax.ejb.Asynchronous;
 import javax.ejb.MessageDriven;
-import javax.naming.NamingException;
-import javax.resource.ResourceException;
+import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
-import io.vavr.Tuple;
+
 import io.vavr.Tuple2;
-import io.vavr.Tuple3;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.inflow.VertxListener;
-import io.vertx.rxjava.core.Vertx;
+import life.genny.jbpm.customworkitemhandlers.RuleFlowGroupWorkItemHandler;
+import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
-import life.genny.qwanda.GPS;
 import life.genny.qwanda.attribute.Attribute;
-import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
-import life.genny.qwanda.entity.SearchEntity;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.exception.BadDataException;
+import life.genny.qwanda.message.MessageData;
 import life.genny.qwanda.message.QBulkMessage;
 import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.message.QDataAnswerMessage;
 import life.genny.qwanda.message.QDataBaseEntityMessage;
-import life.genny.qwanda.message.QDataGPSMessage;
-import life.genny.qwanda.message.QDataPaymentsCallbackMessage;
-import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
-import life.genny.qwanda.message.QEventBtnClickMessage;
-import life.genny.qwanda.message.QEventLinkChangeMessage;
 import life.genny.qwanda.message.QEventMessage;
-import life.genny.qwanda.message.QMessage;
-import life.genny.qwanda.rule.Rule;
-import life.genny.qwanda.service.RulesService;
-import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
-import life.genny.qwandautils.KeycloakUtils;
+import life.genny.qwandautils.QwandaUtils;
 import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.RulesUtils;
-import life.genny.models.GennyToken;
-
-import life.genny.eventbus.EventBusInterface;
-import life.genny.jbpm.customworkitemhandlers.RuleFlowGroupWorkItemHandler;
-import life.genny.rules.RulesLoader;
-import javax.transaction.Transactional;
-import javax.ejb.Asynchronous;
-import org.jboss.ejb3.annotation.ResourceAdapter;
-import life.genny.qwanda.Answer;
-import life.genny.qwanda.Answers;
-import life.genny.qwanda.TaskAsk;
-import life.genny.qwanda.attribute.EntityAttribute;
-import life.genny.qwanda.entity.BaseEntity;
 import life.genny.utils.VertxUtils;
 
 /**
@@ -155,29 +129,32 @@ public class EventBusDataWithReplyListener implements VertxListener {
 					}
 				} else {
 					// check if no change
-					BaseEntity be = existingBEs.get(ans.getTargetCode());
-					if (be != null) {
-						String existingAnswer = be.getValueAsString(ans.getAttributeCode());
-						if (existingAnswer != null) {
-							if (!ans.getValue().equals(existingAnswer)) {
-								normalAnswers.add(ans);
-								newone = true;
-							} else {
-								if (ans.getTargetCode().startsWith("JNL_")) {
-									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
-											"PRI_LAST_UPDATED", now));
-									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
-											"PRI_LAST_CHANGED_BY", userToken.getUserCode()));
-									updatedCodesList.add(ans.getTargetCode());
-									newone = true;
-								}
-
-							}
-						}
-					} else {
+//					BaseEntity be = existingBEs.get(ans.getTargetCode());
+//					if (be != null) {
+//						String existingAnswer = be.getValueAsString(ans.getAttributeCode());
+//						if (existingAnswer != null) {
+//							if (!ans.getValue().equals(existingAnswer)) {
+//								normalAnswers.add(ans);
+//								newone = true;
+//							} else {
+//								if (ans.getTargetCode().startsWith("JNL_")) {
+//									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+//											"PRI_LAST_UPDATED", now));
+//									normalAnswers.add(new Answer(userToken.getUserCode(), ans.getTargetCode(),
+//											"PRI_LAST_CHANGED_BY", userToken.getUserCode()));
+//									updatedCodesList.add(ans.getTargetCode());
+//									newone = true;
+//								}
+//
+//							}
+//						}
+//					} else {
 						normalAnswers.add(ans);
+						if (ans.getTargetCode().startsWith("JNL_")) {
+							//updatedCodesList.add(ans.getTargetCode());
+						}
 						newone = true;
-					}
+//					}
 				}
 				if (newone) {
 					log.info("INCOMING ANSWER: " + ans.getSourceCode() + ":" + ans.getTargetCode() + ":"
@@ -231,7 +208,6 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			dataMsg.setItems(defaultAnswerArray);
 		}
 
-		List<Tuple2<String, Object>> globals = new ArrayList<Tuple2<String, Object>>();
 
 		Map<String, Object> facts = new ConcurrentHashMap<String, Object>();
 		facts.put("serviceToken", serviceToken);
@@ -240,14 +216,14 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		facts.put("device", new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
 		RuleFlowGroupWorkItemHandler ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
 
-		log.info("Executing Rules ");
+		log.info("Executing Dataprocessing Rules ");
 		long startrulestime = System.currentTimeMillis();
 		if (dataMsg.getItems().length > 1) { // not just the device used for sync
 			ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
 					"DataWithReply:DataProcessing");
 		}
 		long midrulestime = System.currentTimeMillis();
-
+		log.info("Fetch Stateless Data ");
 		// Now fetch any synced data
 		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
@@ -263,7 +239,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			if (obj instanceof QBulkMessage) {
 				QBulkMessage msg = (QBulkMessage) results.get("payload");
 
-				// How many journals?
+				// How many journals?nginx
 
 				Integer unapproved = 0;
 				Integer approved = 0;
@@ -271,9 +247,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 				Integer interns = 0;
 
 				Set<QDataBaseEntityMessage> distinctMessages = new HashSet<QDataBaseEntityMessage>();
-
+			
 				for (QDataBaseEntityMessage mg : msg.getMessages()) {
-
+					Set<BaseEntity> beSet = new HashSet<BaseEntity>();
 					for (BaseEntity be : mg.getItems()) {
 						if (be.getCode().startsWith("PER_")) {
 							Optional<Boolean> optInternCode = be.getValue("PRI_IS_INTERN");
@@ -282,6 +258,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 									interns++;
 								}
 							}
+			
 						} else if (be.getCode().startsWith("JNL_")) {
 							String status = be.getValue("PRI_STATUS", "UNAPPROVED");
 							if ("UNAPPROVED".equals(status)) {
@@ -291,14 +268,14 @@ public class EventBusDataWithReplyListener implements VertxListener {
 							} else {
 								rejected++;
 							}
+							updatedCodesList.add(be.getCode());
 						}
 						try {
 							be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
 							be.setLinks(null);
 							be.setQuestions(null);
-							
-							mg.setItems(new BaseEntity[1]);
-							mg.getItems()[0] = be;
+														
+							beSet.add(be);
 						} catch (BadDataException e) {
 							// TODO Auto-generated catch block
 							// e.printStackTrace();
@@ -306,16 +283,17 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						log.info("RETURN " + be.getCode() + ":" + be.getName() + "  - alias :" + mg.getAliasCode());
 
 					}
-					if ((mg.getItems()!=null)&& (mg.getItems().length>0)) {
-						
+					mg.setItems(beSet.toArray(new BaseEntity[0]));
+					if ((mg.getItems() != null) && (mg.getItems().length > 0)) {
+
 						distinctMessages.add(mg);
 					}
 				}
 
 				msg.setMessages(distinctMessages.toArray(new QDataBaseEntityMessage[0]));
 
-				log.info("interns = "+interns+", unapproved = " + unapproved + " , approved = " + approved + " rejected = " + rejected,
-						message);
+				log.info("interns = " + interns + ", unapproved = " + unapproved + " , approved = " + approved
+						+ " rejected = " + rejected, message);
 
 				retPayload = JsonUtils.toJson(msg);
 			} else if (obj instanceof QDataBaseEntityMessage) {
@@ -351,9 +329,133 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			log.info("App api call completed for " + userToken.getUserCode() + "\n");
 			if (sendEventMessage) {
 				String updatedCodes = String.join(",", updatedCodesList);
-				VertxUtils.sendEvent("JOURNAL_ADD", userToken.getUserCode(), updatedCodes);
+				facts = new ConcurrentHashMap<String, Object>();
+				facts.put("serviceToken", serviceToken);
+				facts.put("userToken", userToken);
+				QEventMessage msg = new QEventMessage("UPDATE", "JOURNAL_ADD");
+				MessageData data = new MessageData("JOURNAL_ADD");
+				data.setParentCode(userToken.getUserCode());
+				data.setTargetCode(updatedCodes);
+				msg.setData(data);
+				msg.setToken(serviceToken.getToken());
+
+//				facts.put("data", msg);
+//				facts.put("device", new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
+//				ruleFlowGroupHandler = new RuleFlowGroupWorkItemHandler();
+//				ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "JournalProcessing",
+//						"DataWithReply:DataProcessing");
+				// VertxUtils.sendEvent("JOURNAL_ADD", userToken.getUserCode(),
+				// updatedCodes,userToken);
+				sendTheDamnedSlackMessage(userToken, serviceToken, msg);
 			}
 		}
 	}
 
+	public void sendTheDamnedSlackMessage(GennyToken userToken, GennyToken serviceToken, QEventMessage message) {
+		BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
+		beUtils.setServiceToken(serviceToken);
+
+		String userWhoUpdatedJournals = message.getData().getParentCode();
+		String listOfChangedJournals = message.getData().getTargetCode();
+		String webhookURL = null;
+		String studentName = "Unknown";
+		String hostCompany = "Unknown";
+		String educationProvider = "Unknown";
+		LocalDateTime updateTime = null;
+
+		List<String> changedJournals = new ArrayList<String>(); /*
+																 * Stream.of(listOfChangedJournals.split(",",
+																 * -1)).collect(Collectors.toList());
+																 */
+		String[] journalArray = listOfChangedJournals.split(",", -1);
+		for (String journalCode : journalArray) {
+			changedJournals.add(journalCode);
+		}
+
+		List<BaseEntity> journals = new ArrayList<BaseEntity>();
+		for (String journalCode : changedJournals) {
+			BaseEntity journal = beUtils.getBaseEntityByCode(journalCode);
+			journals.add(journal);
+
+		}
+
+		/* studentName = user.getValue("PRI_LASTNAME",true); */
+		/* updateTime = journal.getValue("PRI_INTERN_LAST_UPDATE",true); */
+
+		Set<BaseEntity> internSet = new HashSet<BaseEntity>();
+		Map<String, BaseEntity> supervisorMap = new HashMap<String, BaseEntity>();
+
+		for (BaseEntity journal : journals) {
+			if (journal != null) {
+				String journalName = journal.getName();
+				String status = journal.getValue("PRI_STATUS", "NO STATUS");
+
+				Optional<String> optHostCompanySupervisorCode = journal.getValue("LNK_INTERN_SUPERVISOR");
+//				if (optHostCompanySupervisorCode.isPresent()) {
+//					String supervisorCode = optHostCompanySupervisorCode.get();
+//					supervisorCode = supervisorCode.substring(2);
+//					supervisorCode = supervisorCode.substring(0, (supervisorCode.length() - 2));
+//					BaseEntity supervisor = beUtils.getBaseEntityByCode(supervisorCode);
+//				}
+
+				Optional<String> optInternCode = journal.getValue("LNK_INTERN");
+				if (optInternCode.isPresent()) {
+					String internCode = optInternCode.get();
+					internCode = internCode.substring(2);
+					internCode = internCode.substring(0, (internCode.length() - 2));
+					BaseEntity intern = beUtils.getBaseEntityByCode(internCode);
+					studentName = intern.getName();
+					Optional<String> optEduCode = intern.getValue("LNK_EDU_PROVIDER");
+					if (optEduCode.isPresent()) {
+						String eduCode = optEduCode.get();
+						eduCode = eduCode.substring(2);
+						eduCode = eduCode.substring(0, (eduCode.length() - 2));
+						BaseEntity edu = beUtils.getBaseEntityByCode(eduCode);
+						educationProvider = edu.getName();
+					}
+					hostCompany = intern.getValue("PRI_ASSOC_HOST_COMPANY", "NOT SET");
+				}
+
+				BaseEntity agent = beUtils.getBaseEntityByCode("CPY_OUTCOME_LIFE");
+				webhookURL = agent.getValueAsString("PRI_SLACK");
+
+				/* Sending Slack Notification */
+
+				updateTime = LocalDateTime.now();
+
+				JsonObject msgpayload = new JsonObject("{\n" + "   \"blocks\":[\n" + "      {\n"
+						+ "         \"type\":\"section\",\n" + "         \"text\":{\n"
+						+ "            \"type\":\"mrkdwn\",\n" + "            \"text\":\"New Journal (" + status
+						+ ") -> " + journalName + " :memo:\"\n" + "         }\n" + "      },\n" + "      {\n"
+						+ "         \"type\":\"divider\"\n" + "      },\n" + "      {\n"
+						+ "         \"type\":\"section\",\n" + "         \"fields\":[\n" + "            {\n"
+						+ "               \"type\":\"mrkdwn\",\n" + "               \"text\":\"*Student:*\\n"
+						+ studentName + "\"\n" + "            },\n" + "            {\n"
+						+ "               \"type\":\"mrkdwn\",\n" + "               \"text\":\"*Time:*\\n" + updateTime
+						+ "\"\n" + "            },\n" + "            {\n" + "               \"type\":\"mrkdwn\",\n"
+						+ "               \"text\":\"*Host Company:*\\n" + hostCompany + "\"\n" + "            },\n"
+						+ "            {\n" + "               \"type\":\"mrkdwn\",\n"
+						+ "               \"text\":\"*Education Provider:*\\n" + educationProvider + "\"\n"
+						+ "            }\n" + "         ]\n" + "      },\n" + "      {\n"
+						+ "         \"type\":\"divider\"\n" + "      },\n" + "      {\n"
+						+ "         \"type\":\"context\",\n" + "         \"elements\":[\n" + "            {\n"
+						+ "               \"type\":\"mrkdwn\",\n"
+						+ "               \"text\":\"*Last updated:* 9:15 AM May 22, 2020\"\n" + "            }\n"
+						+ "         ]\n" + "      }\n" + "   ]\n" + "}");
+
+				System.out.println("Send Slack message for "+journalName);
+				
+
+	
+						try {
+							QwandaUtils.apiPostEntity(webhookURL, msgpayload.toString(), serviceToken.getToken());
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			}
+		}
+
+
+	}
 }
