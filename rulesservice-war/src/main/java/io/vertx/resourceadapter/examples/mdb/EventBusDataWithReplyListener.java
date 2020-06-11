@@ -108,6 +108,14 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		String deviceVersion = "UNKNOWN";
 
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
+		
+		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
+		Optional<Boolean> optUserCode = user.getValue("PRI_IS_INTERN");
+		if (optUserCode.isPresent()) {
+			if (optUserCode.get()) {
+				sendEventMessage = true;
+			}
+		}
 
 		// Extract existing codes
 		Set<String> updatedCodesList = new HashSet<String>();
@@ -200,7 +208,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			 * "PRI_DEVICE_CODE",deviceCode));
 			 */
 			dataMsg.setItems(normalAnswers.toArray(new Answer[0]));
-			sendEventMessage = true;
+			
 		} else {
 			// Only supply device code
 			Answer[] defaultAnswerArray = new Answer[1];
