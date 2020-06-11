@@ -53,13 +53,14 @@ public class RulesEngineBean {
     private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
 
     private RulesLoader getRulesLoader(String token) {
-        String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
-        if (rulesLoader == null) {
-            rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
-        }
-        return rulesLoader;
+//        String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
+//        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
+//        if (rulesLoader == null) {
+//            rulesLoader = new RulesLoader();
+//            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
+//        }
+//        return rulesLoader;
+        return new RulesLoader();
     }
 
     //@Transactional
