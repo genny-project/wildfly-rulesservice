@@ -110,7 +110,7 @@
       
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
 		<property name="hibernate.order_updates" value="true"/>
-		<property name="hibernate.connection.isolation" value="2"/>
+		<property name="hibernate.connection.isolation" value="8"/>
 		
 
 		</properties>
