@@ -136,6 +136,12 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						loadAll = true;
 					}
 				} else {
+					if (ans.getTargetCode().startsWith("JNL_")) {
+						BaseEntity existingJnl = beUtils.getBaseEntityByCode(ans.getTargetCode());
+						if (existingJnl == null) {
+							updatedCodesList.add(ans.getTargetCode());	
+						}
+					}
 					// check if no change
 //					BaseEntity be = existingBEs.get(ans.getTargetCode());
 //					if (be != null) {
@@ -276,7 +282,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 							} else {
 								rejected++;
 							}
-							updatedCodesList.add(be.getCode());
+							
 						}
 						try {
 							be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
