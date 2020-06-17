@@ -241,6 +241,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		
 		// save all answers
 		if ((results == null) || results.get("answersToSave") == null) {
+			log.info("Saving all the answers for "+userToken.getUserCode());
 			Answers answers = (Answers)results.get("answersToSave");
 			beUtils.saveAnswers(answers.getAnswers());
 		} 
