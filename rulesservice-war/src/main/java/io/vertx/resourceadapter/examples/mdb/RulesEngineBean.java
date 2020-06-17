@@ -3,6 +3,8 @@ package io.vertx.resourceadapter.examples.mdb;
 
 
 import javax.enterprise.context.RequestScoped;
+
+import io.vavr.Tuple2;
 import life.genny.qwandautils.KeycloakUtils;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +42,10 @@ public class RulesEngineBean {
     //@Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void processMsg(final Object msg, final String token) {
+        Tuple2<Object, String> tuple2 = new Tuple2<>(msg, token);
         RulesLoader rulesLoader = getRulesLoader(token);
-        rulesLoader.processMsg(msg, token);
+        rulesLoader.addNewItem(tuple2);
+        rulesLoader.processMsgs();
+//        rulesLoader.processMsg(msg, token);
     }
 }
