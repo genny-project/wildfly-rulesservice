@@ -262,6 +262,15 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 				Set<QDataBaseEntityMessage> distinctMessages = new HashSet<QDataBaseEntityMessage>();
 			
+				// Check if device requires all sent BEs to have sync attribute set to false to oenable reeseend
+				Boolean resend = false;
+				try {
+					resend = device.getValue("PRI_RESEND",false);
+				} catch (Exception e1) {
+
+				}
+				
+				
 				for (QDataBaseEntityMessage mg : msg.getMessages()) {
 					Set<BaseEntity> beSet = new HashSet<BaseEntity>();
 					for (BaseEntity be : mg.getItems()) {
@@ -285,7 +294,11 @@ public class EventBusDataWithReplyListener implements VertxListener {
 							
 						}
 						try {
-							be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
+							if (resend) {
+								be.setValue(attributeSync, "FALSE"); // tell the device to send this again
+							} else {
+								be.setValue(attributeSync, "TRUE"); // tell the device not to send this again
+							}
 							be.setLinks(null);
 							be.setQuestions(null);
 														
@@ -332,7 +345,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		if (userToken != null) {
 			// now update the latest sync time
 			beUtils.saveAnswer(new Answer(userToken.getUserCode(), uniqueDeviceCode, "PRI_LAST_UPDATED", now));
-
+			beUtils.saveAnswer(new Answer(userToken.getUserCode(), uniqueDeviceCode, "PRI_RESEND", false));
 			long endtime = System.currentTimeMillis();
 			log.info("Time to process incoming Data for Rules = " + (startrulestime - starttime) + "ms");
 			log.info("Time to run  Data Processing Rules      = " + (midrulestime - startrulestime) + "ms");
