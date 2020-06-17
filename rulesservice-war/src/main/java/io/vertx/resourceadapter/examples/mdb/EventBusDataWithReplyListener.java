@@ -28,6 +28,7 @@ import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.jbpm.customworkitemhandlers.RuleFlowGroupWorkItemHandler;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
+import life.genny.qwanda.Answers;
 import life.genny.qwanda.attribute.Attribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
@@ -232,14 +233,21 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 		log.info("Executing Dataprocessing Rules ");
 		long startrulestime = System.currentTimeMillis();
+		Map<String,Object> results = null;
 		if (dataMsg.getItems().length > 1) { // not just the device used for sync
-			ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
+			results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "DataProcessing",
 					"DataWithReply:DataProcessing");
 		}
+		
+		// save all answers
+		if ((results == null) || results.get("answersToSave") == null) {
+			Answers answers = (Answers)results.get("answersToSave");
+			beUtils.saveAnswers(answers.getAnswers());
+		} 
 		long midrulestime = System.currentTimeMillis();
 		log.info("Fetch Stateless Data ");
 		// Now fetch any synced data
-		Map<String, Object> results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
+		results = ruleFlowGroupHandler.executeRules(serviceToken, userToken, facts, "Stateless",
 				"DataWithReply:Stateless");
 		long endrulestime = System.currentTimeMillis();
 		JsonObject ret = new JsonObject();
