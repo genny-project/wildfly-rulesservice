@@ -44,8 +44,12 @@ public class RulesEngineBean {
     public void processMsg(final Object msg, final String token) {
         Tuple2<Object, String> tuple2 = new Tuple2<>(msg, token);
         RulesLoader rulesLoader = getRulesLoader(token);
-        rulesLoader.addNewItem(tuple2);
-        rulesLoader.processMsgs();
+        try {
+            // RequestProcessor in RulesLoader will get item from queue and process it
+            rulesLoader.addNewItem(tuple2);
+        } catch (InterruptedException ie) {
+            log.error("InterruptedException occurred:" + ie.getMessage());
+        }
 //        rulesLoader.processMsg(msg, token);
     }
 }
