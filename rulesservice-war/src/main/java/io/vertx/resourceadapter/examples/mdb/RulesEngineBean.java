@@ -4,9 +4,10 @@ package io.vertx.resourceadapter.examples.mdb;
 
 import javax.enterprise.context.RequestScoped;
 
-import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import life.genny.qwandautils.KeycloakUtils;
 import java.lang.invoke.MethodHandles;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.Logger;
@@ -42,11 +43,12 @@ public class RulesEngineBean {
     //@Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void processMsg(final Object msg, final String token) {
-        Tuple2<Object, String> tuple2 = new Tuple2<>(msg, token);
+        UUID uuid = UUID.randomUUID();
+        Tuple3<Object, String, UUID> tuple3 = new Tuple3<>(msg, token, uuid);
         RulesLoader rulesLoader = getRulesLoader(token);
         try {
             // RequestProcessor in RulesLoader will get item from queue and process it
-            rulesLoader.addNewItem(tuple2);
+            rulesLoader.addNewItem(tuple3);
         } catch (InterruptedException ie) {
             log.error("InterruptedException occurred:" + ie.getMessage());
         }
