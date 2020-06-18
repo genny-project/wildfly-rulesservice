@@ -47,7 +47,11 @@ public class RulesEngineBean {
         Tuple3<Object, String, UUID> tuple3 = new Tuple3<>(msg, token, uuid);
         RulesLoader rulesLoader = getRulesLoader(token);
         rulesLoader.addNewItem(tuple3);
-        rulesLoader.processMsgs();
+        try {
+            rulesLoader.processMsgs();
+        } catch (Exception ex) {
+           log.error("Exception occurred:" + ex.getMessage() + ", UUID:" + uuid);
+        }
 //        rulesLoader.processMsg(msg, token);
 
     }
