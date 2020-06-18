@@ -46,12 +46,9 @@ public class RulesEngineBean {
         UUID uuid = UUID.randomUUID();
         Tuple3<Object, String, UUID> tuple3 = new Tuple3<>(msg, token, uuid);
         RulesLoader rulesLoader = getRulesLoader(token);
-        try {
-            // RequestProcessor in RulesLoader will get item from queue and process it
-            rulesLoader.addNewItem(tuple3);
-        } catch (InterruptedException ie) {
-            log.error("InterruptedException occurred:" + ie.getMessage());
-        }
+        rulesLoader.addNewItem(tuple3);
+        rulesLoader.processMsgs();
 //        rulesLoader.processMsg(msg, token);
+
     }
 }
