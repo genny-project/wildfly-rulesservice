@@ -13,6 +13,7 @@ import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
+import life.genny.rules.RulesLoaderFactory;
 import org.apache.logging.log4j.Logger;
 
 import io.vavr.Tuple;
@@ -67,9 +68,6 @@ public class EventBusStatefulMessageListener implements VertxListener {
         roles = TokenIntrospection.setRoles("user");
     }
 
-    private static ConcurrentHashMap<String, RulesLoader> tokeRulesLoaderMapping = new ConcurrentHashMap<>();
-
-
     /**
      * Default constructor.
      */
@@ -79,12 +77,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
-        if (rulesLoader == null) {
-            rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
-        }
-        return rulesLoader;
+        return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
     @Override
@@ -117,7 +110,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
                     log.error("No class def found [" + payload.toString() + "]");
                 }
             }
-            getRulesLoader(token).processMsg(eventMsg, token);
+            getRulesLoader(token).addNewItem(eventMsg, token);
         }
     }
 

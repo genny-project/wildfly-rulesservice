@@ -10,6 +10,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import life.genny.rules.RulesLoaderFactory;
 import org.apache.logging.log4j.Logger;
 import life.genny.rules.RulesLoader;
 import javax.ejb.Stateful;
@@ -32,22 +34,15 @@ public class RulesEngineBean {
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
-        if (rulesLoader == null) {
-            rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
-        }
-        return rulesLoader;
+        return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
     //@Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void processMsg(final Object msg, final String token) {
-        UUID uuid = UUID.randomUUID();
-        Tuple3<Object, String, UUID> tuple3 = new Tuple3<>(msg, token, uuid);
         RulesLoader rulesLoader = getRulesLoader(token);
         // Add item to queue, process request thread in RulesLoader will pick and process
-        rulesLoader.addNewItem(tuple3);
+        rulesLoader.addNewItem(msg, token);
 //        rulesLoader.processMsg(msg, token);
 
     }
