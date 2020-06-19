@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
@@ -66,7 +67,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
         roles = TokenIntrospection.setRoles("user");
     }
 
-    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
+    private static ConcurrentHashMap<String, RulesLoader> tokeRulesLoaderMapping = new ConcurrentHashMap<>();
 
 
     /**

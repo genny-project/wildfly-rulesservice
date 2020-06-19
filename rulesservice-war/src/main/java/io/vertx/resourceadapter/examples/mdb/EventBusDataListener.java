@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
@@ -80,7 +81,7 @@ public class EventBusDataListener implements VertxListener {
     private static Map<String, User> usersSession = new HashMap<String, User>();
 
     static String token;
-    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
+    private static ConcurrentHashMap<String, RulesLoader> tokeRulesLoaderMapping = new ConcurrentHashMap<>();
 
 
     /**
