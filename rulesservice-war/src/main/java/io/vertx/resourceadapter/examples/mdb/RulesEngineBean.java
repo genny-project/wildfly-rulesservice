@@ -46,12 +46,8 @@ public class RulesEngineBean {
         UUID uuid = UUID.randomUUID();
         Tuple3<Object, String, UUID> tuple3 = new Tuple3<>(msg, token, uuid);
         RulesLoader rulesLoader = getRulesLoader(token);
+        // Add item to queue, process request thread in RulesLoader will pick and process
         rulesLoader.addNewItem(tuple3);
-        try {
-            rulesLoader.processMsgs();
-        } catch (Exception ex) {
-           log.error("Exception occurred:" + ex.getMessage() + ", UUID:" + uuid);
-        }
 //        rulesLoader.processMsg(msg, token);
 
     }
