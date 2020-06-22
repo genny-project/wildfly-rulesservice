@@ -8,11 +8,13 @@ import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
+import life.genny.rules.RulesLoaderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -80,8 +82,6 @@ public class EventBusDataListener implements VertxListener {
     private static Map<String, User> usersSession = new HashMap<String, User>();
 
     static String token;
-    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
-
 
     /**
      * Default constructor.
@@ -92,12 +92,7 @@ public class EventBusDataListener implements VertxListener {
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
-        if (rulesLoader == null) {
-            rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
-        }
-        return rulesLoader;
+        return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
     @Override
@@ -181,14 +176,15 @@ public class EventBusDataListener implements VertxListener {
                 json.put("items", jsonArray);
                 dataMsg = JsonUtils.fromJson(json.toString(), QDataAnswerMessage.class);
 
-                getRulesLoader(payload.getString("token")).processMsg(dataMsg, payload.getString("token"));
+                // Request Processor thread in RulesLoader will process
+                getRulesLoader(payload.getString("token")).addNewItem(dataMsg, payload.getString("token"));
             }
         } else if (payload.getString("data_type").equals(GPS.class.getSimpleName())) {
 
             QDataGPSMessage dataGPSMsg = null;
             try {
                 dataGPSMsg = JsonUtils.fromJson(payload.toString(), QDataGPSMessage.class);
-                getRulesLoader(payload.getString("token")).processMsg(dataGPSMsg, payload.getString("token"));
+                getRulesLoader(payload.getString("token")).addNewItem(dataGPSMsg, payload.getString("token"));
             } catch (com.google.gson.JsonSyntaxException e) {
 
                 log.error("BAD Syntax converting to json from " + dataGPSMsg);
@@ -198,19 +194,19 @@ public class EventBusDataListener implements VertxListener {
                 jsonArray.add(answerData);
                 json.put("items", jsonArray);
                 dataGPSMsg = JsonUtils.fromJson(json.toString(), QDataGPSMessage.class);
-                getRulesLoader(payload.getString("token")).processMsg(dataGPSMsg, payload.getString("token"));
+                getRulesLoader(payload.getString("token")).addNewItem(dataGPSMsg, payload.getString("token"));
             }
         } else if (payload.getString("data_type").equals(QDataPaymentsCallbackMessage.class.getSimpleName())) {
             QDataPaymentsCallbackMessage dataCallbackMsg = null;
             try {
                 dataCallbackMsg = JsonUtils.fromJson(payload.toString(), QDataPaymentsCallbackMessage.class);
-                getRulesLoader(payload.getString("token")).processMsg(dataCallbackMsg, payload.getString("token"));
+                getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             } catch (com.google.gson.JsonSyntaxException e) {
 
                 log.error("BAD Syntax converting to json from " + dataCallbackMsg);
                 JsonObject json = new JsonObject(payload.toString());
                 dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
-                getRulesLoader(payload.getString("token")).processMsg(dataCallbackMsg, payload.getString("token"));
+                getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }
         }
     }

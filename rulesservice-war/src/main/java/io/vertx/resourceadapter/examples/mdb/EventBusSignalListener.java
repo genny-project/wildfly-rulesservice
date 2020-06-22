@@ -7,11 +7,13 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
+import life.genny.rules.RulesLoaderFactory;
 import org.apache.logging.log4j.Logger;
 
 import io.vavr.Tuple;
@@ -73,16 +75,9 @@ public class EventBusSignalListener implements VertxListener {
         //log.info("EventBusSignalListener started.");
     }
 
-    private static HashMap<String, RulesLoader> tokeRulesLoaderMapping = new HashMap<>();
-
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");
-        RulesLoader rulesLoader = tokeRulesLoaderMapping.get(sessionState);
-        if (rulesLoader == null) {
-            rulesLoader = new RulesLoader();
-            tokeRulesLoaderMapping.put(sessionState, rulesLoader);
-        }
-        return rulesLoader;
+        return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
 
@@ -115,7 +110,7 @@ public class EventBusSignalListener implements VertxListener {
                     log.error("No class def found [" + payload.toString() + "]");
                 }
             }
-            getRulesLoader(token).processMsg(eventMsg, token);
+            getRulesLoader(token).addNewItem(eventMsg, token);
         }
     }
 
