@@ -1,4 +1,3 @@
-
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
@@ -14,12 +13,13 @@
 		<mapping-file>META-INF/JBPMorm.xml</mapping-file>
 		<mapping-file>META-INF/Servicesorm.xml</mapping-file>
 		<mapping-file>META-INF/GennyOrm.xml</mapping-file>
-		<mapping-file>META-INF/Taskorm.xml</mapping-file>
-		<mapping-file>META-INF/TaskAuditorm.xml</mapping-file>
-		<mapping-file>META-INF/Executor-orm.xml</mapping-file>
-		<!-- <mapping-file>META-INF/CaseMgmtorm.xml</mapping-file> -->
-
-
+ 		<mapping-file>META-INF/Taskorm.xml</mapping-file>
+		<mapping-file>META-INF/TaskAuditorm.xml</mapping-file> 
+		<mapping-file>META-INF/Executor-orm.xml</mapping-file> 
+	<!--  <mapping-file>META-INF/CaseMgmtorm.xml</mapping-file> 
+				-->
+				
+				
 		<!-- task service -->
 		<class>org.jbpm.services.task.impl.model.AttachmentImpl</class>
 		<class>org.jbpm.services.task.impl.model.ContentImpl</class>
@@ -28,7 +28,6 @@
 		<class>org.jbpm.services.task.impl.model.DeadlineImpl</class>
 		<class>org.jbpm.services.task.impl.model.CommentImpl</class>
 		<class>org.jbpm.services.task.impl.model.DeadlineImpl</class>
-
 		<class>org.jbpm.services.task.impl.model.DelegationImpl</class>
 		<class>org.jbpm.services.task.impl.model.EscalationImpl</class>
 		<class>org.jbpm.services.task.impl.model.GroupImpl</class>
@@ -64,7 +63,7 @@
 		<!-- bam -->
 		<class>org.jbpm.process.audit.ProcessInstanceLog</class>
 		<class>org.jbpm.process.audit.NodeInstanceLog</class>
-		<class>org.jbpm.process.audit.VariableInstanceLog</class>
+		 <class>org.jbpm.process.audit.VariableInstanceLog</class> 
 
 		<!-- deployment store -->
 		<class>org.jbpm.kie.services.impl.store.DeploymentStoreEntry</class>
@@ -78,79 +77,40 @@
 
 		<!-- error handling -->
 		<class>org.jbpm.runtime.manager.impl.jpa.ExecutionErrorInfo</class>
-
-		<!-- executorservice -->
+		
+		<!--  executorservice -->
 		<class>org.jbpm.executor.entities.ErrorInfo</class>
-		<class>org.jbpm.executor.entities.RequestInfo</class>
+    	<class>org.jbpm.executor.entities.RequestInfo</class>
 
-		<!-- Genny RulesEngine Simple workflow status -->
+				<!-- Genny RulesEngine Simple workflow status  -->
 		<class>life.genny.rules.listeners.NodeStatusLog</class>
 		<class>life.genny.model.NodeStatus</class>
 		<class>life.genny.model.SessionPid</class>
-
+		
 		<properties>
-			<property name="shared-cache-mode" value="ALL" />
 			<property name="hibernate.dialect"
 				value="org.hibernate.dialect.MySQL8Dialect" />
-			<property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver" />
-				
-			<property name="hibernate.connection.autocommit"
-				value="true" />
-			<property name="hibernate.max_fetch_depth" value="3" />
-			<property name="hibernate.hbm2ddl.auto" value="update" />
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.connection.release_mode"
-				value="on_close" />
+		<!-- <property name="hibernate.transaction.jta.platform"
+      value="org.hibernate.service.jta.platform.internal.BitronixJtaPlatform"/>-->
 
-			<!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem 
-				to cause problems -->
-			<property name="hibernate.id.new_generator_mappings"
-				value="true" />
-			<property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/> 
-			<property name="hibernate.transaction.jta.platform"
-				value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
-			<property name="hibernate.order_updates" value="true" />
-			<property name="hibernate.connection.isolation" value="2" />
-			<property name="hibernate.order_inserts" value="true" />
-			<property name="hibernate.order_updates" value="true" />
-			<property name="current_session_context_class" value="thread" />
-			<property
-				name="hibernate.discriminator.ignore_explicit_for_joined"
-				value="false" />
-			<property name="hibernate.generate_statistics" value="false" />
-			<!-- <property name="hibernate.dialect" value="org.hibernate.spatial.dialect.MySQLSpatial56Dialect" 
-				/> -->
-			<!-- Infinispan -->
-			<property name="hibernate.cache.infinispan.statistics"
-				value="false" />
-			<property name="hibernate.cache.use_structured_entries"
-				value="false" />
-			<property name="javax.persistence.lock.timeout" value="100" />
-			<property name="javax.persistence.query.timeout" value="100" />
+     <property name="hibernate.connection.autocommit" value="true" />
 
-			<!-- 2LC -->
-			<property name="hibernate.cache.use_second_level_cache"
-				value="true" />
-			<property name="hibernate.cache.use_query_cache"
-				value="true" />
+      <property name="hibernate.max_fetch_depth" value="3" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show_sql" value="false" />
+  <property name="hibernate.connection.release_mode" value="after_transaction"/> 
 
-			<!-- <property name="cache.provider_class" value="org.hibernate.cache.NoCacheProvider" 
-				/> -->
-			<!-- <property name="hibernate.cache.region.factory_class" value="com.hazelcast.hibernate.HazelcastCacheRegionFactory" 
-				/> -->
-			<property name="hibernate.connection.pool_size" value="100" />
-			<property name="hibernate.c3p0.min_size" value="15" />
-			<property name="hibernate.c3p0.max_size" value="75" />
-			<property name="hibernate.c3p0.timeout" value="600" />
-			<property name="hibernate.c3p0.max_statements" value="75" />
-			<property name="hibernate.c3p0.idle_test_period"
-				value="5000" />
-			<property name="hibernate.c3p0.testConnectionOnCheckout" value="true" />			<!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem 
-				to cause problems -->
-			<property name="hibernate.id.new_generator_mappings"
-				value="true" />
+    
+   <!--    <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.BTMTransactionManagerLookup" /> -->
 
-
+      <!-- BZ 841786: AS7/EAP 6/Hib 4 uses new (sequence) generators which seem to cause problems -->      
+        <property name="hibernate.id.new_generator_mappings" value="true" />
+     <!--  <property name="hibernate.connection.handling_mode" value="DELAYED_ACQUISITION_AND_RELEASE_AFTER_TRANSACTION"/> -->
+      
+      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
+		<property name="hibernate.order_updates" value="true"/>
+		<property name="hibernate.connection.isolation" value="2"/>
+		
 
 		</properties>
 	</persistence-unit>
