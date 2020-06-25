@@ -27,11 +27,6 @@ import javax.transaction.Transactional;
 public class EventBusEventListener implements VertxListener {
 	
 
-//@Inject
-//EventBusBean eventBus;
-
-//@Inject
-//RulesService rulesService;
 	
 	@Inject
 	RulesEngineBean rulesEngineBean;
@@ -58,7 +53,7 @@ public class EventBusEventListener implements VertxListener {
   
   @Override
 //  @Transactional
-  @Asynchronous
+//  @Asynchronous
   public <T> void onMessage(Message<T> message) {
 	  final JsonObject payload = new JsonObject(message.body().toString());
 

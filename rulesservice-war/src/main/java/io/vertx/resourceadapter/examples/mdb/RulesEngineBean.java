@@ -5,6 +5,7 @@ package io.vertx.resourceadapter.examples.mdb;
 import javax.enterprise.context.RequestScoped;
 
 import io.vavr.Tuple3;
+import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.KeycloakUtils;
 import java.lang.invoke.MethodHandles;
 import java.util.UUID;
@@ -42,8 +43,12 @@ public class RulesEngineBean {
     public void processMsg(final Object msg, final String token) {
         RulesLoader rulesLoader = getRulesLoader(token);
         // Add item to queue, process request thread in RulesLoader will pick and process
-        rulesLoader.addNewItem(msg, token);
-//        rulesLoader.processMsg(msg, token);
+      //  
+        if (GennySettings.useEventQueue) {
+        	rulesLoader.addNewItem(msg, token);
+        } else {
+        	rulesLoader.processMsg(msg, token);
+        }
 
     }
 }
