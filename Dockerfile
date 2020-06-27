@@ -1,4 +1,4 @@
-FROM gennyproject/wildfly:v3.1.0 
+FROM gennyproject/wildfly:v7.0.0 
 
 RUN apk add --no-cache libc6-compat
 
