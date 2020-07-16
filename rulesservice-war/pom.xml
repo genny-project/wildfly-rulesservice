@@ -71,7 +71,7 @@
 
         <hazelcast.version>3.8.2</hazelcast.version>
         <javax-cache.version>1.0.0-PFD</javax-cache.version>
-        <log4j-core-version>2.13.3</log4j-core-version>
+        <log4j-core-version>2.11.1</log4j-core-version>
     </properties>
 
     <repositories>
