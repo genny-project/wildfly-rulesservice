@@ -111,6 +111,18 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 		
 		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
+
+		if (user== null) {
+		    log.info("Try fetch BaseEntity user by UUID:" + userToken.getUserUUID());
+			user = beUtils.getBaseEntityByCode(userToken.getUserUUID());
+			if (user == null) {
+			    log.error(String.format("Can not find user by uuid:%s nor code:%s",
+						userToken.getUserUUID(),
+						userToken.getUserCode()));
+			    //TODO, return or let it go throught ?
+			}
+		}
+
 		Optional<Boolean> optUserCode = user.getValue("PRI_IS_INTERN");
 		if (optUserCode.isPresent()) {
 			if (optUserCode.get()) {
