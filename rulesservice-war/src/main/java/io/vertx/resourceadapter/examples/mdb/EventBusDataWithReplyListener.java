@@ -116,10 +116,10 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		    log.info("Try fetch BaseEntity user by UUID:" + userToken.getUserUUID());
 			user = beUtils.getBaseEntityByCode(userToken.getUserUUID());
 			if (user == null) {
-			    log.error(String.format("Can not find user by uuid:%s nor code:%s",
+			    log.error(String.format("Can not find user by uuid:%s nor code:%s, will not go further!!!!!",
 						userToken.getUserUUID(),
 						userToken.getUserCode()));
-			    //TODO, return or let it go throught ?
+			    return;
 			}
 		}
 
