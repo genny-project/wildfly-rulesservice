@@ -78,16 +78,17 @@ public class EventBusDataWithReplyListener implements VertxListener {
 	}
 
 	private BaseEntity getUser(BaseEntityUtils beUtils, GennyToken userToken) {
+		BaseEntity user = null;
 		String userCode = userToken.getUserCode();
 		String userUUID = userToken.getUserUUID();
 
-		BaseEntity user = beUtils.getBaseEntityByCode(userCode);
+		if (userCode.contains("_AT_")) {
+			String email = beUtils.getEmailFromOldCode(userCode);
+			user = beUtils.getPersonFromEmail(email);
+		}
 
 		if (user == null) {
-			if (userCode.contains("_AT_")) {
-				String email = beUtils.getEmailFromOldCode(userCode);
-				user = beUtils.getPersonFromEmail(email);
-			}
+			user = beUtils.getBaseEntityByCode(userCode);
 		}
 
 		if (user== null) {
