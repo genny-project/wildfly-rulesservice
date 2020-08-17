@@ -44,6 +44,7 @@ import life.genny.qwandautils.QwandaUtils;
 import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.RulesUtils;
 import life.genny.utils.VertxUtils;
+import org.jsoup.Connection;
 
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
@@ -74,6 +75,25 @@ public class EventBusDataWithReplyListener implements VertxListener {
 	 */
 	public EventBusDataWithReplyListener() {
 		// log.info("EventBusDataListener started.");
+	}
+
+	private BaseEntity getUser(BaseEntityUtils beUtils, GennyToken userToken) {
+		String userCode = userToken.getUserCode();
+		String userUUID = userToken.getUserUUID();
+
+		BaseEntity user = beUtils.getBaseEntityByCode(userCode);
+
+		if (user == null) {
+			if (userCode.contains("_AT_")) {
+				String email = beUtils.getEmailFromOldCode(userCode);
+				user = beUtils.getPersonFromEmail(email);
+			}
+		}
+
+		if (user== null) {
+			user = beUtils.getBaseEntityByCode(userUUID);
+		}
+		return user;
 	}
 
 	@Override
@@ -109,25 +129,13 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		String deviceVersion = "UNKNOWN";
 
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
-		
-		
-		BaseEntity user = beUtils.getBaseEntityByCode(userToken.getUserCode());
 
-		if (user== null) {
-		    log.info("Try fetch BaseEntity user by UUID:" + userToken.getUserUUID());
-			user = beUtils.getBaseEntityByCode(userToken.getUserUUID());
-			if (user == null) {
-				String userCode = userToken.getUserCode();
-				if (userCode.contains("_AT_")) {
-					String email = beUtils.getEmailFromOldCode(userCode);
-					user = beUtils.getPersonFromEmail(email);
-				}
+		BaseEntity user = getUser(beUtils, userToken);
 
-			    log.error(String.format("Can not find user by uuid:%s nor code:%s, will not go further!!!!!",
-						userToken.getUserUUID(),
-						userToken.getUserCode()));
-			    return;
-			}
+		if (user == null) {
+			log.error(String.format("Can not find user BaseEntity neither by UUID:%s nor by userCode:%s, " +
+					"will not go further!!", userToken.getUserUUID(), userToken.getUserCode()));
+			return;
 		}
 
 		Optional<Boolean> optUserCode = user.getValue("PRI_IS_INTERN");
