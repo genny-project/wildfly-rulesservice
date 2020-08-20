@@ -65,7 +65,7 @@ import io.vertx.core.json.JsonObject;
  * @author Adam Crow
  */
 
-@Path("/service")
+@Path("/ruleservice")
 @Api(value = "/service", tags = "service")
 @Produces(MediaType.APPLICATION_JSON)
 
