@@ -66,7 +66,7 @@ import io.vertx.core.json.JsonObject;
  */
 
 @Path("/ruleservice")
-@Api(value = "/service", tags = "service")
+@Api(value = "/ruleservice", tags = "service")
 @Produces(MediaType.APPLICATION_JSON)
 
 @Stateless
