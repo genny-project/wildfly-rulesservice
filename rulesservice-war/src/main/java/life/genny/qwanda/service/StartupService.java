@@ -18,7 +18,7 @@ import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.message.QDataAttributeMessage;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
-import life.genny.security.SecureResources;
+import life.genny.security.RulesSecureResources;
 import life.genny.utils.FrameUtils2;
 
 
@@ -41,7 +41,7 @@ public class StartupService {
 	@Inject
 	private SecurityService securityService;
 	@Inject
-	private SecureResources secureResources;
+	private RulesSecureResources secureResources;
 	@Inject
 	private RulesService rulesservice;
 	

@@ -28,7 +28,7 @@ import life.genny.qwandautils.JsonUtils;
 import life.genny.utils.VertxUtils;
 
 @ApplicationScoped
-public class SecureResources {
+public class RulesSecureResources {
 	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
@@ -63,7 +63,7 @@ public class SecureResources {
 	public static String getKeycloakJson(String fullurl) {
 		fullurl = StringUtils.removeEnd(fullurl, ".json");
 		log.info("Getting KeycloakJson from SecureResource :"+fullurl);
-		String keycloakJson = SecureResources.getKeycloakJsonMap().get(fullurl+".json");
+		String keycloakJson = RulesSecureResources.getKeycloakJsonMap().get(fullurl+".json");
 		if ( keycloakJson != null) {
 			return keycloakJson;
 		}

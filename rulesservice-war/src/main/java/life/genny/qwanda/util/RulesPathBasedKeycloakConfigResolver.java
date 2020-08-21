@@ -21,9 +21,9 @@ import org.keycloak.adapters.OIDCHttpFacade;
 
 import life.genny.qwandautils.GennySettings;
 
-import life.genny.security.SecureResources;
+import life.genny.security.RulesSecureResources;
 
-public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
+public class RulesPathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 	/**
 	 * Stores logger object.
 	 */
@@ -83,7 +83,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 					} else {
 					aURL = new URL(request.getURI());
 					final String url = aURL.getHost();
-					final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(url + ".json");
+					final String keycloakJsonText = RulesSecureResources.getKeycloakJsonMap().get(url + ".json");
 					if (keycloakJsonText==null) {
 						log.error(url + ".json is NOT in qwanda-service Keycloak Map!");
 						
@@ -110,10 +110,10 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 				lastlog = logtext;
 			}
 		} else {
-			Optional<String> firstRealm = SecureResources.getKeycloakJsonMap().keySet().stream().findFirst();
+			Optional<String> firstRealm = RulesSecureResources.getKeycloakJsonMap().keySet().stream().findFirst();
 			if (firstRealm.isPresent()) {
 				String kcStr = firstRealm.get();
-				final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(kcStr);
+				final String keycloakJsonText = RulesSecureResources.getKeycloakJsonMap().get(kcStr);
 
 				JSONObject json = null;
 				try {
@@ -142,7 +142,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		if (null == deployment) {
 			InputStream is;
 			try {
-				String keycloakJson = SecureResources.getKeycloakJsonMap().get(key);
+				String keycloakJson = RulesSecureResources.getKeycloakJsonMap().get(key);
 				is = new ByteArrayInputStream(
 						keycloakJson.getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);

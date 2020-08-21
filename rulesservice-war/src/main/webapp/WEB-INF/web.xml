@@ -19,7 +19,7 @@
 	
  	<context-param>
         <param-name>keycloak.config.resolver</param-name>
-        <param-value>life.genny.qwanda.util.PathBasedKeycloakConfigResolver</param-value>
+        <param-value>life.genny.qwanda.util.RulesPathBasedKeycloakConfigResolver</param-value>
     </context-param>  
 	
 
