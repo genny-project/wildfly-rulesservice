@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "Setting up Realms ****"
+unset JAVA_OPTS
 
 KEYCLOAK_JSON_DIR=/opt/jboss/wildfly/realm
 KEYCLOAK_ORIGINAL_JSON_DIR=/opt/realm
