@@ -112,7 +112,11 @@ public class EventBusEventListener implements VertxListener {
 			VertxUtils.writeMsg("data",JsonUtils.toJson(dataMsg));
 			//kieSession.signalEvent("data", sessionFactsData, processId);
 	} else {
+		if (eventMsg.getData().getCode()!=null) {
 		rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
+		} else {
+			log.error("EMPTY Event Msg sent! "+eventMsg);
+		}
 	}
   }
 
