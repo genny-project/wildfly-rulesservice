@@ -35,7 +35,7 @@ public class EventBusEventListener implements VertxListener {
  	protected static final Logger log = org.apache.logging.log4j.LogManager
 			.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
   
-
+ 	private static QEventMessage lastMessage; // TODO this is ugly and exists to stop duplicate messages
 
   /**
    * Default constructor.
@@ -62,7 +62,14 @@ public class EventBusEventListener implements VertxListener {
 	QEventMessage eventMsg = null;
 	if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
-		logMessage += " EVT_ATTRIBUTE_VALUE_CHANGE ";
+		logMessage += " EVT_ATTRIBUTE_VALUE_CHANGE "+eventMsg.hashCode();
+		if (eventMsg!=null) {
+			if ((lastMessage != null) && (eventMsg.equals(lastMessage))) {
+				return;
+			} else {
+				lastMessage = eventMsg;
+			}
+		}
 	} else if (payload.getString("event_type").equals("BTN_CLICK")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
 	} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
