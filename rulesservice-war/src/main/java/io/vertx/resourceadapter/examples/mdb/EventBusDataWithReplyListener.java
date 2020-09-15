@@ -216,7 +216,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			String deviceName = userToken.getString("given_name") + "'s " + deviceType + " Phone";
 			beUtils.create(uniqueDeviceCode, deviceName);
 
-			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "LNK_USER", userToken.getUserCode()));
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "LNK_USER", "[\""+userToken.getUserCode()+"\"]"));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_TYPE", deviceType));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_VERSION", deviceVersion));
