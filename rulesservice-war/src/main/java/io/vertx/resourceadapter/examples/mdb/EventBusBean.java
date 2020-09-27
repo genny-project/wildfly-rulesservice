@@ -61,35 +61,40 @@ public class EventBusBean implements EventBusInterface {
 	{
 		String json = msg.toString();
 		JsonObject event = new JsonObject(json);
-		if (!StringUtils.isBlank(event.getString("token"))) {
-		   javax.naming.InitialContext ctx = null;
-		    io.vertx.resourceadapter.VertxConnection conn = null;
-		    try {
-		      ctx = new javax.naming.InitialContext();
-		      io.vertx.resourceadapter.VertxConnectionFactory connFactory =
-		          (io.vertx.resourceadapter.VertxConnectionFactory) ctx
-		              .lookup("java:/eis/VertxConnectionFactory");
-		      conn = connFactory.getVertxConnection();
-		    //  log.info("Publishing Vertx Bus Message on channel "+channel+":");
+		try {
+			if (!StringUtils.isBlank(event.getString("token"))) {
+			   javax.naming.InitialContext ctx = null;
+			    io.vertx.resourceadapter.VertxConnection conn = null;
+			    try {
+			      ctx = new javax.naming.InitialContext();
+			      io.vertx.resourceadapter.VertxConnectionFactory connFactory =
+			          (io.vertx.resourceadapter.VertxConnectionFactory) ctx
+			              .lookup("java:/eis/VertxConnectionFactory");
+			      conn = connFactory.getVertxConnection();
+			    //  log.info("Publishing Vertx Bus Message on channel "+channel+":");
 
-		      conn.vertxEventBus().publish(channel, event);
-		    //  log.info("Published Vertx Bus Message on channel "+channel);
-		    } catch (Exception e) {
-		      e.printStackTrace();
-		    } finally {
-		      if (ctx != null) {
-		        ctx.close();
-		      }
-		      if (conn != null) {
-		    	  try {
-		        conn.close();
-		    	  } catch (ResourceException e) {
-		    		  e.printStackTrace();
-		    	  }
-		      }
-		    }
-		} else {
-			log.error("No token set for message");
+			      conn.vertxEventBus().publish(channel, event);
+			    //  log.info("Published Vertx Bus Message on channel "+channel);
+			    } catch (Exception e) {
+			      e.printStackTrace();
+			    } finally {
+			      if (ctx != null) {
+			        ctx.close();
+			      }
+			      if (conn != null) {
+			    	  try {
+			        conn.close();
+			    	  } catch (ResourceException e) {
+			    		  e.printStackTrace();
+			    	  }
+			      }
+			    }
+			} else {
+				log.error("No token set for message");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
   
