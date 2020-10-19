@@ -148,7 +148,7 @@ public class EventBusDataListener implements VertxListener {
                                 }
                             }
                         }
-                        if (equaled) {
+                        if (equaled && (!"PRI_SUBMIT".equals(answer.getAttributeCode()))) {
                             log.info("This Already exists! " + answer.getAttributeCode() + ":" + answer.getValue());
                             changed = false;
                         }
