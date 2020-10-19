@@ -68,6 +68,6 @@ export JAVA_OPTS="${JAVA_OPTS}    -agentlib:jdwp=transport=dt_socket,address=878
 else
 echo "Debug is False";
 #export JAVA_OPTS="${JAVA_OPTS} -agentpath:/usr/local/YourKit-JavaProfiler-2019.8/bin/linux-x86-64/libyjpagent.so=port=10002,listen=all "
-/opt/jboss/wildfly/bin/standalone.sh   -Djboss.bind.address.private=${CLUSTER_IP}  -bmanagement=0.0.0.0 -b 0.0.0.0 -Dadmin.username=${ADMIN_USERNAME} -Dadmin.password=${ADMIN_PASSWORD} -Dpublic.host=${myip}  -Dresteasy.preferJacksonOverJsonB  -Djboss.tx.node.id=${hostname} -Dhazelcast.health.monitoring.level=OFF -Dhazelcast.http.healthcheck.enabled=false  --server-config=standalone-full-ha.xml  -Dorg.kie.executor.pool.size=10 -Dorg.kie.executor.disabled=false
+/opt/jboss/wildfly/bin/standalone.sh -Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true  -Djboss.bind.address.private=${CLUSTER_IP}  -bmanagement=0.0.0.0 -b 0.0.0.0 -Dadmin.username=${ADMIN_USERNAME} -Dadmin.password=${ADMIN_PASSWORD} -Dpublic.host=${myip}  -Dresteasy.preferJacksonOverJsonB  -Djboss.tx.node.id=${hostname} -Dhazelcast.health.monitoring.level=OFF -Dhazelcast.http.healthcheck.enabled=false  --server-config=standalone-full-ha.xml  -Dorg.kie.executor.pool.size=10 -Dorg.kie.executor.disabled=false
 #  -DHIBERNATE_SHOW_SQL=$HIBERNATE_SHOW_SQL -DHIBERNATE_HBM2DDL=$HIBERNATE_HBM2DDL -DMYSQL_USER=$MYSQL_USER -DMYSQL_PASSWORD=$MYSQL_PASSWORD -Djava.security.auth.login.config=''
 fi
