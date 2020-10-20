@@ -48,6 +48,10 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 					// extract the token
 					final String authTokenHeader = request.getHeader("Authorization");
+					if ((authTokenHeader == null)||(authTokenHeader.length()<7))
+					{
+						return null;
+					}
 					final String bearerToken = authTokenHeader.substring(7);
 					// now extract the realm
 					JSONObject jsonObj = null;
@@ -112,8 +116,19 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 				String kcStr = firstRealm.get();
 				final String keycloakJsonText = SecureResources.getKeycloakJsonMap().get(kcStr);
 
-				final JSONObject json = new JSONObject(keycloakJsonText);
-				realm = json.getString("realm");
+				JSONObject json = null;
+				try {
+					json = new JSONObject(keycloakJsonText);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					realm = json.getString("realm");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				key = realm + ".json";
 
 			} else {
@@ -129,14 +144,11 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 			InputStream is;
 			try {
 				String keycloakJson = SecureResources.getKeycloakJsonMap().get(key);
-				if (keycloakJson != null) {
 				is = new ByteArrayInputStream(
 						keycloakJson.getBytes(StandardCharsets.UTF_8.name()));
 				deployment = KeycloakDeploymentBuilder.build(is);
 				cache.put(realm, deployment);
-				} else {
-					log.warn("Incorrect realm being used! - "+key);
-				}
+
 			} catch (final java.lang.RuntimeException ce) {
 				ce.printStackTrace();
 				log.debug("Connection Refused:"+username+":"+ realm + " :" + request.getURI() + ":" + request.getMethod()
