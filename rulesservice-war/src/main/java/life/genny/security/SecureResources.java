@@ -36,6 +36,7 @@ public class SecureResources {
 	 * @return the keycloakJsonMap
 	 */
 	public static Map<String, String> getKeycloakJsonMap() {
+
 		return keycloakJsonMap;
 	}
 
@@ -57,6 +58,7 @@ public class SecureResources {
 		for (String realm : realmsSet) {
 			log.info("Loaded realm is "+realm);
 			getKeycloakJson("http://"+realm + ".genny.life");
+			getKeycloakJson(GennySettings.projectUrl);
 		}
 	}
 
