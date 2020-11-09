@@ -25,7 +25,6 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.inflow.VertxListener;
-import io.vertx.rxjava.core.Vertx;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
 import life.genny.qwanda.attribute.EntityAttribute;
