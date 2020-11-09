@@ -61,11 +61,11 @@ public class EventBusStatefulMessageListener implements VertxListener {
             .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
 
-    private static final List<String> roles;
+    //private static final List<String> roles;
 
-    static {
-        roles = TokenIntrospection.setRoles("user");
-    }
+    //static {
+        //roles = TokenIntrospection.setRoles("user");
+    //}
 
     /**
      * Default constructor.
