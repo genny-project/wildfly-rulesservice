@@ -18,7 +18,7 @@ if [ -f "$file" ]; then
   echo "git.commit.id = " "$(prop 'git.commit.id')"
   echo "git.build.version = " "$(prop 'git.build.version')"
 
-  docker build -t gennyproject/${project}:"${version}" --network host .
+  docker build --build-arg CODE_VERSION=${version} -t gennyproject/${project}:"${version}" --network host .
 else
   echo "ERROR: git properties $file not found."
 fi
