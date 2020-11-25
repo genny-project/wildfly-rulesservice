@@ -70,6 +70,8 @@ public class EventBusEventListener implements VertxListener {
 				lastMessage = eventMsg;
 			}
 		}
+	} else if (payload.getString("event_type").equals("DD")) {
+		eventMsg = JsonUtils.fromJson(payload.toString(), QEventDropdownMessage.class);
 	} else if (payload.getString("event_type").equals("BTN_CLICK")) {
 		eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
 	} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
