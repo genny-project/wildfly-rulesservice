@@ -128,6 +128,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		String deviceCode = "UNKNOWN";
 		String deviceType = "UNKNOWN";
 		String deviceVersion = "UNKNOWN";
+		String notifyId = "UNKNOWN";
 
 		Attribute attributeSync = RulesUtils.getAttribute("PRI_SYNC", userToken);
 
@@ -160,6 +161,8 @@ public class EventBusDataWithReplyListener implements VertxListener {
 					deviceType = ans.getValue();
 				} else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
 					deviceVersion = ans.getValue();
+				} else if ("PRI_NOTIFY_ID".equals(ans.getAttributeCode())) {
+					notifyId = ans.getValue();
 				} else if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
 					if ("EMPTY".equals(ans.getValue())) {
 						loadAll = true;
@@ -220,8 +223,9 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_TYPE", deviceType));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_VERSION", deviceVersion));
+			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_NOTIFY_ID",notifyId));
 			log.info("New device detected -> created " + deviceType + ":" + deviceVersion + ":" + deviceCode
-					+ "  associated " + userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode);
+					+ "  associated " + userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode+" -> notifyId:"+notifyId);
 
 		}
 		if ((device == null) || loadAll) {
@@ -232,7 +236,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		}
 
 		log.info("Device identified  " + deviceType + ":" + deviceVersion + ":" + deviceCode + "  associated "
-				+ userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode);
+				+ userToken.getUserCode() + "->uniqueCode:" + uniqueDeviceCode+" -> notifyId:"+notifyId);
 
 		device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 
