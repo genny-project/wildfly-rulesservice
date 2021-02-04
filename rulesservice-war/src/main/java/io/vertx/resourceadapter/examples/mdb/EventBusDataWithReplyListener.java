@@ -147,6 +147,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			}
 		}
 
+		String uniqueDeviceCode = "DEV_" + deviceCode.toUpperCase() + userToken.getString("sub").hashCode();
 		// Extract existing codes
 		Set<String> updatedCodesList = new HashSet<String>();
 		List<Answer> normalAnswers = new ArrayList<Answer>();
@@ -155,14 +156,13 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		for (Answer ans : dataMsg.getItems()) {
 			if (ans != null) {
 				boolean newone = false;
+				ans.setTargetCode(userToken.getUserCode());
 				if ("PRI_DEVICE_CODE".equals(ans.getAttributeCode())) {
 					deviceCode = ans.getValue();
 				} else if ("PRI_DEVICE_TYPE".equals(ans.getAttributeCode())) {
 					deviceType = ans.getValue();
 				} else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
 					deviceVersion = ans.getValue();
-				} else if ("PRI_NOTIFY_ID".equals(ans.getAttributeCode())) {
-					notifyId = ans.getValue();
 				} else if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
 					if ("EMPTY".equals(ans.getValue())) {
 						loadAll = true;
@@ -173,7 +173,12 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						if (existingJnl == null) {
 							updatedCodesList.add(ans.getTargetCode());	
 						}
-					}
+					} 
+					 if ("PRI_NOTIFY_ID".equals(ans.getAttributeCode())) {
+						 ans.setTargetCode(userToken.getUserCode());
+							notifyId = ans.getValue();
+							normalAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_NOTIFY_ID",notifyId));
+						} 
 					// check if no change
 //					BaseEntity be = existingBEs.get(ans.getTargetCode());
 //					if (be != null) {
@@ -210,7 +215,6 @@ public class EventBusDataWithReplyListener implements VertxListener {
 			}
 		}
 
-		String uniqueDeviceCode = "DEV_" + deviceCode.toUpperCase() + userToken.getString("sub").hashCode();
 
 		BaseEntity device = beUtils.getBaseEntityByCode(uniqueDeviceCode);
 		List<Answer> deviceAnswers = new ArrayList<Answer>();
