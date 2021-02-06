@@ -178,6 +178,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 						 ans.setTargetCode(userToken.getUserCode());
 							notifyId = ans.getValue();
 							normalAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_NOTIFY_ID",notifyId));
+							normalAnswers.add(new Answer(userToken.getUserCode(), userToken.getUserCode(), "PRI_NOTIFY_ID",notifyId));
 						} 
 					// check if no change
 //					BaseEntity be = existingBEs.get(ans.getTargetCode());
