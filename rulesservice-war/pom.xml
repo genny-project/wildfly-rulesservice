@@ -7,14 +7,14 @@
     <groupId>life.genny</groupId>
     <artifactId>rulesservice-war</artifactId>
     <packaging>war</packaging>
-    <version>7.19.0</version>
+    <version>7.20.0</version>
     <name>rulesservice-war</name>
     <url>http://genny.life</url>
 
     <parent>
         <groupId>life.genny</groupId>
         <artifactId>wildfly-rulesservice</artifactId>
-        <version>7.19.0</version>
+        <version>7.20.0</version>
     </parent>
 
     <licenses>
