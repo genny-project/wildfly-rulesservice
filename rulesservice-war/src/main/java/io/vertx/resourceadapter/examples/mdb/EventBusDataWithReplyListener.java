@@ -156,15 +156,17 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		for (Answer ans : dataMsg.getItems()) {
 			if (ans != null) {
 				boolean newone = false;
-				
-				if ("PRI_DEVICE_CODE".equals(ans.getAttributeCode())) {
+				if (ans.getTargetCode().contains("_AT_")) { // old school email based usercode
 					ans.setTargetCode(userToken.getUserCode());
+				}
+				if ("PRI_DEVICE_CODE".equals(ans.getAttributeCode())) {
+					
 					deviceCode = ans.getValue();
 				} else if ("PRI_DEVICE_TYPE".equals(ans.getAttributeCode())) {
-					ans.setTargetCode(userToken.getUserCode());
+					
 					deviceType = ans.getValue();
 				} else if ("PRI_DEVICE_VERSION".equals(ans.getAttributeCode())) {
-					ans.setTargetCode(userToken.getUserCode());
+					
 					deviceVersion = ans.getValue();
 				} else if ("PRI_EXISTING_CODES".equals(ans.getAttributeCode())) {
 					if ("EMPTY".equals(ans.getValue())) {
