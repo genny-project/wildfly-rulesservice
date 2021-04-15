@@ -55,6 +55,7 @@ import life.genny.rules.RulesLoader;
 
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 
 import org.jboss.ejb3.annotation.ResourceAdapter;
 import life.genny.qwanda.Answer;
@@ -72,6 +73,7 @@ import life.genny.qwanda.entity.BaseEntity;
 //@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusDataListener implements VertxListener {
 @ApplicationScoped
+@DependsOn("StartupService")
 public class EventBusDataListener {
 
 //@Inject

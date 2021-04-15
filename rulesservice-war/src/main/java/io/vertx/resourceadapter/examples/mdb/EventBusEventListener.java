@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 import javax.transaction.Transactional;
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
@@ -31,6 +32,7 @@ import javax.transaction.Transactional;
 //@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusEventListener implements VertxListener {
 @ApplicationScoped
+@DependsOn("StartupService")
 public class EventBusEventListener {
 	
 

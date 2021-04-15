@@ -43,6 +43,7 @@ import life.genny.models.GennyToken;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 import javax.transaction.Transactional;
 
 /**
@@ -56,6 +57,7 @@ import javax.transaction.Transactional;
 //public class EventBusSignalListener implements VertxListener {
 @ApplicationScoped
 //public class EventBusSignalListener implements VertxListener {
+@DependsOn("StartupService")
 public class EventBusSignalListener {
 
     @Inject

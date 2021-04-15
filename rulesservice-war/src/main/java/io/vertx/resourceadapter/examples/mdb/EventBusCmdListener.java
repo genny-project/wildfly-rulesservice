@@ -27,6 +27,7 @@ import life.genny.rules.RulesLoader;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 import javax.transaction.Transactional;
 
 /**
@@ -37,6 +38,7 @@ import javax.transaction.Transactional;
 //@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusCmdListener implements VertxListener {
 @ApplicationScoped
+@DependsOn("StartupService")
 public class EventBusCmdListener {
 	
 

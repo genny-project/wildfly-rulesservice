@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 import javax.ejb.MessageDriven;
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
@@ -65,6 +66,7 @@ import javax.ws.rs.core.Response;
 @Api(value = "/eventbus", tags = "eventbus")
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@DependsOn("StartupService")
 public class EventBusDataWithReplyListener {
 
 //@Inject

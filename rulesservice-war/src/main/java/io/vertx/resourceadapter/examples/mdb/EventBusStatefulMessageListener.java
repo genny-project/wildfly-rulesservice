@@ -43,6 +43,7 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
 
 import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
+import javax.ejb.DependsOn;
 
 /**
  * Message-Driven Bean implementation class for: EventBusMessageListener -
@@ -54,6 +55,7 @@ import javax.ejb.Asynchronous;
 //@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusStatefulMessageListener implements VertxListener {
 @ApplicationScoped
+@DependsOn("StartupService")
 public class EventBusStatefulMessageListener {
 
     @Inject

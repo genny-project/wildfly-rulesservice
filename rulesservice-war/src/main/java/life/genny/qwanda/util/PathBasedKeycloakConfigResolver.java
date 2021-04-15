@@ -79,7 +79,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 
 				} else {
 
-					if (request.getURI().equals("http://localhost:8080/version") || request.getURI().equals("http://localhost:8080/eventbus/datawithreply")) {
+					if (request.getURI().equals("http://localhost:8080/version") || request.getURI().endsWith("eventbus/datawithreply")) {
 						realm = GennySettings.mainrealm;
 					} else {
 					aURL = new URL(request.getURI());
@@ -103,7 +103,7 @@ public class PathBasedKeycloakConfigResolver implements KeycloakConfigResolver {
 		}
 
 		// don't bother showing Docker health checks
-		if (!request.getURI().equals("http://localhost:8080/version") || request.getURI().equals("http://localhost:8080/eventbus/datawithreply")) {
+		if (!request.getURI().equals("http://localhost:8080/version") || request.getURI().endsWith("eventbus/datawithreply")) {
 			String logtext = ">>>>> INCOMING REALM IS " + realm + " :" + request.getURI() + ":" + request.getMethod()
 			+ ":" + request.getRemoteAddr();
 			if (!logtext.equals(lastlog)) {
