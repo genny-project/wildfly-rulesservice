@@ -4,16 +4,21 @@ import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
-import io.vertx.core.eventbus.Message;
+import io.smallrye.reactive.messaging.annotations.Merge;
+//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import io.vertx.resourceadapter.inflow.VertxListener;
+//import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QCmdMessage;
@@ -28,9 +33,11 @@ import javax.transaction.Transactional;
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
 
-@MessageDriven(name = "EventBusCmdListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "cmds"), })
-@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-public class EventBusCmdListener implements VertxListener {
+//@MessageDriven(name = "EventBusCmdListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "cmds"), })
+//@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+//public class EventBusCmdListener implements VertxListener {
+@ApplicationScoped
+public class EventBusCmdListener {
 	
 
 @Inject
@@ -59,31 +66,36 @@ RulesService rulesService;
     //log.info("EventBusDataListener started.");
   }
 
-  @Override
-  @Transactional
-  @Asynchronous
-  public <T> void onMessage(Message<T> message) {
-	  final JsonObject payload = new JsonObject(message.body().toString());
-    log.info("Get a data message from Vert.x: " + payload);
-	log.info("********* THIS IS WILDFLY CMD LISTENER!!!! *******************");
+  //@Override
+  //@Transactional
+  //@Asynchronous
+  //public <T> void onMessage(Message<T> message) {
+	@Incoming("cmds")
+  @Merge
+  public CompletionStage<Void> fromWebCmds(Message<String>  message) {
+		//final JsonObject payload = new JsonObject(message.body().toString());
+		final JsonObject payload = new JsonObject(message.getPayload());
+		log.info("Get a data message from Vert.x: " + payload);
+		log.info("********* THIS IS WILDFLY CMD LISTENER!!!! *******************");
 
-	QCmdMessage cmdMsg = null;
-	
-	String token = payload.getString("token");
-	
-	GennyToken gennyToken = new GennyToken(token);
-	
-		
-	if (gennyToken.hasRole("dev")) {
+		QCmdMessage cmdMsg = null;
 
-		if (payload.getString("msg_type").equals("CMD_MSG")) {
-			if (payload.getString("cmd_type").equals("CMD_RELOAD_RULES")) {
-				if (payload.getString("code").equals("RELOAD_RULES_FROM_FILES")) {
-					RulesLoader.loadRules(gennyToken.getRealm(),"/rules");
+		String token = payload.getString("token");
+
+		GennyToken gennyToken = new GennyToken(token);
+
+
+		if (gennyToken.hasRole("dev")) {
+
+			if (payload.getString("msg_type").equals("CMD_MSG")) {
+				if (payload.getString("cmd_type").equals("CMD_RELOAD_RULES")) {
+					if (payload.getString("code").equals("RELOAD_RULES_FROM_FILES")) {
+						RulesLoader.loadRules(gennyToken.getRealm(),"/rules");
+					}
 				}
 			}
 		}
-	}
+		return message.ack();
   }
 
   

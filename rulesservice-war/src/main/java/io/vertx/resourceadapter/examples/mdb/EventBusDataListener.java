@@ -8,23 +8,28 @@ import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
 import life.genny.rules.RulesLoaderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
+import io.smallrye.reactive.messaging.annotations.Merge;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
-import io.vertx.core.eventbus.Message;
+//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.resourceadapter.inflow.VertxListener;
+//import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
 import life.genny.qwanda.attribute.EntityAttribute;
@@ -62,10 +67,12 @@ import life.genny.qwanda.entity.BaseEntity;
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
 
-@MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = {
-        @ActivationConfigProperty(propertyName = "address", propertyValue = "data"),})
-@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-public class EventBusDataListener implements VertxListener {
+//@MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = {
+        //@ActivationConfigProperty(propertyName = "address", propertyValue = "data"),})
+//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+//public class EventBusDataListener implements VertxListener {
+@ApplicationScoped
+public class EventBusDataListener {
 
 //@Inject
 //EventBusBean eventBus;
@@ -94,11 +101,15 @@ public class EventBusDataListener implements VertxListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    @Override
-//	@Transactional
-  @Asynchronous
-    public <T> void onMessage(Message<T> message) {
-        final JsonObject payload = new JsonObject(message.body().toString());
+    //@Override
+////	@Transactional
+  //@Asynchronous
+    //public <T> void onMessage(Message<T> message) {
+    @Incoming("data")
+    @Merge
+    public CompletionStage<Void>  onMessage(Message<String> message) {
+        //final JsonObject payload = new JsonObject(message.body().toString());
+        final JsonObject payload = new JsonObject(message.getPayload());
         String token = payload.getString("token");
         payload.remove("token");
         log.info("Get a data message from Vert.x: " + payload);
@@ -208,6 +219,7 @@ public class EventBusDataListener implements VertxListener {
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }
         }
+        return message.ack();
     }
 
 }

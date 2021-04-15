@@ -2,6 +2,9 @@ package life.genny.qwanda.endpoint;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+
+import io.vertx.resourceadapter.examples.mdb.EventBusDataWithReplyListener;
+
 import java.util.HashSet;
 import java.util.Set;
 import life.genny.qwanda.providers.CORSFilter;
@@ -21,6 +24,7 @@ public class RestApplication extends Application {
     resources.add(JsonDateTimeProvider.class);
     resources.add(VersionEndpoint.class);
     resources.add(ServiceEndpoint.class);
+    resources.add(EventBusDataWithReplyListener.class);
     resources.add(CORSFilter.class);
 
     resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);

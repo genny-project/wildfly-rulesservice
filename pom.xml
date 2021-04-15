@@ -9,7 +9,7 @@
 	<name>wildfly-rulesservice</name>
 
 	<modules>
-		<module>rulesservice-ear</module>
+		<!--<module>rulesservice-ear</module>-->
 		<module>rulesservice-war</module>
 	</modules>
 
@@ -33,24 +33,24 @@
 				<version>2.1.0</version>
 				<scope>provided</scope>
 			</dependency>
-			<dependency>
-				<groupId>io.vertx</groupId>
-				<artifactId>vertx-core</artifactId>
-				<version>${vertx.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.vertx</groupId>
-				<artifactId>vertx-hazelcast</artifactId>
-				<version>${vertx.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.vertx</groupId>
-				<artifactId>vertx-jca-api</artifactId>
-				<version>${vertx.version}</version>
-				<scope>provided</scope>
-			</dependency>
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-core</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-hazelcast</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-jca-api</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
 				<artifactId>jboss-javaee-6.0</artifactId>
@@ -64,12 +64,18 @@
 				<version>8.0</version>
 				<scope>provided</scope>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf -->
+			<!--[> https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf <]-->
+			<!--<dependency>-->
+				<!--<groupId>org.wildfly</groupId>-->
+				<!--<artifactId>wildfly-jsf</artifactId>-->
+				<!--<version>${version.org.wildfly}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
 			<dependency>
-				<groupId>org.wildfly</groupId>
-				<artifactId>wildfly-jsf</artifactId>
-				<version>${version.org.wildfly}</version>
-				<scope>provided</scope>
+				<groupId>io.vertx</groupId>
+				<artifactId>vertx-core</artifactId>
+				<version>3.9.3</version>
+				<!--<scope>provided</scope>-->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

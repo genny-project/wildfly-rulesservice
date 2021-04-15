@@ -15,16 +15,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.Asynchronous;
 import javax.ejb.MessageDriven;
+import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.apache.logging.log4j.Logger;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
-
+import io.swagger.annotations.Api;
 import io.vavr.Tuple2;
-import io.vertx.core.eventbus.Message;
+//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import io.vertx.resourceadapter.inflow.VertxListener;
+//import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.jbpm.customworkitemhandlers.RuleFlowGroupWorkItemHandler;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
@@ -45,15 +50,22 @@ import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.RulesUtils;
 import life.genny.utils.VertxUtils;
 import org.jsoup.Connection;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Message-Driven Bean implementation class for: EventBusDataListener
  */
 
-@MessageDriven(name = "EventBusDataWithReplyListener", messageListenerInterface = VertxListener.class, activationConfig = {
-		@ActivationConfigProperty(propertyName = "address", propertyValue = "dataWithReply"), })
-@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-public class EventBusDataWithReplyListener implements VertxListener {
+//@MessageDriven(name = "EventBusDataWithReplyListener", messageListenerInterface = VertxListener.class, activationConfig = {
+		//@ActivationConfigProperty(propertyName = "address", propertyValue = "dataWithReply"), })
+//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+//public class EventBusDataWithReplyListener implements VertxListener {
+@Path("/eventbus")
+@Api(value = "/eventbus", tags = "eventbus")
+@Produces(MediaType.APPLICATION_JSON)
+@Stateless
+public class EventBusDataWithReplyListener {
 
 //@Inject
 //EventBusBean eventBus;
@@ -97,19 +109,24 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		return user;
 	}
 
-	@Override
-//	@Transactional
-	@Asynchronous
-	public <T> void onMessage(Message<T> message) {
+	//@Override
+////	@Transactional
+	//@Asynchronous
+	//public <T> void onMessage(Message<T> message) {
+  @POST
+  @Path("/datawithreply")
+	public Response  onMessage(String message) {
 		log.info("********* THIS IS WILDFLY DATA WITH REPLY LISTENER!!!! *******************");
 
 		long starttime = System.currentTimeMillis();
 		Boolean sendEventMessage = false;
 
 		GennyToken userToken = null;
-		final JsonObject payload = new JsonObject(message.body().toString());
+		//final JsonObject payload = new JsonObject(message.body().toString());
+		final JsonObject payload = new JsonObject(message);
 		QDataAnswerMessage dataMsg = null;
-		dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
+		//dataMsg = JsonUtils.fromJson(message.body().toString(), QDataAnswerMessage.class);
+		dataMsg = JsonUtils.fromJson(message, QDataAnswerMessage.class);
 		dataMsg.setAliasCode("STATELESS");
 		String token = payload.getString("token");
 
@@ -137,7 +154,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 		if (user == null) {
 			log.error(String.format("Can not find user BaseEntity neither by UUID:%s nor by userCode:%s, " +
 					"will not go further!!", userToken.getUserUUID(), userToken.getUserCode()));
-			return;
+			return Response.status(400).build();
 		}
 
 		Optional<Boolean> optUserCode = user.getValue("PRI_IS_INTERN");
@@ -392,7 +409,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 
 		}
 
-		message.reply(ret);
+		//message.reply(ret);
 		if (userToken != null) {
 			// now update the latest sync time
 			beUtils.saveAnswer(new Answer(userToken.getUserCode(), uniqueDeviceCode, "PRI_LAST_UPDATED", now));
@@ -427,6 +444,7 @@ public class EventBusDataWithReplyListener implements VertxListener {
 				sendTheDamnedSlackMessage(userToken, serviceToken, msg);
 			}
 		}
+		return Response.status(200).entity(ret.toString()).build();
 	}
 
 	public void sendTheDamnedSlackMessage(GennyToken userToken, GennyToken serviceToken, QEventMessage message) {
