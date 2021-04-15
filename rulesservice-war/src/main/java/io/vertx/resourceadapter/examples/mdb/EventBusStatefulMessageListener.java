@@ -7,20 +7,23 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
 import life.genny.rules.RulesLoaderFactory;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vertx.core.eventbus.Message;
+//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import io.vertx.resourceadapter.inflow.VertxListener;
+//import io.vertx.resourceadapter.inflow.VertxListener;
 
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
@@ -46,10 +49,12 @@ import javax.ejb.Asynchronous;
  * listen for Stateful JBPM Messages
  */
 
-@MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
-        @ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"),})
-@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-public class EventBusStatefulMessageListener implements VertxListener {
+//@MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
+        //@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"),})
+//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+//public class EventBusStatefulMessageListener implements VertxListener {
+@ApplicationScoped
+public class EventBusStatefulMessageListener {
 
     @Inject
     EventBusBean eventBus;
@@ -79,14 +84,15 @@ public class EventBusStatefulMessageListener implements VertxListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    @Override
-    @Transactional
-    @Asynchronous
-    public <T> void onMessage(Message<T> message) {
+    //@Override
+    //@Transactional
+    //@Asynchronous
+    //public <T> void onMessage(Message<T> message) {
+    public CompletionStage<Void> onMessage(Message<String> message) {
 
         log.info("********* THIS IS WILDFLY STATEFUL MESSGE LISTENER!!!! *******************");
 
-        final JsonObject payload = new JsonObject(message.body().toString());
+        final JsonObject payload = new JsonObject(message.getPayload());
 
         String token = payload.getString("token"); // TODO, this should be grabbed from header
 
@@ -111,6 +117,7 @@ public class EventBusStatefulMessageListener implements VertxListener {
             }
             getRulesLoader(token).addNewItem(eventMsg, token);
         }
+        return message.ack();
     }
 
 }

@@ -7,20 +7,24 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 
 import life.genny.rules.RulesLoaderFactory;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vertx.core.eventbus.Message;
+//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-import io.vertx.resourceadapter.inflow.VertxListener;
+//import io.vertx.resourceadapter.inflow.VertxListener;
 
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
@@ -46,10 +50,13 @@ import javax.transaction.Transactional;
  * listen for Stateful JBPM Messages
  */
 
-@MessageDriven(name = "EventBusSignalListener", messageListenerInterface = VertxListener.class, activationConfig = {
-        @ActivationConfigProperty(propertyName = "address", propertyValue = "signals"),})
-@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-public class EventBusSignalListener implements VertxListener {
+//@MessageDriven(name = "EventBusSignalListener", messageListenerInterface = VertxListener.class, activationConfig = {
+        //@ActivationConfigProperty(propertyName = "address", propertyValue = "signals"),})
+//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
+//public class EventBusSignalListener implements VertxListener {
+@ApplicationScoped
+//public class EventBusSignalListener implements VertxListener {
+public class EventBusSignalListener {
 
     @Inject
     EventBusBean eventBus;
@@ -80,20 +87,23 @@ public class EventBusSignalListener implements VertxListener {
     }
 
 
-    @Override
-    // @Transactional
-    // @Asynchronous
-    public <T> void onMessage(Message<T> message) {
+    //@Override
+    //// @Transactional
+    //// @Asynchronous
+    //public <T> void onMessage(Message<T> message) {
+    @Incoming("signals")
+    public CompletionStage<Void> onMessage(Message<String> message) {
 
         log.info("********* THIS IS WILDFLY SIGNAL LISTENER!!!! *******************");
 
-        final JsonObject payload = new JsonObject(message.body().toString());
+        //final JsonObject payload = new JsonObject(message.body().toString());
+        final JsonObject payload = new JsonObject(message.getPayload());
 
         String token = payload.getString("token"); // GODO, this should be grabbed from header
         if (token != null /* && TokenIntrospection.checkAuthForRoles(userToken,roles, token)*/) { // do not allow empty tokens
 
-//			log.info("Roles from this token are allow and authenticated "
-//					+ TokenIntrospection.checkAuthForRoles(roles, token));
+            //			log.info("Roles from this token are allow and authenticated "
+            //					+ TokenIntrospection.checkAuthForRoles(roles, token));
 
             QEventMessage eventMsg = null;
             if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
@@ -110,7 +120,9 @@ public class EventBusSignalListener implements VertxListener {
                 }
             }
             getRulesLoader(token).addNewItem(eventMsg, token);
+
         }
+        return message.ack();
     }
 
 }

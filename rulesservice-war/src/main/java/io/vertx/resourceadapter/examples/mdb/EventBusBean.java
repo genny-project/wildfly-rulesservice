@@ -1,54 +1,24 @@
 package io.vertx.resourceadapter.examples.mdb;
 
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.naming.NamingException;
-import javax.resource.ResourceException;
-import io.vertx.resourceadapter.*;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.EventBusOptions;
-import life.genny.channel.Producer;
-import life.genny.cluster.CurrentVtxCtx;
-import life.genny.eventbus.EventBusInterface;
-import life.genny.qwanda.entity.BaseEntity;
-import javax.enterprise.context.RequestScoped;
-import io.vertx.core.json.JsonObject;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.QwandaUtils;
-import life.genny.qwandautils.JsonUtils;
 import java.lang.invoke.MethodHandles;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.naming.NamingException;
-import javax.resource.ResourceException;
-import io.vertx.resourceadapter.*;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.EventBusOptions;
-import life.genny.channel.Producer;
-import life.genny.cluster.CurrentVtxCtx;
-import life.genny.eventbus.EventBusInterface;
-import life.genny.qwanda.entity.BaseEntity;
 import javax.enterprise.context.ApplicationScoped;
-import io.vertx.core.json.JsonObject;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.QwandaUtils;
-import life.genny.qwandautils.JsonUtils;
-import java.lang.invoke.MethodHandles;
+import javax.inject.Inject;
+import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+
+import io.vertx.core.json.JsonObject;
+//import life.genny.channel.Producer;
+import life.genny.eventbus.EventBusInterface;
 
 @ApplicationScoped
 public class EventBusBean implements EventBusInterface {
+
+	@Inject 
+	Producer producer;
 
 	/**
 	 * Stores logger object.
@@ -58,84 +28,64 @@ public class EventBusBean implements EventBusInterface {
   
 
 	public void write(final String channel, final Object msg) throws NamingException 
-	{
+	{ 
 		String json = msg.toString();
 		JsonObject event = new JsonObject(json);
-		try {
-			if (!StringUtils.isBlank(event.getString("token"))) {
-			   javax.naming.InitialContext ctx = null;
-			    io.vertx.resourceadapter.VertxConnection conn = null;
-			    try {
-			      ctx = new javax.naming.InitialContext();
-			      io.vertx.resourceadapter.VertxConnectionFactory connFactory =
-			          (io.vertx.resourceadapter.VertxConnectionFactory) ctx
-			              .lookup("java:/eis/VertxConnectionFactory");
-			      conn = connFactory.getVertxConnection();
-			    //  log.info("Publishing Vertx Bus Message on channel "+channel+":");
+		if (!StringUtils.isBlank(event.getString("token"))) {
 
-			      conn.vertxEventBus().publish(channel, event);
-			    //  log.info("Published Vertx Bus Message on channel "+channel);
-			    } catch (Exception e) {
-			      e.printStackTrace();
-			    } finally {
-			      if (ctx != null) {
-			        ctx.close();
-			      }
-			      if (conn != null) {
-			    	  try {
-			        conn.close();
-			    	  } catch (ResourceException e) {
-			    		  e.printStackTrace();
-			    	  }
-			      }
-			    }
-			} else {
-				log.error("No token set for message");
+			if(channel.equals("events"))
+			{
+				producer.getToEvents().send(event.toString());;
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			else if(channel.equals("data"))
+			{
+				producer.getToData().send(event.toString());;
+			}
+			else if(channel.equals("webdata"))
+			{
+				producer.getToWebData().send(event.toString());;
+			}
+			else if(channel.equals("webcmds"))
+			{
+				producer.getToWebCmds().send(event.toString());;
+			}
+			else if(channel.equals("cmds"))
+			{
+				producer.getToCmds().send(event.toString());
+			}
+			else if(channel.equals("social"))
+			{
+				producer.getToSocial().send(event.toString());
+			}
+			else if(channel.equals("signals"))
+			{
+				producer.getToSignals().send(event.toString());
+			}
+			else if(channel.equals("statefulmessages"))
+			{
+				producer.getToStatefulMessages().send(event.toString());
+			}
+			else if(channel.equals("health"))
+			{
+				producer.getToHealth().send(event.toString());
+			}
+			if(channel.equals("messages"))
+			{
+				producer.getToMessages().send(event.toString());;
+			}
+			if(channel.equals("services"))
+			{
+				producer.getToServices().send(event.toString());;
+			}
+
+		} else {
+			log.error("No token set for message");
 		}
+
 	}
-  
 
 	public void send(final String channel, final Object msg) throws NamingException 
 	{
-		//String msgStr = JsonUtils.toJson(msg);
-	   //   JsonObject event = new JsonObject(msgStr);
-		String json = msg.toString();
-		JsonObject event = new JsonObject(json);  // TODO, change this to use an original JsonObject
-	      
-
-		   javax.naming.InitialContext ctx = null;
-		    io.vertx.resourceadapter.VertxConnection conn = null;
-		    try {
-		      ctx = new javax.naming.InitialContext();
-		      io.vertx.resourceadapter.VertxConnectionFactory connFactory =
-		          (io.vertx.resourceadapter.VertxConnectionFactory) ctx
-		              .lookup("java:/eis/VertxConnectionFactory");
-		     // log.info("Sending Vertx Bus Message on channel "+channel+":");
-		      DeliveryOptions options = new DeliveryOptions();
-		      conn = connFactory.getVertxConnection();
-
-		      conn.vertxEventBus().send(channel, event,options);
-		     // log.info("Sent Vertx Bus Message on channel "+channel);
-		    } catch (Exception e) {
-		      e.printStackTrace();
-		    } finally {
-		      if (ctx != null) {
-		        ctx.close();
-		      }
-		      if (conn != null) {
-		    	  try {
-		        conn.close();
-		    	  } catch (ResourceException e) {
-		    		  e.printStackTrace();
-		    	  }
-		      }
-		    }
-
+		write(channel,msg);
 	}
- 
-
 }

@@ -26,6 +26,6 @@ RUN mkdir /realm
 RUN mkdir /rules
 
 ADD realm /opt/realm
-ADD rulesservice-ear/target/rulesservice-ear.ear $JBOSS_HOME/standalone/deployments/rulesservice-ear.ear
+ADD rulesservice-war/target/rulesservice-war.war $JBOSS_HOME/standalone/deployments/rulesservice-war.war
 RUN rm -Rf /opt/jboss/wildfly/standalone/data/*
 ENTRYPOINT [ "/opt/jboss/docker-entrypoint2.sh" ]

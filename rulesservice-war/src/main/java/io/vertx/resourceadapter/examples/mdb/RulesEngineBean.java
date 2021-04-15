@@ -20,7 +20,7 @@ import javax.ejb.StatefulTimeout;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-@RequestScoped
+//@RequestScoped
 @Stateful
 @StatefulTimeout(unit = TimeUnit.MINUTES, value = 20)
 public class RulesEngineBean {
