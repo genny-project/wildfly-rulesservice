@@ -1,14 +1,16 @@
 package io.vertx.resourceadapter.examples.mdb;
 
 import javax.ejb.DependsOn;
+import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-@ApplicationScoped
+//@ApplicationScoped
 @DependsOn("StartupService")
+@Singleton
 public class Producer {
 
 

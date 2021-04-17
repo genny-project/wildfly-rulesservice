@@ -2,6 +2,7 @@ package io.vertx.resourceadapter.examples.mdb;
 
 
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 
 import io.vavr.Tuple3;
@@ -21,8 +22,9 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
 //@RequestScoped
-@Stateful
-@StatefulTimeout(unit = TimeUnit.MINUTES, value = 20)
+//@Stateful
+//@StatefulTimeout(unit = TimeUnit.MINUTES, value = 20)
+@ApplicationScoped
 public class RulesEngineBean {
 
     /**
@@ -39,7 +41,7 @@ public class RulesEngineBean {
     }
 
     //@Transactional
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    //@TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void processMsg(final Object msg, final String token) {
         RulesLoader rulesLoader = getRulesLoader(token);
         // Add item to queue, process request thread in RulesLoader will pick and process

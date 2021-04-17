@@ -14,8 +14,11 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.jboss.ejb3.annotation.ResourceAdapter;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -31,11 +34,14 @@ import javax.transaction.Transactional;
 //@MessageDriven(name = "EventBusEventListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
 //@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusEventListener implements VertxListener {
-@ApplicationScoped
+//@ApplicationScoped
+@Startup
 @DependsOn("StartupService")
+@Singleton
 public class EventBusEventListener {
 	
 
+	@Inject DummyObject dummy;
 	
 	@Inject
 	RulesEngineBean rulesEngineBean;
@@ -50,9 +56,12 @@ public class EventBusEventListener {
    * Default constructor.
    */
   public EventBusEventListener() {
-   // log.info("EventBusEventListener started.");
+				
   }
 
+	@PostConstruct
+	public void dummy(){
+	}
   
   
 //  @Override

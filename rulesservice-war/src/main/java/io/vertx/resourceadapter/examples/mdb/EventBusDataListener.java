@@ -10,8 +10,12 @@ import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
@@ -72,12 +76,15 @@ import life.genny.qwanda.entity.BaseEntity;
         //@ActivationConfigProperty(propertyName = "address", propertyValue = "data"),})
 //@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusDataListener implements VertxListener {
-@ApplicationScoped
+//@ApplicationScoped
 @DependsOn("StartupService")
+@Startup
+@Singleton
 public class EventBusDataListener {
 
 //@Inject
 //EventBusBean eventBus;
+	@Inject DummyObject dummy;
 
     @Inject
     RulesEngineBean rulesEngineBean;
@@ -95,8 +102,11 @@ public class EventBusDataListener {
      * Default constructor.
      */
     public EventBusDataListener() {
-        // log.info("EventBusDataListener started.");
     }
+
+	@PostConstruct
+	public void dummy(){
+	}
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");

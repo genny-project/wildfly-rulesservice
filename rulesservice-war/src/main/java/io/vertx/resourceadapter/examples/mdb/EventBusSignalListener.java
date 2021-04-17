@@ -9,8 +9,12 @@ import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
@@ -55,14 +59,17 @@ import javax.transaction.Transactional;
         //@ActivationConfigProperty(propertyName = "address", propertyValue = "signals"),})
 //@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusSignalListener implements VertxListener {
-@ApplicationScoped
+//@ApplicationScoped
 //public class EventBusSignalListener implements VertxListener {
 @DependsOn("StartupService")
+@Startup
+@Singleton
 public class EventBusSignalListener {
 
     @Inject
     EventBusBean eventBus;
 
+	@Inject DummyObject dummy;
     @Inject
     RulesService rulesService;
 
@@ -80,8 +87,10 @@ public class EventBusSignalListener {
      * Default constructor.
      */
     public EventBusSignalListener() {
-        //log.info("EventBusSignalListener started.");
     }
+	@PostConstruct
+	public void dummy(){
+	}
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");

@@ -9,8 +9,12 @@ import javax.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
@@ -54,8 +58,10 @@ import javax.ejb.DependsOn;
         //@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"),})
 //@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusStatefulMessageListener implements VertxListener {
-@ApplicationScoped
-@DependsOn("StartupService")
+//@ApplicationScoped
+@DependsOn("DummyObject")
+@Startup
+@Singleton
 public class EventBusStatefulMessageListener {
 
     @Inject
@@ -63,6 +69,8 @@ public class EventBusStatefulMessageListener {
 
     @Inject
     RulesService rulesService;
+
+	@Inject DummyObject dummy;
 
     protected static final Logger log = org.apache.logging.log4j.LogManager
             .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -78,8 +86,10 @@ public class EventBusStatefulMessageListener {
      * Default constructor.
      */
     public EventBusStatefulMessageListener() {
-        //log.info("EventBusStatefulMessageListener started.");
     }
+	@PostConstruct
+	public void dummy(){
+	}
 
     private RulesLoader getRulesLoader(String token) {
         String sessionState = (String) KeycloakUtils.getJsonMap(token).get("session_state");

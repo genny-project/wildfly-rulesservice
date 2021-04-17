@@ -12,10 +12,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.Asynchronous;
 import javax.ejb.DependsOn;
 import javax.ejb.MessageDriven;
+import javax.ejb.Startup;
 import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -67,10 +69,12 @@ import javax.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
 @DependsOn("StartupService")
+@Startup
 public class EventBusDataWithReplyListener {
 
 //@Inject
 //EventBusBean eventBus;
+	@Inject DummyObject dummy;
 
 	@Inject
 	RulesEngineBean rulesEngineBean;
@@ -87,10 +91,12 @@ public class EventBusDataWithReplyListener {
 	/**
 	 * Default constructor.
 	 */
-	public EventBusDataWithReplyListener() {
-		// log.info("EventBusDataListener started.");
-	}
+    public EventBusDataWithReplyListener() {
+    }
 
+	@PostConstruct
+	public void dummy(){
+	}
 	private BaseEntity getUser(BaseEntityUtils beUtils, GennyToken userToken) {
 		BaseEntity user = null;
 		String userCode = userToken.getUserCode();

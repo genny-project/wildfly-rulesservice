@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -37,8 +40,10 @@ import javax.transaction.Transactional;
 //@MessageDriven(name = "EventBusCmdListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "cmds"), })
 //@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
 //public class EventBusCmdListener implements VertxListener {
-@ApplicationScoped
+//@ApplicationScoped
 @DependsOn("StartupService")
+@Startup
+@Singleton
 public class EventBusCmdListener {
 	
 
@@ -56,6 +61,13 @@ RulesService rulesService;
 	private static Map<String, User> usersSession = new HashMap<String, User>();
 
 	
+	@Inject DummyObject dummy;
+	public EventBusCmdListener(){
+	}
+
+	@PostConstruct
+	public void dummy(){
+	}
 
 
 	static String token;
@@ -64,9 +76,9 @@ RulesService rulesService;
   /**
    * Default constructor.
    */
-  public EventBusCmdListener() {
-    //log.info("EventBusDataListener started.");
-  }
+  //public EventBusCmdListener() {
+		//log.info("EventBusDataListkner started.");
+  //}
 
   //@Override
   //@Transactional
