@@ -1,26 +1,20 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.inject.Inject;
-import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
-import javax.naming.NamingException;
-import javax.resource.ResourceException;
+import javax.inject.Inject;
 
-import life.genny.rules.RulesLoaderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -28,11 +22,11 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.smallrye.reactive.messaging.annotations.Merge;
 import io.vavr.Tuple;
-import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 //import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import life.genny.models.GennyToken;
 //import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
@@ -42,48 +36,19 @@ import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QDataAnswerMessage;
 import life.genny.qwanda.message.QDataGPSMessage;
 import life.genny.qwanda.message.QDataPaymentsCallbackMessage;
-import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
-import life.genny.qwanda.message.QEventBtnClickMessage;
-import life.genny.qwanda.message.QEventLinkChangeMessage;
-import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwanda.rule.Rule;
-import life.genny.qwanda.service.RulesService;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.qwandautils.KeycloakUtils;
-import life.genny.utils.BaseEntityUtils;
-import life.genny.models.GennyToken;
-
-import life.genny.eventbus.EventBusInterface;
 import life.genny.rules.RulesLoader;
+import life.genny.rules.RulesLoaderFactory;
+import life.genny.utils.BaseEntityUtils;
 
-import javax.transaction.Transactional;
-import javax.ejb.Asynchronous;
-import javax.ejb.DependsOn;
-
-import org.jboss.ejb3.annotation.ResourceAdapter;
-import life.genny.qwanda.Answer;
-import life.genny.qwanda.Answers;
-import life.genny.qwanda.TaskAsk;
-import life.genny.qwanda.attribute.EntityAttribute;
-import life.genny.qwanda.entity.BaseEntity;
-
-/**
- * Message-Driven Bean implementation class for: EventBusDataListener
- */
-
-//@MessageDriven(name = "EventBusDataListener", messageListenerInterface = VertxListener.class, activationConfig = {
-        //@ActivationConfigProperty(propertyName = "address", propertyValue = "data"),})
-//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-//public class EventBusDataListener implements VertxListener {
-//@ApplicationScoped
 @DependsOn("StartupService")
 @Startup
 @Singleton
 public class EventBusDataListener {
 
-//@Inject
-//EventBusBean eventBus;
 	@Inject DummyObject dummy;
 
     @Inject
@@ -113,14 +78,9 @@ public class EventBusDataListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    //@Override
-////	@Transactional
-  //@Asynchronous
-    //public <T> void onMessage(Message<T> message) {
     @Incoming("data")
     @Merge
     public CompletionStage<Void>  onMessage(Message<String> message) {
-        //final JsonObject payload = new JsonObject(message.body().toString());
         final JsonObject payload = new JsonObject(message.getPayload());
         String token = payload.getString("token");
         payload.remove("token");

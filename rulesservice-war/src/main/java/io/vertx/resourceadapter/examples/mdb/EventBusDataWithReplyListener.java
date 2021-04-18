@@ -13,23 +13,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.Asynchronous;
 import javax.ejb.DependsOn;
-import javax.ejb.MessageDriven;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.Logger;
-import org.jboss.ejb3.annotation.ResourceAdapter;
 
 import io.swagger.annotations.Api;
-import io.vavr.Tuple2;
 //import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 //import io.vertx.resourceadapter.inflow.VertxListener;
@@ -52,18 +48,7 @@ import life.genny.qwandautils.QwandaUtils;
 import life.genny.utils.BaseEntityUtils;
 import life.genny.utils.RulesUtils;
 import life.genny.utils.VertxUtils;
-import org.jsoup.Connection;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-/**
- * Message-Driven Bean implementation class for: EventBusDataListener
- */
-
-//@MessageDriven(name = "EventBusDataWithReplyListener", messageListenerInterface = VertxListener.class, activationConfig = {
-		//@ActivationConfigProperty(propertyName = "address", propertyValue = "dataWithReply"), })
-//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-//public class EventBusDataWithReplyListener implements VertxListener {
 @Path("/eventbus")
 @Api(value = "/eventbus", tags = "eventbus")
 @Produces(MediaType.APPLICATION_JSON)
@@ -72,8 +57,6 @@ import javax.ws.rs.core.Response;
 @Startup
 public class EventBusDataWithReplyListener {
 
-//@Inject
-//EventBusBean eventBus;
 	@Inject DummyObject dummy;
 
 	@Inject
@@ -88,15 +71,12 @@ public class EventBusDataWithReplyListener {
 
 	static String token;
 
-	/**
-	 * Default constructor.
-	 */
     public EventBusDataWithReplyListener() {
     }
 
 	@PostConstruct
-	public void dummy(){
-	}
+	public void dummy(){}
+
 	private BaseEntity getUser(BaseEntityUtils beUtils, GennyToken userToken) {
 		BaseEntity user = null;
 		String userCode = userToken.getUserCode();
@@ -117,10 +97,6 @@ public class EventBusDataWithReplyListener {
 		return user;
 	}
 
-	//@Override
-////	@Transactional
-	//@Asynchronous
-	//public <T> void onMessage(Message<T> message) {
   @POST
   @Path("/datawithreply")
 	public Response  onMessage(String message) {

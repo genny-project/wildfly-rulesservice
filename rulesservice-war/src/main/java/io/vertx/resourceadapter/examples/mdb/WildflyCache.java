@@ -1,20 +1,11 @@
 package io.vertx.resourceadapter.examples.mdb;
 
-import java.util.concurrent.TimeUnit;
-import javax.enterprise.context.ApplicationScoped;
 import java.lang.invoke.MethodHandles;
+
 import org.apache.logging.log4j.Logger;
-import java.io.IOException;
-
-import javax.inject.Inject;
-
-import life.genny.channel.DistMap;
 
 import life.genny.eventbus.WildflyCacheInterface;
 import life.genny.qwanda.service.Hazel;
-import life.genny.qwandautils.GennySettings;
-import io.vertx.core.json.JsonObject;
-import life.genny.qwandautils.QwandaUtils;
 
 //@ApplicationScoped
 public class WildflyCache implements WildflyCacheInterface {

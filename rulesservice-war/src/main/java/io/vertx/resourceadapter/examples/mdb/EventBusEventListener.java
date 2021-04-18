@@ -1,40 +1,36 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import java.lang.invoke.MethodHandles;
+import java.util.concurrent.CompletionStage;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.DependsOn;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.inject.Inject;
+
+import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
+
 import io.smallrye.reactive.messaging.annotations.Merge;
 //import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 //import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
-import life.genny.qwanda.message.*;
+import life.genny.qwanda.message.QDataAnswerMessage;
+import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
+import life.genny.qwanda.message.QEventBtnClickMessage;
+import life.genny.qwanda.message.QEventDropdownMessage;
+import life.genny.qwanda.message.QEventLinkChangeMessage;
+import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.utils.VertxUtils;
-import org.apache.logging.log4j.Logger;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
-import org.jboss.ejb3.annotation.ResourceAdapter;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.lang.invoke.MethodHandles;
-import java.util.concurrent.CompletionStage;
-
-import javax.ejb.Asynchronous;
-import javax.ejb.DependsOn;
-import javax.transaction.Transactional;
 /**
  * Message-Driven Bean implementation class for: EventBusEventListener
  */
 
-//@MessageDriven(name = "EventBusEventListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "events"), })
-//@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-//public class EventBusEventListener implements VertxListener {
-//@ApplicationScoped
 @Startup
 @DependsOn("StartupService")
 @Singleton
@@ -64,20 +60,10 @@ public class EventBusEventListener {
 	}
   
   
-//  @Override
-//  public <T> void onMessage(Message<T> message) {
-//	  doProcessing(message);
-//  }
-  
-  //@Override
-//  @Transactional
-//  @Asynchronous
-  //public <T> void onMessage(Message<T> message) {
 	@Incoming("events")
 	@Merge
   public CompletionStage<Void> onMessage(Message<String> message) {
 		//final JsonObject payload = new JsonObject(message.body().toString());
-		System.out.println("heloo thee meesage here ::::::" + message.getPayload());
 		final JsonObject payload = new JsonObject(message.getPayload());
 
 		String logMessage = "********* THIS IS WILDFLY EVENT LISTENER!!!! ******************* ";	

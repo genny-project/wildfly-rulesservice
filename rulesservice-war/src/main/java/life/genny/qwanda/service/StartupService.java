@@ -3,21 +3,18 @@ package life.genny.qwanda.service;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import life.genny.qwanda.attribute.Attribute;
+
 import life.genny.qwanda.entity.BaseEntity;
-import life.genny.qwanda.message.QDataAttributeMessage;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.JsonUtils;
 import life.genny.security.SecureResources;
 import life.genny.utils.FrameUtils2;
 

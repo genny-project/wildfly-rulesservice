@@ -7,11 +7,9 @@ import java.util.Set;
 import java.util.concurrent.CompletionStage;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.ActivationConfigProperty;
-import javax.ejb.MessageDriven;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.Logger;
@@ -19,28 +17,13 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
 import io.smallrye.reactive.messaging.annotations.Merge;
-//import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-//import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QCmdMessage;
 import life.genny.qwanda.service.RulesService;
 import life.genny.rules.RulesLoader;
-import org.jboss.ejb3.annotation.ResourceAdapter;
 
-import javax.ejb.Asynchronous;
-import javax.ejb.DependsOn;
-import javax.transaction.Transactional;
-
-/**
- * Message-Driven Bean implementation class for: EventBusDataListener
- */
-
-//@MessageDriven(name = "EventBusCmdListener", messageListenerInterface = VertxListener.class, activationConfig = { @ActivationConfigProperty(propertyName = "address", propertyValue = "cmds"), })
-//@ResourceAdapter(value="rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-//public class EventBusCmdListener implements VertxListener {
-//@ApplicationScoped
 @DependsOn("StartupService")
 @Startup
 @Singleton
@@ -62,6 +45,7 @@ RulesService rulesService;
 
 	
 	@Inject DummyObject dummy;
+
 	public EventBusCmdListener(){
 	}
 
@@ -73,21 +57,9 @@ RulesService rulesService;
 	static String token;
 
 
-  /**
-   * Default constructor.
-   */
-  //public EventBusCmdListener() {
-		//log.info("EventBusDataListkner started.");
-  //}
-
-  //@Override
-  //@Transactional
-  //@Asynchronous
-  //public <T> void onMessage(Message<T> message) {
 	@Incoming("cmds")
   @Merge
   public CompletionStage<Void> fromWebCmds(Message<String>  message) {
-		//final JsonObject payload = new JsonObject(message.body().toString());
 		final JsonObject payload = new JsonObject(message.getPayload());
 		log.info("Get a data message from Vert.x: " + payload);
 		log.info("********* THIS IS WILDFLY CMD LISTENER!!!! *******************");

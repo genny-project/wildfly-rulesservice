@@ -49,16 +49,6 @@ import javax.transaction.Transactional;
 import javax.ejb.Asynchronous;
 import javax.ejb.DependsOn;
 
-/**
- * Message-Driven Bean implementation class for: EventBusMessageListener -
- * listen for Stateful JBPM Messages
- */
-
-//@MessageDriven(name = "EventBusStatefulMessageListener", messageListenerInterface = VertxListener.class, activationConfig = {
-        //@ActivationConfigProperty(propertyName = "address", propertyValue = "statefulmessages"),})
-//@ResourceAdapter(value = "rulesservice-ear.ear#vertx-jca-adapter-3.5.4.rar")
-//public class EventBusStatefulMessageListener implements VertxListener {
-//@ApplicationScoped
 @DependsOn("DummyObject")
 @Startup
 @Singleton
@@ -76,15 +66,6 @@ public class EventBusStatefulMessageListener {
             .getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
 
-    //private static final List<String> roles;
-
-    //static {
-        //roles = TokenIntrospection.setRoles("user");
-    //}
-
-    /**
-     * Default constructor.
-     */
     public EventBusStatefulMessageListener() {
     }
 	@PostConstruct
@@ -96,10 +77,6 @@ public class EventBusStatefulMessageListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    //@Override
-    //@Transactional
-    //@Asynchronous
-    //public <T> void onMessage(Message<T> message) {
     public CompletionStage<Void> onMessage(Message<String> message) {
 
         log.info("********* THIS IS WILDFLY STATEFUL MESSGE LISTENER!!!! *******************");
