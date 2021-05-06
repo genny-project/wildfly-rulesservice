@@ -9,8 +9,10 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+
 import org.apache.logging.log4j.Logger;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import io.vertx.resourceadapter.examples.mdb.WildflyCache;
 import life.genny.qwandautils.GennySettings;
@@ -46,6 +48,8 @@ public class RulesService {
 		log.info("Loading Rules");
 		Boolean noChangeInRules = RulesLoader.loadRules(GennySettings.rulesDir);
 
+		JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
+		log.info("SKIP JENNY JSON = "+skipJson.toString());
 		
 		if ((!noChangeInRules) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {
 			log.info("Rulesservice triggering rules");
