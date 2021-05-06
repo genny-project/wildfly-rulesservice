@@ -3,74 +3,19 @@
  */
 package life.genny.qwanda.service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.Message;
-import org.kie.api.builder.ReleaseId;
-import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.conf.TimedRuleExecutionFilter;
-import org.kie.api.runtime.conf.TimedRuleExecutionOption;
-import org.kie.api.runtime.conf.TimerJobFactoryOption;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
-
-import com.google.common.io.Files;
-
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
-import io.vertx.core.json.DecodeException;
-import io.vertx.core.json.JsonObject;
-import life.genny.bootxport.bootx.DataKeyColumn;
-import life.genny.bootxport.bootx.GoogleImportService;
-import life.genny.bootxport.bootx.Realm;
-import life.genny.bootxport.bootx.XlsxImport;
-import life.genny.bootxport.bootx.XlsxImportOnline;
-import life.genny.eventbus.EventBusInterface;
-import life.genny.models.GennyToken;
-import life.genny.qwanda.Answer;
-import life.genny.qwanda.entity.User;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.KeycloakUtils;
-
-import life.genny.utils.RulesUtils;
-import life.genny.utils.VertxUtils;
-
-import life.genny.eventbus.EventBusInterface;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import io.vertx.resourceadapter.examples.mdb.WildflyCache;
-import javax.inject.Inject;
-import javax.annotation.PreDestroy;
-import javax.ejb.Asynchronous;
-
-import life.genny.qwanda.message.QEventMessage;
-
-
+import life.genny.qwandautils.GennySettings;
 import life.genny.rules.RulesLoader;
+import life.genny.utils.VertxUtils;
 
 /**
  * @author acrow
