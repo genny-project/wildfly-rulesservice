@@ -43,6 +43,11 @@ public class RulesService {
 		log.info("Initialising Rules .... from " + GennySettings.rulesDir);
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus, cacheInterface);
+		
+		// Load in DEFs for every realm
+		
+		
+		
 		// Load in Rules
 		RulesLoader.init();
 		log.info("Loading Rules");
