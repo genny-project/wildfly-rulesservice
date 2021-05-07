@@ -47,15 +47,24 @@ public class RulesService {
 		RulesLoader.init();
 		log.info("Loading Rules");
 		Boolean noChangeInRules = RulesLoader.loadRules(GennySettings.rulesDir);
-
+		Boolean noskip = true;
 		JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
+		if (skipJson.containsKey("status")) {
+			if ("ok".equalsIgnoreCase(skipJson.getString("status"))) {
+				String val = skipJson.getString("value");
+				if ("TRUE".equalsIgnoreCase(val)) {
+					noChangeInRules = true;
+					noskip = false;
+				}
+			}
+		}
 		log.info("SKIP JENNY JSON = "+skipJson.toString());
 		
-		if ((!noChangeInRules) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP")))) {
+		if (noskip &&((!noChangeInRules) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))))) {
 			log.info("Rulesservice triggering rules");
 			(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
 		} else {
-			log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered.");
+			log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered. SKIP CACHE = "+(noskip?"FALSE":"TRUE"));
 		}
 	}
 
