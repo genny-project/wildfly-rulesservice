@@ -1,5 +1,6 @@
 package life.genny.qwanda.endpoint;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -10,14 +11,43 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieModule;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.ReleaseId;
+import org.kie.api.executor.ExecutorService;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeEnvironmentBuilder;
+import org.kie.api.runtime.manager.RuntimeManagerFactory;
+import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.api.task.TaskService;
+import org.kie.internal.conf.ConsequenceExceptionHandlerOption;
+import org.kie.internal.runtime.manager.context.EmptyContext;
 
 import io.swagger.annotations.Api;
 import life.genny.models.BaseEntityImport;
@@ -44,11 +74,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
+import org.jbpm.executor.ExecutorServiceFactory;
+import org.jbpm.runtime.manager.impl.DefaultRegisterableItemsFactory;
+import org.kie.api.io.Resource;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.vavr.Tuple3;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import life.genny.qwanda.service.RulesService;
 import life.genny.qwanda.service.SecurityService;
@@ -92,7 +127,7 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			RulesLoader.loadRules(securityService.getRealm(), GennySettings.rulesDir);
+			RulesLoader.reloadRules(securityService.getRealm());
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -144,6 +179,93 @@ public class ServiceEndpoint {
 		RulesLoader.loadRules(realm, GennySettings.rulesDir);
 		(new RulesLoader()).triggerStartupRules(securityService.getRealm(), GennySettings.rulesDir);
 
+	}
+
+	
+	@POST
+	@Consumes("multipart/form-data")
+	@Path("/postrule")
+	public Response postRule(final MultipartFormDataInput input) {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+      String realm = securityService.getRealm();
+			final Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
+
+			log.info("Rules postrule used");
+			// Get file data to save
+			final List<InputPart> inputParts = uploadForm.get("attachment");
+
+			for (final InputPart inputPart : inputParts) {
+				try {
+
+					final MultivaluedMap<String, String> header = inputPart.getHeaders();
+					final String fileName = getFileName(header);
+
+					RulesLoader.reloadRules(securityService.getRealm(),fileName,inputPart.getBodyAsString());
+
+					//List<Tuple3<String, String, String>> rules = RulesLoader.processFileRealmsFromFiles(
+							//"genny",
+							//GennySettings.rulesDir, 
+							//RulesLoader.realms
+							//);
+
+					//Comparator<Tuple3<String, String, String>> byRealm = (o1, o2)-> 
+						//Optional.of(o1._1)
+						//.filter("genny"::equals)
+						//.map(d-> -1)
+						//.orElse(1);
+
+					//Map<String, String> distictRules = rules.stream()
+						//.sorted(byRealm)
+						//.map(d -> {
+							//Map<String, String> map = new HashMap<>();
+							//map.put(d._2, d._3);
+							//return map;
+						//})
+					//.reduce((d1,d2)-> {
+						//d1.putAll(d2);
+						//return d1;
+					//})
+					//.get();
+
+					//KieServices ks = RulesLoader.ks;
+					//KieFileSystem kfs = ks.newKieFileSystem();
+
+					//String kjarFolerPath ="src/main/resources/life/genny/rules/";
+					//String newResourceAbsolutePath =kjarFolerPath+ fileName;
+					//distictRules.entrySet().stream().forEach(d ->{
+						//String resourceAbsolutePath =kjarFolerPath+ d.getKey();
+						//Resource rs = ks.getResources().newReaderResource(new StringReader(d.getValue()));
+						//kfs.write(resourceAbsolutePath, rs.setResourceType(ResourceType.DRL));
+						//kfs.delete(newResourceAbsolutePath);
+					//});
+					//Resource rs = ks.getResources().newReaderResource(new StringReader(inputPart.getBodyAsString()));
+					//kfs.write(newResourceAbsolutePath, rs.setResourceType(ResourceType.DRL));
+
+					//final KieBuilder kieBuilder = ks.newKieBuilder(kfs).buildAll();
+					//ReleaseId releaseId = kieBuilder.getKieModule().getReleaseId();
+					//final KieContainer kContainer = ks.newKieContainer(releaseId);
+					//final KieBaseConfiguration kbconf = ks.newKieBaseConfiguration();
+					//kbconf.setProperty("name",realm);
+					//kbconf.setProperty(ConsequenceExceptionHandlerOption.PROPERTY_NAME, "life.genny.utils.GennyRulesExceptionHandler");
+					//final KieBase kbase = kContainer.newKieBase(kbconf);
+
+					//log.info("Put rules KieBase into Custom Cache");
+					//if (RulesLoader.getKieBaseCache().containsKey(realm)) {
+						//RulesLoader.getKieBaseCache().remove(realm);
+					//}
+					//RulesLoader.getKieBaseCache().put(realm, kbase);
+					//log.info("Internmatch"+ " rules installed\n");
+					return Response.status(200).entity("Imported file name : " + fileName).build();
+
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			}
+		return null;
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
 	}
 
 	@POST
