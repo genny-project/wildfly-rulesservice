@@ -131,7 +131,7 @@ public class EventBusEventListener {
 			VertxUtils.writeMsg("data",JsonUtils.toJson(dataMsg));
 			//kieSession.signalEvent("data", sessionFactsData, processId);
 		} else {
-			if (eventMsg.getData().getCode()!=null) {
+			if ((eventMsg.getData().getCode()!=null)||(eventMsg.getAttributeCode()!= null)) {
 				rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
 			} 
 		}
