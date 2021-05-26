@@ -92,7 +92,7 @@
       <property name="hibernate.cache.use_query_cache" value="true" />
 
 			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.MySQL8Dialect" />
+				value="life.genny.qwanda.util.MySQL8DialectGenny" />
 		<!-- <property name="hibernate.transaction.jta.platform"
       value="org.hibernate.service.jta.platform.internal.BitronixJtaPlatform"/>-->
 
