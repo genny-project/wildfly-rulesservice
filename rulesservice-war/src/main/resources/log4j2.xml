@@ -38,7 +38,7 @@
 		<Logger name="org.drools.core.xml.ExtensibleXmlParser" level="ERROR">
 			<AppenderRef ref="STDOUT" />
 		</Logger>
-		<Logger name="io.vertx.core.impl.BlockedThreadChecker" level="WARN" additivity="false">
+		<Logger name="io.vertx.core.impl.BlockedThreadChecker" level="ERROR" additivity="false">
 			<AppenderRef ref="STDOUT" />
 		</Logger>
 
