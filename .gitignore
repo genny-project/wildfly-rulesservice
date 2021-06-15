@@ -27,3 +27,4 @@ npm-debug.log
 **/target/
 rulesservice-war/src/main/resources/rulesservice-war-git.properties
 **/rulesservice-war/bin/
+/build/
