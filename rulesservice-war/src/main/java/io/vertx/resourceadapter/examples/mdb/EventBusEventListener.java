@@ -68,6 +68,7 @@ public class EventBusEventListener {
 
 		long startTime = System.nanoTime();
         log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
+        String logMessage = "";
         
 		QEventMessage eventMsg = null;
 		if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
