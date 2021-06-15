@@ -39,7 +39,7 @@
         <version.org.wildfly>22.0.1.Final</version.org.wildfly>
         <version.wildfly-jsf>22.0.1.Final</version.wildfly-jsf>
         <version.wildfly-dist>22.0.1.Final</version.wildfly-dist>
-        <version.keycloak>11.0.3</version.keycloak>
+        <version.keycloak>13.0.0</version.keycloak>
         <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
         <maven.compiler.source>11</maven.compiler.source>
@@ -72,6 +72,7 @@
         <!--<hazelcast.version>3.12.2</hazelcast.version>-->
         <javax-cache.version>1.0.0-PFD</javax-cache.version>
         <log4j-core-version>2.13.3</log4j-core-version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
     <repositories>
@@ -292,10 +293,10 @@
         </dependency>
 
         <dependency>
-            <groupId>dom4j</groupId>
+            <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-            <scope>provided</scope>
+            <version>2.1.3</version>
+            <!--scope>provided</scope-->
         </dependency>
         <dependency>
             <groupId>org.jboss.spec.javax.ejb</groupId>
@@ -376,7 +377,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
+            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.libphonenumber</groupId>
