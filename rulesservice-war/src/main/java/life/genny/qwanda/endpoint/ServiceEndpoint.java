@@ -1,98 +1,45 @@
 package life.genny.qwanda.endpoint;
 
-import org.apache.commons.io.IOUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.apache.logging.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-
-import javax.ejb.Stateless;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieModule;
-import org.kie.api.builder.Message;
-import org.kie.api.builder.ReleaseId;
-import org.kie.api.executor.ExecutorService;
-import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.manager.RuntimeEngine;
-import org.kie.api.runtime.manager.RuntimeEnvironmentBuilder;
-import org.kie.api.runtime.manager.RuntimeManagerFactory;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.task.TaskService;
-import org.kie.internal.conf.ConsequenceExceptionHandlerOption;
-import org.kie.internal.runtime.manager.context.EmptyContext;
-
-import io.swagger.annotations.Api;
-import life.genny.models.BaseEntityImport;
-import life.genny.qwanda.Ask;
-import life.genny.qwanda.message.QEventMessage;
-import life.genny.qwandautils.GennySettings;
-import life.genny.qwandautils.GitUtils;
-import life.genny.rules.RulesLoader;
-import life.genny.utils.ImportUtils;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
-import org.jbpm.executor.ExecutorServiceFactory;
-import org.jbpm.runtime.manager.impl.DefaultRegisterableItemsFactory;
-import org.kie.api.io.Resource;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.vavr.Tuple3;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
+import life.genny.models.BaseEntityImport;
+import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwanda.service.RulesService;
 import life.genny.qwanda.service.SecurityService;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ejb.Asynchronous;
-
-import io.vertx.core.json.JsonObject;
+import life.genny.qwandautils.GennySettings;
+import life.genny.rules.RulesLoader;
+import life.genny.rules.listeners.GennyRuleTimingListener;
+import life.genny.utils.ImportUtils;
 
 /**
  * VService endpoint
@@ -167,6 +114,48 @@ public class ServiceEndpoint {
 
 	}
 
+	
+	@GET
+	@Path("/showruleslogs/{realm}/{count}")
+	public Response showRulesLogs(@PathParam("realm") String realm,@PathParam("count") Integer count) {
+	
+	if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+			|| GennySettings.devMode) {
+		if (realm == null) {
+			realm = securityService.getRealm();
+		}	
+		String filter = "";
+		if (count >0 ) {
+			filter = "count:"+count;
+		}
+		
+		GennyRuleTimingListener.showLogs(filter);
+	return Response.status(200).entity("Load Process Begun").build();
+} else {
+	return Response.status(401).entity("Unauthorized").build();
+}
+
+}
+	
+	@GET
+	@Path("/clearruleslogs/{realm}")
+	public Response clearRulesLogs(@PathParam("realm") String realm) {
+	
+	if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+			|| GennySettings.devMode) {
+		if (realm == null) {
+			realm = securityService.getRealm();
+		}	
+		
+		GennyRuleTimingListener.clearLogs();
+	return Response.status(200).entity("Load Process Begun").build();
+} else {
+	return Response.status(401).entity("Unauthorized").build();
+}
+
+}
+
+	
 	@Asynchronous
 	private void loadRules(final String realm) {
 		RulesLoader.persistRules = false;
