@@ -67,8 +67,10 @@ public class EventBusEventListener {
 		final JsonObject payload = new JsonObject(message.getPayload());
 		System.out.println("MSG PAYLOAD = " + payload.toString());
 
-		String logMessage = "********* THIS IS WILDFLY EVENT LISTENER!!!! ******************* ";	
-
+		long startTime = System.nanoTime();
+        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
+        String logMessage = "";
+        
 		QEventMessage eventMsg = null;
 		if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
 			eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
@@ -137,6 +139,8 @@ public class EventBusEventListener {
 				rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
 			} 
 		}
+		long endTime = System.nanoTime();
+        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
 		return message.ack();
   }
 

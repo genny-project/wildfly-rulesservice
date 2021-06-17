@@ -86,8 +86,9 @@ public class EventBusDataListener {
         payload.remove("token");
         log.info("Get a data message from Vert.x: " + payload);
         payload.put("token", token);
-        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *******************");
-
+        long startTime = System.nanoTime();
+        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
+        
         QDataAnswerMessage dataMsg = null;
 
         // Is it a Rule?
@@ -191,6 +192,8 @@ public class EventBusDataListener {
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }
         }
+        long endTime = System.nanoTime();
+        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
         return message.ack();
     }
 
