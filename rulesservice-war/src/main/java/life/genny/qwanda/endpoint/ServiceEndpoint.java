@@ -136,6 +136,24 @@ public class ServiceEndpoint {
 }
 
 }
+	
+	@GET
+	@Path("/clearruleslogs/{realm}")
+	public Response clearRulesLogs(@PathParam("realm") String realm) {
+	
+	if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+			|| GennySettings.devMode) {
+		if (realm == null) {
+			realm = securityService.getRealm();
+		}	
+		
+		GennyRuleTimingListener.clearLogs();
+	return Response.status(200).entity("Load Process Begun").build();
+} else {
+	return Response.status(401).entity("Unauthorized").build();
+}
+
+}
 
 	
 	@Asynchronous
