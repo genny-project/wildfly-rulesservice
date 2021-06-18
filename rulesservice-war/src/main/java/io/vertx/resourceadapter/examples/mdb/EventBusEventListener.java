@@ -65,7 +65,6 @@ public class EventBusEventListener {
   public CompletionStage<Void> onMessage(Message<String> message) {
 		//final JsonObject payload = new JsonObject(message.body().toString());
 		final JsonObject payload = new JsonObject(message.getPayload());
-		System.out.println("MSG PAYLOAD = " + payload.toString());
 
 		long startTime = System.nanoTime();
         log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
@@ -84,7 +83,6 @@ public class EventBusEventListener {
 			}
 		} else if (payload.getString("event_type").equals("DD")) {
 			eventMsg = JsonUtils.fromJson(payload.toString(), QEventDropdownMessage.class);
-			System.out.println("DD MSG = " + JsonUtils.toJson(eventMsg));
 		} else if (payload.getString("event_type").equals("BTN_CLICK")) {
 			eventMsg = JsonUtils.fromJson(payload.toString(), QEventBtnClickMessage.class);
 		} else if (payload.getString("event_type").equals("EVT_LINK_CHANGE")) {
