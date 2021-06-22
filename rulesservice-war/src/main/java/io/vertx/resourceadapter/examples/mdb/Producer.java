@@ -1,16 +1,12 @@
 package io.vertx.resourceadapter.examples.mdb;
 
-import javax.ejb.DependsOn;
-import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-//@ApplicationScoped
-@DependsOn("StartupService")
-@Singleton
+@ApplicationScoped
 public class Producer {
 
 
@@ -67,6 +63,11 @@ public class Producer {
   @Inject @Channel("servicesout") Emitter<String> services;
   public Emitter<String> getToServices() {
     return services;
+  }
+
+  @Inject @Channel("answerout") Emitter<String> answer;
+  public Emitter<String> getToanswer() {
+    return answer;
   }
 
 }

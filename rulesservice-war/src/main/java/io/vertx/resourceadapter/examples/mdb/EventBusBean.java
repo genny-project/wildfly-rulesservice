@@ -31,8 +31,9 @@ public class EventBusBean implements EventBusInterface {
 	{ 
 		String json = msg.toString();
 		JsonObject event = new JsonObject(json);
-		if (!StringUtils.isBlank(event.getString("token"))) {
-
+		if("answer".equals(channel)){
+			producer.getToanswer().send(event.toString());
+		} else if (!StringUtils.isBlank(event.getString("token"))) {
 			if(channel.equals("events"))
 			{
 				producer.getToEvents().send(event.toString());;
