@@ -14,7 +14,7 @@
     <parent>
         <groupId>life.genny</groupId>
         <artifactId>wildfly-rulesservice</artifactId>
-        <version>9.1.0</version>
+        <version>9.0.0</version>
     </parent>
 
     <licenses>
