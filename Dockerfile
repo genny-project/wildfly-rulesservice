@@ -1,5 +1,5 @@
-ARG CODE_VERSION=latest
-FROM gennyproject/wildfly:${CODE_VERSION}
+ARG CODE_VERSION=wildfly24
+FROM gennyproject/wildfly:wildfly24
 
 #RUN apk add --no-cache libc6-compat
 
