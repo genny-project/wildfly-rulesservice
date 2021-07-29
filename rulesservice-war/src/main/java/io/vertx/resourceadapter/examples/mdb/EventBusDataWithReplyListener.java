@@ -229,7 +229,11 @@ public class EventBusDataWithReplyListener {
 		if ((device == null)) {
 			String deviceName = userToken.getString("given_name") + "'s " + deviceType + " Phone";
 			BaseEntity defBE = beUtils.getDEFByCode("DEF_DEVICE");
-			beUtils.create(defBE, deviceName, uniqueDeviceCode);
+			try {
+				beUtils.create(defBE, deviceName, uniqueDeviceCode);
+			} catch (Exception e) {
+				log.error(e.getStackTrace());
+			}
 
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "LNK_USER", "[\""+userToken.getUserCode()+"\"]"));
 			deviceAnswers.add(new Answer(uniqueDeviceCode, uniqueDeviceCode, "PRI_DEVICE_CODE", deviceCode));
