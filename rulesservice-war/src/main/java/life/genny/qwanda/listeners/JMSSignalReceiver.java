@@ -78,7 +78,7 @@ public class JMSSignalReceiver implements MessageListener {
                 processInstanceId = (Long) bytesMessage.getObjectProperty("KIE_SignalProcessInstanceId");
                 workItemId = (Long) bytesMessage.getObjectProperty("KIE_SignalWorkItemId");
 
-                logger.debug("Deployment id '{}', signal '{}', processInstanceId '{}', workItemId '{}'", deploymentId, signal, processInstanceId, workItemId);
+                logger.debug("Deployment id '{}', signal '{}', processInstanceId '{}', workItemId '{}'", new Object[]{deploymentId, signal, processInstanceId, workItemId});
 
                 Collection<String> availableRuntimeManagers = matchDeployments(deploymentId, RuntimeManagerRegistry.get().getRegisteredIdentifiers());
 
@@ -109,7 +109,7 @@ public class JMSSignalReceiver implements MessageListener {
                             logger.debug("Successfully completed work item with id {}", workItemId);
                         } else if (signal != null) {
                             if (processInstanceId != null) {
-                                logger.debug("About to signal process instance with id {} and event data {} with signal {}", processInstanceId, data, signal);
+                                logger.debug("About to signal process instance with id {} and event data {} with signal {}", new Object[]{processInstanceId, data, signal});
                                 engine.getKieSession().signalEvent(signal, data, processInstanceId);
                             } else {
                                 logger.debug("About to broadcast signal {} and event data {}", signal, data);
