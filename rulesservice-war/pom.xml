@@ -26,67 +26,138 @@
     </licenses>
 
     <properties>
-        <vertx.version>3.9.8</vertx.version>
+        <!--<ear.name>z-ear.ear</ear.name>-->
+        <!--<rar.name>vertx-jca-adapter</rar.name>-->
+        <!--<rar.version>3.5.1</rar.version>-->
+        <!--<rar.file.name>${rar.name}-${rar.version}.rar</rar.file.name>-->
+        <vertx.version>3.9.3</vertx.version>
 
         <genny-rules.version>${project.version}</genny-rules.version>
         <kie.version>7.34.0.Final</kie.version>
 
 
-        <version.org.wildfly>24.0.1.Final</version.org.wildfly>
-        <version.wildfly-jsf>24.0.1.Final</version.wildfly-jsf>
-        <version.wildfly-dist>24.0.1.Final</version.wildfly-dist>
+        <version.org.wildfly>22.0.1.Final</version.org.wildfly>
+        <version.wildfly-jsf>22.0.1.Final</version.wildfly-jsf>
+        <version.wildfly-dist>22.0.1.Final</version.wildfly-dist>
         <version.keycloak>13.0.0</version.keycloak>
         <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
+        <version.h2>1.4.195</version.h2>
+        <version.postgresql>9.4.1207</version.postgresql>
         <version.mysql-connector-java>8.0.21</version.mysql-connector-java>
 
+        <version.jodatime>2.7</version.jodatime>
 
+        <version.h2db>1.4.193</version.h2db>
+        <jackson.version>2.6.3</jackson.version>
+
+        <joda-time-version>2.8</joda-time-version>
+        <jersey.version>2.13</jersey.version>
+        <project.http.version>1.19.0</project.http.version>
+        <project.oauth.version>1.19.0</project.oauth.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 
         <version.ee7>1.0.2.Final</version.ee7>
         <version.resteasy>3.0.10.Final</version.resteasy>
-        <version.slf4j>1.7.32</version.slf4j>
+        <version.slf4j>1.7.21</version.slf4j>
         <version.swagger>1.5.16</version.swagger>
 
-        <version.org.jboss.arquillian>1.6.0.Final</version.org.jboss.arquillian>
-        <version.junit>4.13.2</version.junit>
+        <version.org.jboss.arquillian>1.1.5.Final</version.org.jboss.arquillian>
+        <version.junit>4.13.1</version.junit>
 
+        <!--<hazelcast.version>3.12.2</hazelcast.version>-->
         <javax-cache.version>1.0.0-PFD</javax-cache.version>
-        <log4j-core-version>2.14.1</log4j-core-version>
+        <log4j-core-version>2.13.3</log4j-core-version>
         <httpclient.version>4.5.13</httpclient.version>
     </properties>
 
+    <repositories>
+
+        <repository>
+            <id>Maven repository</id>
+            <url>https://mvnrepository.com/artifact/org.wildfly.arquillian/wildfly-arquillian-container-managed/</url>
+        </repository>
+        <repository>
+            <id>Apache repository</id>
+            <url>https://mvnrepository.com/artifact/org.apache.commons/commons-lang3</url>
+        </repository>
+        <repository>
+            <id>Maven repository2</id>
+            <url>https://mvnrepository.com/artifact/org.wildfly/wildfly-dist/</url>
+        </repository>
+        <repository>
+            <id>Maven repository3</id>
+            <url>https://mvnrepository.com/artifact/org.jboss.logging/jboss-logging/</url>
+        </repository>
+        <repository>
+            <id>Maven repository4</id>
+            <url>https://mvnrepository.com/artifact/org.jboss.remoting/jboss-remoting/</url>
+        </repository>
+        <repository>
+            <id>Maven repository5</id>
+            <url>https://mvnrepository.com/artifact/org.wildfly.common/wildfly-common/</url>
+        </repository>
+        <repository>
+            <id>Maven repository6</id>
+            <url>https://mvnrepository.com/artifact/org.jboss.xnio/xnio-api/</url>
+        </repository>
+        <repository>
+            <id>JBoss repository</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+        <repository>
+            <id>life.genny</id>
+            <url>http://nexus.outcome-hub.com/nexus/content/repositories/life.genny</url>
+        </repository>
+    </repositories>
     <dependencies>
 			<dependency>
 				<groupId>io.vertx</groupId>
 				<artifactId>vertx-core</artifactId>
-                <version>${vertx.version}</version>
+				<version>3.9.3</version>
+				<!--<scope>provided</scope>-->
 			</dependency>
 
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-provider</artifactId>
-            <version>3.7.1</version>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-kafka</artifactId>
-            <version>3.7.1</version>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>mutiny-reactive-streams-operators</artifactId>
-            <version>0.19.2</version>
+            <version>0.14.0</version>
         </dependency>
         <dependency>
             <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
-            <version>2.4.2</version>
+            <version>1.10.0</version>
         </dependency> 
 
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-core</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-hazelcast</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-jca-api</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.jboss.spec</groupId>
             <artifactId>jboss-javaee-6.0</artifactId>
@@ -96,6 +167,29 @@
         <dependency>
             <groupId>org.jboss.ejb3</groupId>
             <artifactId>jboss-ejb3-ext-api</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-jca-adapter</artifactId>-->
+            <!--<version>${vertx.version}</version>-->
+            <!--<type>rar</type>-->
+        <!--</dependency>-->
+
+
+        <!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-ejb-client-bom -->
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-ejb-client-bom</artifactId>
+            <version>${version.org.wildfly}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.wildfly/wildfly-jms-client-bom -->
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-jms-client-bom</artifactId>
+            <version>${version.org.wildfly}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -114,10 +208,6 @@
                 <exclusion>
                     <groupId>com.hazelcast</groupId>
                     <artifactId>hazelcast-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
 
@@ -140,10 +230,6 @@
                     <groupId>com.hazelcast</groupId>
                     <artifactId>hazelcast-client</artifactId>
                 </exclusion>
-                <!--exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion-->
             </exclusions>
 
         </dependency>
@@ -161,6 +247,14 @@
             <version>${javax-cache.version}</version>
         </dependency>
 
+        <!--> <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version> </dependency> <dependency> <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-client</artifactId> <version>${hazelcast.version}</version>
+            </dependency> </! -->
+
+        <!-- <dependency> <groupId>commons-io</groupId> <artifactId>commons-io</artifactId>
+            <version>2.5</version> </dependency> -->
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -517,6 +611,14 @@
                 <artifactId>arquillian-bom</artifactId>
                 <version>${version.org.jboss.arquillian}</version>
                 <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.wildfly.bom/wildfly-javaee7 -->
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-javaee7</artifactId>
+                <version>${version.org.wildfly}</version>
                 <type>pom</type>
             </dependency>
 

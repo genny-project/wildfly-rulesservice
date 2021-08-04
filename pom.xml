@@ -15,11 +15,12 @@
 
 	<properties>
         <revision>${project.version}</revision>
+		<ear-plugin-version>2.9</ear-plugin-version>
 		<ejb-plugin-version>2.3</ejb-plugin-version>
 		<ejb-spec-version>3.0</ejb-spec-version>
 		<version.wildfly-maven-plugin>2.0.1.Final</version.wildfly-maven-plugin>
 		<antrun-plugin-version>1.7</antrun-plugin-version>
-		<vertx.version>3.9.8</vertx.version>
+		<vertx.version>3.9.3</vertx.version>
 		<source.version>11</source.version>
 		<target.version>11</target.version>
 	</properties>
@@ -32,6 +33,24 @@
 				<version>2.1.0</version>
 				<scope>provided</scope>
 			</dependency>
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-core</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-hazelcast</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
+			<!--<dependency>-->
+				<!--<groupId>io.vertx</groupId>-->
+				<!--<artifactId>vertx-jca-api</artifactId>-->
+				<!--<version>${vertx.version}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
 			<dependency>
 				<groupId>org.jboss.spec</groupId>
 				<artifactId>jboss-javaee-6.0</artifactId>
@@ -45,10 +64,18 @@
 				<version>8.0</version>
 				<scope>provided</scope>
 			</dependency>
+			<!--[> https://mvnrepository.com/artifact/org.wildfly/wildfly-jsf <]-->
+			<!--<dependency>-->
+				<!--<groupId>org.wildfly</groupId>-->
+				<!--<artifactId>wildfly-jsf</artifactId>-->
+				<!--<version>${version.org.wildfly}</version>-->
+				<!--<scope>provided</scope>-->
+			<!--</dependency>-->
 			<dependency>
 				<groupId>io.vertx</groupId>
 				<artifactId>vertx-core</artifactId>
-                <version>${vertx.version}</version>
+				<version>3.9.3</version>
+				<!--<scope>provided</scope>-->
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
