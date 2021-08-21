@@ -39,6 +39,7 @@ import life.genny.qwanda.service.SecurityService;
 import life.genny.qwandautils.GennySettings;
 import life.genny.rules.RulesLoader;
 import life.genny.rules.listeners.GennyRuleTimingListener;
+import life.genny.utils.DefUtils;
 import life.genny.utils.ImportUtils;
 
 /**
@@ -68,6 +69,20 @@ public class ServiceEndpoint {
 	@Inject
 	EventBusBean eventBus;
 
+	@GET
+	@Path("/loaddefs")
+	public Response reloadDefs() {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+
+			DefUtils.loadDEFS(securityService.getRealm());
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
+	}
+
+	
 	@GET
 	@Path("/loadrules")
 	public Response reloadRules() {
