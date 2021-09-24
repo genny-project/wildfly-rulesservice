@@ -61,8 +61,7 @@ RulesService rulesService;
   @Merge
   public CompletionStage<Void> fromWebCmds(Message<String>  message) {
 		final JsonObject payload = new JsonObject(message.getPayload());
-		log.info("Get a data message from Vert.x: " + payload);
-		log.info("********* THIS IS WILDFLY CMD LISTENER!!!! *******************");
+		log.info("********* KAFKA CMD LISTENER!!!! ***** "+payload);
 
 		QCmdMessage cmdMsg = null;
 

@@ -84,10 +84,10 @@ public class EventBusDataListener {
         final JsonObject payload = new JsonObject(message.getPayload());
         String token = payload.getString("token");
         payload.remove("token");
-        log.info("Get a data message from Vert.x: " + payload);
+        log.debug("Get a data message from Vert.x: " + payload);
         payload.put("token", token);
         long startTime = System.nanoTime();
-        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
+        log.info("********* KAFKA DATA LISTENER!!!! *********" + startTime +" data came in "+payload);
         
         QDataAnswerMessage dataMsg = null;
 
@@ -192,8 +192,8 @@ public class EventBusDataListener {
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }
         }
-        long endTime = System.nanoTime();
-        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
+//        long endTime = System.nanoTime();
+//        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
         return message.ack();
     }
 
