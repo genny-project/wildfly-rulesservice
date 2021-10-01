@@ -112,7 +112,10 @@ public class ServiceEndpoint {
 			return Response.status(401).entity("Unauthorized").build();
 		}
 
-	}	@GET
+	}	
+	
+	
+	@GET
 	@Path("/loadattributes/{realm}")
 	public Response loadAttributes(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
