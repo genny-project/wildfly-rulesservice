@@ -67,7 +67,7 @@ public class EventBusEventListener {
 		final JsonObject payload = new JsonObject(message.getPayload());
 
 		long startTime = System.nanoTime();
-        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
+        log.info("********* KAFKA EVENT LISTENER!!!! *********" + payload.toString());
         String logMessage = "";
         
 		QEventMessage eventMsg = null;
@@ -90,7 +90,7 @@ public class EventBusEventListener {
 			logMessage += " EVT_LINK_CHANGE ";
 		} else if ((payload.getString("event_type").equals("AUTH_INIT"))){
 			JsonObject frontendData = payload.getJsonObject("data");
-			log.info("Incoming Frontend data is "+frontendData.toString());
+			log.debug("Incoming Frontend data is "+frontendData.toString());
 			try {
 				String payloadString = payload.toString();
 				eventMsg = JsonUtils.fromJson(payloadString, QEventMessage.class);
@@ -108,7 +108,7 @@ public class EventBusEventListener {
 		}
 
 
-		log.info(logMessage);
+		//log.info(logMessage);
 		if (eventMsg == null) {
 			//log.error("Can't get eventMsg from payload:" + message.body().toString());
 			log.error("Can't get eventMsg from payload:" + message.getPayload());
@@ -125,7 +125,7 @@ public class EventBusEventListener {
 			dataMsg.setToken(token);
 			//			SessionFacts sessionFactsData = new SessionFacts(facts.getServiceToken(),
 			//					userToken, dataMsg);
-			log.info("QUE_SUBMIT event to 'data' for "
+			log.debug("QUE_SUBMIT event to 'data' for "
 					+ userToken.getUserCode());
 
 			rulesEngineBean.processMsg(eventMsg, payload.getString("token"));
@@ -138,7 +138,7 @@ public class EventBusEventListener {
 			} 
 		}
 		long endTime = System.nanoTime();
-        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
+        log.debug("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
 		return message.ack();
   }
 

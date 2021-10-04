@@ -84,11 +84,11 @@ public class EventBusDataListener {
         final JsonObject payload = new JsonObject(message.getPayload());
         String token = payload.getString("token");
         payload.remove("token");
-        log.info("Get a data message from Vert.x: " + payload);
+        log.debug("Get a data message from Vert.x: " + payload);
+      //  long startTime = System.nanoTime();
+        log.info("********* KAFKA DATA LISTENER!!!! *********" +" data came in "+payload.toString());
         payload.put("token", token);
-        long startTime = System.nanoTime();
-        log.info("********* THIS IS WILDFLY DATA LISTENER!!!! *********" + startTime);
-        
+               
         QDataAnswerMessage dataMsg = null;
 
         // Is it a Rule?
@@ -192,8 +192,8 @@ public class EventBusDataListener {
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }
         }
-        long endTime = System.nanoTime();
-        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
+//        long endTime = System.nanoTime();
+//        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
         return message.ack();
     }
 

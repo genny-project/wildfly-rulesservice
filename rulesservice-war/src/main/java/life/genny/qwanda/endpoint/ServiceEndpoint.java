@@ -33,6 +33,7 @@ import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import io.swagger.annotations.Api;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import life.genny.models.BaseEntityImport;
+import life.genny.models.GennyToken;
 import life.genny.qwanda.message.QEventMessage;
 import life.genny.qwanda.service.RulesService;
 import life.genny.qwanda.service.SecurityService;
@@ -41,6 +42,7 @@ import life.genny.rules.RulesLoader;
 import life.genny.rules.listeners.GennyRuleTimingListener;
 import life.genny.utils.DefUtils;
 import life.genny.utils.ImportUtils;
+import life.genny.utils.RulesUtils;
 
 /**
  * VService endpoint
@@ -105,6 +107,24 @@ public class ServiceEndpoint {
 				realm = securityService.getRealm();
 			}
 			loadRulesFull(realm);
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
+
+	}	
+	
+	
+	@GET
+	@Path("/loadattributes/{realm}")
+	public Response loadAttributes(@PathParam("realm") String realm) {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+			if (realm == null) {
+				realm = securityService.getRealm();
+			}
+			GennyToken gennyToken = new GennyToken(securityService.getToken());
+			RulesUtils.loadAllAttributesIntoCache(gennyToken);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
