@@ -141,14 +141,6 @@
 		</pluginManagement>
 	</build>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>jboss</id>
-			<name>JBoss Nexus</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public</url>
-		</pluginRepository>
-	</pluginRepositories>
-
 
 	<profiles>
 		<profile>
