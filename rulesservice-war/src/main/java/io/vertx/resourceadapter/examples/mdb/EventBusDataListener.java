@@ -78,15 +78,15 @@ public class EventBusDataListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    @Incoming("data")
+    @Incoming("valid_data")
     @Merge
     public CompletionStage<Void>  onMessage(Message<String> message) {
         final JsonObject payload = new JsonObject(message.getPayload());
         String token = payload.getString("token");
         payload.remove("token");
-        log.debug("Get a data message from Vert.x: " + payload);
+        log.debug("Get a valid_data message from Vert.x: " + payload);
       //  long startTime = System.nanoTime();
-        log.info("********* KAFKA DATA LISTENER!!!! *********" +" data came in "+payload.toString());
+        log.info("********* KAFKA DATA LISTENER!!!! *********" +" valid_data came in "+payload.toString());
         payload.put("token", token);
                
         QDataAnswerMessage dataMsg = null;

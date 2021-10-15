@@ -19,6 +19,11 @@ public class Producer {
   public Emitter<String> getToData() {
     return data;
   }
+  
+  @Inject @Channel("valid_dataout") Emitter<String> valid_data;
+  public Emitter<String> getToValidData() {
+    return valid_data;
+  }
 
   @Inject @Channel("cmdsout") Emitter<String> cmds;
   public Emitter<String> getToCmds() {
