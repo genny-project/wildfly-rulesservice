@@ -42,6 +42,10 @@ public class EventBusBean implements EventBusInterface {
 			{
 				producer.getToData().send(event.toString());;
 			}
+			else if(channel.equals("valid_data"))
+			{
+				producer.getToValidData().send(event.toString());;
+			}
 			else if(channel.equals("webdata"))
 			{
 				producer.getToWebData().send(event.toString());;
