@@ -78,7 +78,7 @@ public class EventBusDataListener {
         return RulesLoaderFactory.getRulesLoader(sessionState);
     }
 
-    @Incoming("data")
+    @Incoming("valid_data")
     @Merge
     public CompletionStage<Void>  onMessage(Message<String> message) {
         final JsonObject payload = new JsonObject(message.getPayload());
