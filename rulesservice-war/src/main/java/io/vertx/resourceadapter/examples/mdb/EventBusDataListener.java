@@ -30,6 +30,7 @@ import life.genny.models.GennyToken;
 //import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
+import life.genny.qwanda.GennyItem;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
@@ -192,7 +193,7 @@ public class EventBusDataListener {
                 dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
             }        
-        } else if (payload.getString("data_type").equals(QDataB2BMessage.class.getSimpleName())) {
+        } else if (payload.getString("data_type").equals(GennyItem.class.getSimpleName())) { // Why did I choose this data_type? ACC
                 QDataB2BMessage dataB2BMsg = null;
                 try {
                     dataB2BMsg = JsonUtils.fromJson(payload.toString(), QDataB2BMessage.class);
