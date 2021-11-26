@@ -34,6 +34,7 @@ import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QDataAnswerMessage;
+import life.genny.qwanda.message.QDataB2BMessage;
 import life.genny.qwanda.message.QDataGPSMessage;
 import life.genny.qwanda.message.QDataPaymentsCallbackMessage;
 import life.genny.qwanda.rule.Rule;
@@ -190,7 +191,19 @@ public class EventBusDataListener {
                 JsonObject json = new JsonObject(payload.toString());
                 dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
-            }
+            }        
+        } else if (payload.getString("data_type").equals(QDataB2BMessage.class.getSimpleName())) {
+                QDataB2BMessage dataB2BMsg = null;
+                try {
+                    dataB2BMsg = JsonUtils.fromJson(payload.toString(), QDataB2BMessage.class);
+                    getRulesLoader(payload.getString("token")).addNewItem(dataB2BMsg, payload.getString("token"));
+                } catch (com.google.gson.JsonSyntaxException e) {
+
+                    log.error("BAD Syntax converting to json from " + dataB2BMsg);
+                    JsonObject json = new JsonObject(payload.toString());
+                    dataB2BMsg = JsonUtils.fromJson(json.toString(), QDataB2BMessage.class);
+                    getRulesLoader(payload.getString("token")).addNewItem(dataB2BMsg, payload.getString("token"));
+                }
         }
 //        long endTime = System.nanoTime();
 //        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
