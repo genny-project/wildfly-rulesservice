@@ -14,6 +14,8 @@ import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -196,7 +198,9 @@ public class EventBusDataListener {
         } else if (payload.getString("data_type").equals(GennyItem.class.getSimpleName())) { // Why did I choose this data_type? ACC
                 QDataB2BMessage dataB2BMsg = null;
                 try {
-                    dataB2BMsg = JsonUtils.fromJson(payload.toString(), QDataB2BMessage.class);
+                	Jsonb jsonb = JsonbBuilder.create();
+                	String b2bStr = payload.toString();
+                    dataB2BMsg = jsonb.fromJson(b2bStr, QDataB2BMessage.class);
                     getRulesLoader(payload.getString("token")).addNewItem(dataB2BMsg, payload.getString("token"));
                 } catch (com.google.gson.JsonSyntaxException e) {
 
