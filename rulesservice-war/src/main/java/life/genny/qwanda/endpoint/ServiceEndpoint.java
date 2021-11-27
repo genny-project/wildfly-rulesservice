@@ -112,7 +112,7 @@ public class ServiceEndpoint {
 				(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
 			} else {
 				log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered. SKIP CACHE = "+(noskip?"FALSE":"TRUE"));
-			}
+			}log.info("Loaded Rules!");
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
