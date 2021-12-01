@@ -31,6 +31,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 
 import io.swagger.annotations.Api;
+import io.vertx.core.json.JsonObject;
 import io.vertx.resourceadapter.examples.mdb.EventBusBean;
 import life.genny.models.BaseEntityImport;
 import life.genny.models.GennyToken;
@@ -43,6 +44,7 @@ import life.genny.rules.listeners.GennyRuleTimingListener;
 import life.genny.utils.DefUtils;
 import life.genny.utils.ImportUtils;
 import life.genny.utils.RulesUtils;
+import life.genny.utils.VertxUtils;
 
 /**
  * VService endpoint
@@ -91,7 +93,58 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			RulesLoader.reloadRules(securityService.getRealm());
+			Boolean changeInRules = RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir,false);
+			Boolean noskip = true;
+			JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
+			if (skipJson.containsKey("status")) {
+				if ("ok".equalsIgnoreCase(skipJson.getString("status"))) {
+					String val = skipJson.getString("value");
+					if ("TRUE".equalsIgnoreCase(val)) {
+						changeInRules = false;
+						noskip = false;
+					}
+				}
+			}
+			log.info("SKIP JENNY JSON = "+skipJson.toString());
+			log.info("Change in rules that requires generateResources is "+(changeInRules?"YES":"NO"));
+			if (noskip &&(changeInRules) /*|| (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))))*/) {
+				log.info("Rulesservice triggering rules");
+				(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
+			} else {
+				log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered. SKIP CACHE = "+(noskip?"FALSE":"TRUE"));
+			}log.info("Loaded Rules!");
+			return Response.status(200).entity("Loaded").build();
+		} else {
+			return Response.status(401).entity("Unauthorized").build();
+		}
+	}
+	
+	@GET
+	@Path("/loadrules/defs")
+	public Response reloadRulesDefs() {
+		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
+				|| GennySettings.devMode) {
+
+			Boolean noChangeInRules = RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir,true);
+			Boolean noskip = true;
+			JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
+			if (skipJson.containsKey("status")) {
+				if ("ok".equalsIgnoreCase(skipJson.getString("status"))) {
+					String val = skipJson.getString("value");
+					if ("TRUE".equalsIgnoreCase(val)) {
+						noChangeInRules = true;
+						noskip = false;
+					}
+				}
+			}
+			log.info("SKIP JENNY JSON = "+skipJson.toString());
+			
+			if (noskip &&((!noChangeInRules) || (!"TRUE".equalsIgnoreCase(System.getenv("DISABLE_INIT_RULES_STARTUP"))))) {
+				log.info("Rulesservice triggering rules");
+				(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
+			} else {
+				log.warn("DISABLE_INIT_RULES_STARTUP IS TRUE -> No Init Rules triggered. SKIP CACHE = "+(noskip?"FALSE":"TRUE"));
+			}
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();

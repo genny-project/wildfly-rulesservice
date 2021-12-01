@@ -14,6 +14,8 @@ import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +32,12 @@ import life.genny.models.GennyToken;
 //import io.vertx.resourceadapter.inflow.VertxListener;
 import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
+import life.genny.qwanda.GennyItem;
 import life.genny.qwanda.attribute.EntityAttribute;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QDataAnswerMessage;
+import life.genny.qwanda.message.QDataB2BMessage;
 import life.genny.qwanda.message.QDataGPSMessage;
 import life.genny.qwanda.message.QDataPaymentsCallbackMessage;
 import life.genny.qwanda.rule.Rule;
@@ -190,7 +194,21 @@ public class EventBusDataListener {
                 JsonObject json = new JsonObject(payload.toString());
                 dataCallbackMsg = JsonUtils.fromJson(json.toString(), QDataPaymentsCallbackMessage.class);
                 getRulesLoader(payload.getString("token")).addNewItem(dataCallbackMsg, payload.getString("token"));
-            }
+            }        
+        } else if (payload.getString("data_type").equals(GennyItem.class.getSimpleName())) { // Why did I choose this data_type? ACC
+                QDataB2BMessage dataB2BMsg = null;
+                try {
+                	Jsonb jsonb = JsonbBuilder.create();
+                	String b2bStr = payload.toString();
+                    dataB2BMsg = jsonb.fromJson(b2bStr, QDataB2BMessage.class);
+                    getRulesLoader(payload.getString("token")).addNewItem(dataB2BMsg, payload.getString("token"));
+                } catch (com.google.gson.JsonSyntaxException e) {
+
+                    log.error("BAD Syntax converting to json from " + dataB2BMsg);
+                    JsonObject json = new JsonObject(payload.toString());
+                    dataB2BMsg = JsonUtils.fromJson(json.toString(), QDataB2BMessage.class);
+                    getRulesLoader(payload.getString("token")).addNewItem(dataB2BMsg, payload.getString("token"));
+                }
         }
 //        long endTime = System.nanoTime();
 //        log.info("********* Time taken from startTime *********" + startTime + " -> "+ (endTime - startTime)/1000000 + "ms");
