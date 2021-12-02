@@ -75,5 +75,10 @@ public class Producer {
     return answer;
   }
 
+  @Inject @Channel("search_eventsout") Emitter<String> searchEvents;
+  public Emitter<String> getToSearchEvents() {
+    return searchEvents;
+  }
+
 }
 
