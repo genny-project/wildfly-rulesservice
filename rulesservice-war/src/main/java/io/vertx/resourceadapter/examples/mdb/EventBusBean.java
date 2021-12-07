@@ -82,6 +82,10 @@ public class EventBusBean implements EventBusInterface {
 			{
 				producer.getToServices().send(event.toString());;
 			}
+			if(channel.equals("search_events"))
+			{
+				producer.getToSearchEvents().send(event.toString());;
+			}
 
 		} else {
 			log.error("No token set for message");

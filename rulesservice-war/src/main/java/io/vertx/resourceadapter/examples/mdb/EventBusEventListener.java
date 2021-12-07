@@ -25,6 +25,7 @@ import life.genny.qwanda.message.QEventBtnClickMessage;
 import life.genny.qwanda.message.QEventDropdownMessage;
 import life.genny.qwanda.message.QEventLinkChangeMessage;
 import life.genny.qwanda.message.QEventMessage;
+import life.genny.qwanda.message.QEventWorkflowMessage;
 import life.genny.qwandautils.JsonUtils;
 import life.genny.utils.VertxUtils;
 /**
@@ -81,6 +82,8 @@ public class EventBusEventListener {
 					lastMessage = eventMsg;
 				}
 			}
+		} else if (payload.getString("event_type").equals("WF")) {
+			eventMsg = JsonUtils.fromJson(payload.toString(), QEventWorkflowMessage.class);
 		} else if (payload.getString("event_type").equals("DD")) {
 			eventMsg = JsonUtils.fromJson(payload.toString(), QEventDropdownMessage.class);
 		} else if (payload.getString("event_type").equals("BTN_CLICK")) {
