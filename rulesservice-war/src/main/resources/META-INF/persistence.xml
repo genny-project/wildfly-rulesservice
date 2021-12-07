@@ -88,8 +88,6 @@
 		<class>life.genny.model.SessionPid</class>
 		
 		<properties>
-      <property name="hibernate.cache.use_second_level_cache" value="false" />
-      <property name="hibernate.cache.use_query_cache" value="false" />
 
 			<property name="hibernate.dialect"
 				value="life.genny.qwanda.util.MySQL8DialectGenny" />
