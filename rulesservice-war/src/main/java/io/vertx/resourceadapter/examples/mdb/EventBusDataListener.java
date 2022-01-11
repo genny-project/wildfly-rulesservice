@@ -112,9 +112,11 @@ public class EventBusDataListener {
         } else if (payload.getString("data_type").equals(Answer.class.getSimpleName())) {
             // log.info("DATA Msg :");;
             try {
+            	if ((dataMsg.getItems()!=null)&&(dataMsg.getItems().length>0)) {
                 BaseEntityUtils beUtils = new BaseEntityUtils(new GennyToken(token));
                 dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
                 List<Answer> answers = new ArrayList<Answer>();
+                
                 for (Answer answer : dataMsg.getItems()) {
                     if ("PRI_SEARCH_TEXT".equals(answer.getAttributeCode())) {
                         answers.add(answer);
@@ -154,6 +156,9 @@ public class EventBusDataListener {
                 if (!answers.isEmpty()) {
                     rulesEngineBean.processMsg(dataMsg, payload.getString("token"));
                 }
+            	} else {
+            		log.error("Answer Message received with NO Answers!");
+            	}
             } catch (com.google.gson.JsonSyntaxException e) {
                 log.error("BAD Syntax converting to json from " + dataMsg);
                 JsonObject json = new JsonObject(payload.toString());
