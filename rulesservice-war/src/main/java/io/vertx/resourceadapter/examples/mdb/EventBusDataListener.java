@@ -115,8 +115,15 @@ public class EventBusDataListener {
 			try {
 				dataMsg = JsonUtils.fromJson(payload.toString(), QDataAnswerMessage.class);
 				if ((dataMsg.getItems() != null) && (dataMsg.getItems().length > 0)) {
-					BaseEntityUtils beUtils = new BaseEntityUtils(new GennyToken(token));
 					
+					BaseEntityUtils beUtils = new BaseEntityUtils(new GennyToken(token));
+					if ((dataMsg.getItems().length == 1)) {
+						Answer checkAnswer = dataMsg.getItems()[0];
+						if (StringUtils.isBlank(checkAnswer.getAttributeCode())) {
+							log.error("NULL ANSWER CODE in only answer in message - aborting");
+							return message.ack();
+						}
+					}
 					List<Answer> answers = new ArrayList<Answer>();
 
 					for (Answer answer : dataMsg.getItems()) {
