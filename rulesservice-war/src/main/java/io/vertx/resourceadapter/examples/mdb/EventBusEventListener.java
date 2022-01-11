@@ -68,7 +68,11 @@ public class EventBusEventListener {
 		final JsonObject payload = new JsonObject(message.getPayload());
 
 		long startTime = System.nanoTime();
+		String token = payload.getString("token");
+		payload.remove("token"); // dumbly hide from log
+
         log.info("********* KAFKA EVENT LISTENER!!!! *********" + payload.toString());
+    	payload.put("token", token); // put it back
         String logMessage = "";
         
 		QEventMessage eventMsg = null;
