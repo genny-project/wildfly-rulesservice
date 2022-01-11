@@ -123,7 +123,7 @@ public class EventBusEventListener {
 		}
 
 		if ((eventMsg.getData().getCode()!=null)&&(eventMsg.getData().getCode().equals("QUE_SUBMIT"))) {
-			String token =  payload.getString("token");
+			token =  payload.getString("token");
 			GennyToken userToken = new GennyToken(token);
 			Answer dataAnswer = new Answer(userToken.getUserCode(),
 					userToken.getUserCode(), "PRI_SUBMIT", "QUE_SUBMIT");
