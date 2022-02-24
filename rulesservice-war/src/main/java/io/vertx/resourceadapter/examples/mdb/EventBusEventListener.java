@@ -26,6 +26,8 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
+import life.genny.qwanda.data.BridgeSwitch;
+
 /** Message-Driven Bean implementation class for: EventBusEventListener */
 @Startup
 @DependsOn("StartupService")
