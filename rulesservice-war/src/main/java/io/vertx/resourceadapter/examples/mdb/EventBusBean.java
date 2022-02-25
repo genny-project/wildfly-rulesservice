@@ -4,6 +4,7 @@ import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
 import io.vertx.core.json.JsonObject;
 // import life.genny.channel.Producer;
 import java.lang.invoke.MethodHandles;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
@@ -30,6 +31,17 @@ public class EventBusBean implements EventBusInterface {
 
     String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
 
+    try {
+      if (bridgeId == null)
+        throw new Exception("There is not bridgeId associated with the given token JTI");
+    } catch (Exception e) {
+      log.error(
+          "An error occurred this JTI "
+              + userToken.getUniqueId()
+              + " does not exist as a key for any of these bridges "
+              + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
+      e.printStackTrace();
+    }
     if ("answer".equals(channel)) {
       producer.getToanswer().send(event.toString());
     } else if (!StringUtils.isBlank(event.getString("token"))) {

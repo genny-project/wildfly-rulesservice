@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 // import io.vertx.resourceadapter.inflow.VertxListener;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
@@ -60,13 +61,24 @@ public class EventBusEventListener {
     GennyToken userToken = new GennyToken(token);
     String jti = userToken.getUniqueId();
     String bridgeId = payload.getString(jti);
-    BridgeSwitch.bridges.put(jti, bridgeId);
+    try {
+      if (bridgeId == null)
+        throw new Exception("There is not bridgeId associated with the given token JTI");
+      else BridgeSwitch.bridges.put(jti, bridgeId);
+    } catch (Exception e) {
+      log.error(
+          "An error occurred this JTI "
+              + userToken.getUniqueId()
+              + " does not exist as a key for any of these bridges "
+              + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
+      e.printStackTrace();
+    }
     payload.remove("token"); // dumbly hide from log
 
     log.info(
         "********* KAFKA EVENT LISTENER!!!! *********"
             + " valid_data came in "
-            + payload.toString().substring(0, payload.size() >= 20 ? 20 : payload.size()));
+            + payload.toString().substring(0, payload.size() >= 40 ? 40 : payload.size()));
     payload.put("token", token); // put it back
     String logMessage = "";
 
