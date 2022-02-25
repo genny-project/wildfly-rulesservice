@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
+import life.genny.qwanda.data.BridgeSwitch;
+
 @ApplicationScoped
 public class EventBusBean implements EventBusInterface {
 
