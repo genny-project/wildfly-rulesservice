@@ -28,6 +28,7 @@ import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
 import life.genny.qwanda.GennyItem;
 import life.genny.qwanda.attribute.EntityAttribute;
+import life.genny.qwanda.data.BridgeSwitch;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QDataAnswerMessage;
@@ -45,8 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
-
-import life.genny.qwanda.data.BridgeSwitch;
 
 @DependsOn("StartupService")
 @Startup
