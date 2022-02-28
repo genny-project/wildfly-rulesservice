@@ -30,6 +30,15 @@ public class EventBusBean implements EventBusInterface {
 
     String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
 
+    // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
+    if(bridgeId == null) {
+      if(userToken.getUsername() == "service") {
+        if("webcmds".equals(channel) || "webdata".equals(channel)) {
+          log.warn("Service account sending message to frontend channe!: " + channel);
+        } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
+      }
+    }
+
     try {
       if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
         throw new Exception("There is not bridgeId associated with the given token JTI");
