@@ -34,12 +34,11 @@ public class EventBusBean implements EventBusInterface {
 
     // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
     if(bridgeId == null) {
-      log.warn("Bridge ID is null for token with username: " + userToken.getUsername() + " and email " + userToken.getEmail());
       if(userToken.getUsername().equals("service")) {
         if("webcmds".equals(channel) || "webdata".equals(channel)) {
           log.warn("Service account sending message to frontend channe!: " + channel);
         } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
-      }
+      } else log.debug("Token for email: " + userToken.getEmail() + ": sending message to channel: " + channel + ". JTI: " + userToken.getUniqueId() + " is missing from BridgeSwitch");
     }
 
     try {
@@ -72,22 +71,26 @@ public class EventBusBean implements EventBusInterface {
         producer.getToValidData().send(event.toString());
         ;
       } else if (channel.equals("webdata")) {
-        // OutgoingKafkaRecordMetadata<String> metadata =
-        //     OutgoingKafkaRecordMetadata.<String>builder()
-        //         .withTopic(bridgeId + "-" + channel)
-        //         .build();
-        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+        
+        // Dynamic Channel builder
+        OutgoingKafkaRecordMetadata<String> metadata =
+            OutgoingKafkaRecordMetadata.<String>builder()
+                .withTopic(bridgeId + "-" + channel)
+                .build();
+        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
 
-        producer.getToWebData().send(event.toString());
+        //producer.getToWebData().send(event.toString());
 
       } else if (channel.equals("webcmds")) {
-        // OutgoingKafkaRecordMetadata<String> metadata =
-        //     OutgoingKafkaRecordMetadata.<String>builder()
-        //         .withTopic(bridgeId + "-" + channel)
-        //         .build();
-        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+        
+        // Dynamic Channel builder
+        OutgoingKafkaRecordMetadata<String> metadata =
+            OutgoingKafkaRecordMetadata.<String>builder()
+                .withTopic(bridgeId + "-" + channel)
+                .build();
+        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
 
-        producer.getToWebCmds().send(event.toString());
+        // producer.getToWebCmds().send(event.toString());
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
       } else if (channel.equals("social")) {
