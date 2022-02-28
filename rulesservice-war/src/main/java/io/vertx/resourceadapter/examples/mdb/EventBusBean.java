@@ -1,5 +1,6 @@
 package io.vertx.resourceadapter.examples.mdb;
 
+import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
 import io.vertx.core.json.JsonObject;
 // import life.genny.channel.Producer;
 import java.lang.invoke.MethodHandles;
@@ -12,6 +13,7 @@ import life.genny.models.GennyToken;
 import life.genny.qwanda.data.BridgeSwitch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
 @ApplicationScoped
 public class EventBusBean implements EventBusInterface {
@@ -32,7 +34,8 @@ public class EventBusBean implements EventBusInterface {
 
     // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
     if(bridgeId == null) {
-      if(userToken.getUsername() == "service") {
+      log.warn("Bridge ID is null for token with username: " + userToken.getUsername() + " and email " + userToken.getEmail());
+      if(userToken.getUsername().equals("service")) {
         if("webcmds".equals(channel) || "webdata".equals(channel)) {
           log.warn("Service account sending message to frontend channe!: " + channel);
         } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
