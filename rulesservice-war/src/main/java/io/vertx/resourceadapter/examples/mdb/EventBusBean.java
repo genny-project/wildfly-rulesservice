@@ -33,31 +33,32 @@ public class EventBusBean implements EventBusInterface {
     String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
 
     // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
-    if(bridgeId == null) {
-      if(userToken.getUsername().equals("service")) {
-        if("webcmds".equals(channel) || "webdata".equals(channel)) {
-          log.warn("Service account sending message to frontend channe!: " + channel);
-        } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
-      } else log.debug("Token for email: " + userToken.getEmail() + ": sending message to channel: " + channel + ". JTI: " + userToken.getUniqueId() + " is missing from BridgeSwitch");
-    }
+    // TODO: Revisit this in 10.0.0
+    // if(bridgeId == null) {
+    //   if(userToken.getUsername().equals("service")) {
+    //     if("webcmds".equals(channel) || "webdata".equals(channel)) {
+    //       log.warn("Service account sending message to frontend channe!: " + channel);
+    //     } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
+    //   } else log.debug("Token for email: " + userToken.getEmail() + ": sending message to channel: " + channel + ". JTI: " + userToken.getUniqueId() + " is missing from BridgeSwitch");
+    // }
 
-    try {
-      if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
-        throw new Exception("There is not bridgeId associated with the given token JTI");
-    } catch (Exception e) {
-      log.warn(
-          "An error occurred for sending to "
-              + channel
-              + " this JTI "
-              + userToken.getUniqueId()
-              + " with email "
-              + userToken.getEmail()
-              + " and with session_state "
-              + userToken.getAdecodedTokenMap().get("session_state")
-              + " does not exist as a key for any of these bridges "
-              + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-      e.printStackTrace();
-    }
+    // try {
+    //   if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
+    //     throw new Exception("There is not bridgeId associated with the given token JTI");
+    // } catch (Exception e) {
+    //   log.warn(
+    //       "An error occurred for sending to "
+    //           + channel
+    //           + " this JTI "
+    //           + userToken.getUniqueId()
+    //           + " with email "
+    //           + userToken.getEmail()
+    //           + " and with session_state "
+    //           + userToken.getAdecodedTokenMap().get("session_state")
+    //           + " does not exist as a key for any of these bridges "
+    //           + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
+    //   // e.printStackTrace();
+    // }
     if ("answer".equals(channel)) {
       producer.getToanswer().send(event.toString());
     } else if (!StringUtils.isBlank(event.getString("token"))) {
@@ -73,24 +74,24 @@ public class EventBusBean implements EventBusInterface {
       } else if (channel.equals("webdata")) {
         
         // Dynamic Channel builder
-        OutgoingKafkaRecordMetadata<String> metadata =
-            OutgoingKafkaRecordMetadata.<String>builder()
-                .withTopic(bridgeId + "-" + channel)
-                .build();
-        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+        // OutgoingKafkaRecordMetadata<String> metadata =
+        //     OutgoingKafkaRecordMetadata.<String>builder()
+        //         .withTopic(bridgeId + "-" + channel)
+        //         .build();
+        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
 
-        //producer.getToWebData().send(event.toString());
+        producer.getToWebData().send(event.toString());
 
       } else if (channel.equals("webcmds")) {
         
         // Dynamic Channel builder
-        OutgoingKafkaRecordMetadata<String> metadata =
-            OutgoingKafkaRecordMetadata.<String>builder()
-                .withTopic(bridgeId + "-" + channel)
-                .build();
-        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+        // OutgoingKafkaRecordMetadata<String> metadata =
+        //     OutgoingKafkaRecordMetadata.<String>builder()
+        //         .withTopic(bridgeId + "-" + channel)
+        //         .build();
+        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
 
-        // producer.getToWebCmds().send(event.toString());
+        producer.getToWebCmds().send(event.toString());
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
       } else if (channel.equals("social")) {
