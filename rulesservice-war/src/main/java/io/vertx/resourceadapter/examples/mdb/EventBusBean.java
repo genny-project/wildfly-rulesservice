@@ -42,7 +42,7 @@ public class EventBusBean implements EventBusInterface {
               + userToken.getUniqueId()
               + " does not exist as a key for any of these bridges "
               + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-      e.printStackTrace();
+      // e.printStackTrace();
     }
     if ("answer".equals(channel)) {
       producer.getToanswer().send(event.toString());
@@ -57,19 +57,22 @@ public class EventBusBean implements EventBusInterface {
         producer.getToValidData().send(event.toString());
         ;
       } else if (channel.equals("webdata")) {
-        OutgoingKafkaRecordMetadata<String> metadata =
-            OutgoingKafkaRecordMetadata.<String>builder()
-                .withTopic(bridgeId + "-" + channel)
-                .build();
-        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
-        ;
+        // OutgoingKafkaRecordMetadata<String> metadata =
+        //     OutgoingKafkaRecordMetadata.<String>builder()
+        //         .withTopic(bridgeId + "-" + channel)
+        //         .build();
+        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+
+        producer.getToWebData().send(event.toString());
+
       } else if (channel.equals("webcmds")) {
-        OutgoingKafkaRecordMetadata<String> metadata =
-            OutgoingKafkaRecordMetadata.<String>builder()
-                .withTopic(bridgeId + "-" + channel)
-                .build();
-        producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
-        ;
+        // OutgoingKafkaRecordMetadata<String> metadata =
+        //     OutgoingKafkaRecordMetadata.<String>builder()
+        //         .withTopic(bridgeId + "-" + channel)
+        //         .build();
+        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
+
+        producer.getToWebCmds().send(event.toString());
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
       } else if (channel.equals("social")) {
