@@ -34,17 +34,17 @@ public class EventBusBean implements EventBusInterface {
       if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
         throw new Exception("There is not bridgeId associated with the given token JTI");
     } catch (Exception e) {
-      log.warn(
-          "An error occurred for sending to "
-              + channel
-              + " this JTI "
-              + userToken.getUniqueId()
-              + " with email "
-              + userToken.getEmail()
-              + " and with session_state "
-              + userToken.getAdecodedTokenMap().get("session_state")
-              + " does not exist as a key for any of these bridges "
-              + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
+      // log.warn(
+      //     "An error occurred for sending to "
+      //         + channel
+      //         + " this JTI "
+      //         + userToken.getUniqueId()
+      //         + " with email "
+      //         + userToken.getEmail()
+      //         + " and with session_state "
+      //         + userToken.getAdecodedTokenMap().get("session_state")
+      //         + " does not exist as a key for any of these bridges "
+      //         + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
       // e.printStackTrace();
     }
     if ("answer".equals(channel)) {
