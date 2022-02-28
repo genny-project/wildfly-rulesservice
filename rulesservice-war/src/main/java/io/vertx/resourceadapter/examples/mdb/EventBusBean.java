@@ -1,6 +1,5 @@
 package io.vertx.resourceadapter.examples.mdb;
 
-import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
 import io.vertx.core.json.JsonObject;
 // import life.genny.channel.Producer;
 import java.lang.invoke.MethodHandles;
@@ -10,11 +9,9 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.models.GennyToken;
+import life.genny.qwanda.data.BridgeSwitch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.microprofile.reactive.messaging.Message;
-
-import life.genny.qwanda.data.BridgeSwitch;
 
 @ApplicationScoped
 public class EventBusBean implements EventBusInterface {
@@ -37,9 +34,15 @@ public class EventBusBean implements EventBusInterface {
       if (bridgeId == null)
         throw new Exception("There is not bridgeId associated with the given token JTI");
     } catch (Exception e) {
-      log.error(
-          "An error occurred this JTI "
+      log.warn(
+          "An error occurred for sending to "
+              + channel
+              + " this JTI "
               + userToken.getUniqueId()
+              + " with email "
+              + userToken.getEmail()
+              + " and with session_state "
+              + userToken.getAdecodedTokenMap().get("session_state")
               + " does not exist as a key for any of these bridges "
               + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
       // e.printStackTrace();
