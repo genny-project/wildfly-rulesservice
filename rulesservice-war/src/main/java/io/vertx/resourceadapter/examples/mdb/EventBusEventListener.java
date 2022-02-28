@@ -14,6 +14,7 @@ import javax.ejb.Startup;
 import javax.inject.Inject;
 import life.genny.models.GennyToken;
 import life.genny.qwanda.Answer;
+import life.genny.qwanda.data.BridgeSwitch;
 import life.genny.qwanda.message.QDataAnswerMessage;
 import life.genny.qwanda.message.QEventAttributeValueChangeMessage;
 import life.genny.qwanda.message.QEventBtnClickMessage;
@@ -26,8 +27,6 @@ import life.genny.utils.VertxUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
-
-import life.genny.qwanda.data.BridgeSwitch;
 
 /** Message-Driven Bean implementation class for: EventBusEventListener */
 @Startup
@@ -68,12 +67,15 @@ public class EventBusEventListener {
         throw new Exception("There is not bridgeId associated with the given token JTI");
       else BridgeSwitch.bridges.put(jti, bridgeId);
     } catch (Exception e) {
-      log.error(
-          "An error occurred this JTI "
+      log.warn(
+          "An error occurred in topic events this JTI "
               + userToken.getUniqueId()
+              + " with email "
+              + userToken.getEmail()
+              + " and with session_state "
+              + userToken.getAdecodedTokenMap().get("session_state")
               + " does not exist as a key for any of these bridges "
               + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-      e.printStackTrace();
     }
     payload.remove("token"); // dumbly hide from log
 

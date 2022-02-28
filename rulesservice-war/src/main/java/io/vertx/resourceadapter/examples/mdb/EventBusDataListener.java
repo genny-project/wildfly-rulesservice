@@ -85,19 +85,22 @@ public class EventBusDataListener {
     // BridgeSwitch.BridgeInfo info = new BridgeSwitch.BridgeInfo();
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
-    String jti = userToken.getUniqueId();
+    String jti = userToken.getJTI();
     String bridgeId = payload.getString(jti);
     try {
       if (bridgeId == null)
         throw new Exception("There is not bridgeId associated with the given token JTI");
       else BridgeSwitch.bridges.put(jti, bridgeId);
     } catch (Exception e) {
-      log.error(
-          "An error occurred this JTI "
+      log.warn(
+          "An error occurred in topic valid_data this JTI "
               + userToken.getUniqueId()
+              + " with email "
+              + userToken.getEmail()
+              + " and with session_state "
+              + userToken.getAdecodedTokenMap().get("session_state")
               + " does not exist as a key for any of these bridges "
               + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-      e.printStackTrace();
     }
     payload.remove("token");
     log.debug("Get a valid_data message from Vert.x: " + payload);
