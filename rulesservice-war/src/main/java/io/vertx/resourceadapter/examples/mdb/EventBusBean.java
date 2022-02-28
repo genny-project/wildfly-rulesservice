@@ -31,7 +31,7 @@ public class EventBusBean implements EventBusInterface {
     String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
 
     try {
-      if (bridgeId == null)
+      if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
         throw new Exception("There is not bridgeId associated with the given token JTI");
     } catch (Exception e) {
       log.warn(
