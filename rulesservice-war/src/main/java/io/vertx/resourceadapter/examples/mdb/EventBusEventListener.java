@@ -60,23 +60,23 @@ public class EventBusEventListener {
     long startTime = System.nanoTime();
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
-    String jti = userToken.getUniqueId();
-    String bridgeId = payload.getString(jti);
-    try {
-      if (bridgeId == null)
-        throw new Exception("There is not bridgeId associated with the given token JTI");
-      else BridgeSwitch.bridges.put(jti, bridgeId);
-    } catch (Exception e) {
-      log.warn(
-          "An error occurred in topic events this JTI "
-              + userToken.getUniqueId()
-              + " with email "
-              + userToken.getEmail()
-              + " and with session_state "
-              + userToken.getAdecodedTokenMap().get("session_state")
-              + " does not exist as a key for any of these bridges "
-              + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-    }
+    // String jti = userToken.getUniqueId();
+    // String bridgeId = payload.getString(jti);
+    // try {
+    //   if (bridgeId == null)
+    //     throw new Exception("There is not bridgeId associated with the given token JTI");
+    //   else BridgeSwitch.bridges.put(jti, bridgeId);
+    // } catch (Exception e) {
+    //   log.warn(
+    //       "An error occurred in topic events this JTI "
+    //           + userToken.getUniqueId()
+    //           + " with email "
+    //           + userToken.getEmail()
+    //           + " and with session_state "
+    //           + userToken.getAdecodedTokenMap().get("session_state")
+    //           + " does not exist as a key for any of these bridges "
+    //           + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
+    // }
     payload.remove("token"); // dumbly hide from log
 
     log.info(

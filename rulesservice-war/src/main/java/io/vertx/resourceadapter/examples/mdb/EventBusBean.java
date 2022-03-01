@@ -30,7 +30,7 @@ public class EventBusBean implements EventBusInterface {
     JsonObject event = new JsonObject(json);
     GennyToken userToken = new GennyToken(event.getString("token"));
 
-    String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
+    // String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
 
     // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
     // TODO: Revisit this in 10.0.0
