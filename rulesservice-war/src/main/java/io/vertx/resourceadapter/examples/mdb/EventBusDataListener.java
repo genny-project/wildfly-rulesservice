@@ -28,7 +28,6 @@ import life.genny.qwanda.Answer;
 import life.genny.qwanda.GPS;
 import life.genny.qwanda.GennyItem;
 import life.genny.qwanda.attribute.EntityAttribute;
-import life.genny.qwanda.data.BridgeSwitch;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwanda.entity.User;
 import life.genny.qwanda.message.QDataAnswerMessage;
@@ -82,26 +81,8 @@ public class EventBusDataListener {
   public CompletionStage<Void> onMessage(Message<String> message) {
 
     final JsonObject payload = new JsonObject(message.getPayload());
-    // BridgeSwitch.BridgeInfo info = new BridgeSwitch.BridgeInfo();
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
-    // String jti = userToken.getJTI();
-    // String bridgeId = payload.getString(jti);
-    // try {
-    //   if (bridgeId == null)
-    //     throw new Exception("There is not bridgeId associated with the given token JTI");
-    //   else BridgeSwitch.bridges.put(jti, bridgeId);
-    // } catch (Exception e) {
-    //   log.warn(
-    //       "An error occurred in topic valid_data this JTI "
-    //           + userToken.getUniqueId()
-    //           + " with email "
-    //           + userToken.getEmail()
-    //           + " and with session_state "
-    //           + userToken.getAdecodedTokenMap().get("session_state")
-    //           + " does not exist as a key for any of these bridges "
-    //           + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-    // }
     payload.remove("token");
     log.debug("Get a valid_data message from Vert.x: " + payload);
     // long startTime = System.nanoTime();
