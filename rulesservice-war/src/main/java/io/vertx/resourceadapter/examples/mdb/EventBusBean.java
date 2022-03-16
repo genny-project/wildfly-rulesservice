@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.models.GennyToken;
-import life.genny.qwanda.data.BridgeSwitch;
+import life.genny.data.BridgeSwitch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -30,90 +30,65 @@ public class EventBusBean implements EventBusInterface {
     JsonObject event = new JsonObject(json);
     GennyToken userToken = new GennyToken(event.getString("token"));
 
-    // String bridgeId = BridgeSwitch.bridges.get(userToken.getUniqueId());
+	// create metadata for correct bridge
+	// OutgoingKafkaRecordMetadata<String> metadata = null;
 
-    // Check to see if it is a service account TODO: Make this more conventional. Perhaps we change the service account email to service@gada.io ?
-    // TODO: Revisit this in 10.0.0
-    // if(bridgeId == null) {
-    //   if(userToken.getUsername().equals("service")) {
-    //     if("webcmds".equals(channel) || "webdata".equals(channel)) {
-    //       log.warn("Service account sending message to frontend channe!: " + channel);
-    //     } else log.info("Service sending message to: " + (channel != null ? channel : "undefined"));
-    //   } else log.debug("Token for email: " + userToken.getEmail() + ": sending message to channel: " + channel + ". JTI: " + userToken.getUniqueId() + " is missing from BridgeSwitch");
-    // }
+	// if ("webcmds".equals(channel) || "webdata".equals(channel)) {
 
-    // try {
-    //   if (bridgeId == null && ("webcmds".equals(channel) || "webdata".equals(channel)) )
-    //     throw new Exception("There is not bridgeId associated with the given token JTI");
-    // } catch (Exception e) {
-    //   log.warn(
-    //       "An error occurred for sending to "
-    //           + channel
-    //           + " this JTI "
-    //           + userToken.getUniqueId()
-    //           + " with email "
-    //           + userToken.getEmail()
-    //           + " and with session_state "
-    //           + userToken.getAdecodedTokenMap().get("session_state")
-    //           + " does not exist as a key for any of these bridges "
-    //           + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
-    //   // e.printStackTrace();
-    // }
+	// 	String bridgeId = BridgeSwitch.get(userToken);
+
+	// 	if (bridgeId == null) {
+	// 		log.error("No Bridge ID found for " + userToken.getUserCode() + " : " + userToken.getUniqueId() + ", channel = " + channel);
+	// 	}
+	// 	metadata = OutgoingKafkaRecordMetadata.<String>builder()
+	// 		.withTopic(bridgeId + "-" + channel)
+	// 		.build();
+	// }
+
     if ("answer".equals(channel)) {
       producer.getToanswer().send(event.toString());
     } else if (!StringUtils.isBlank(event.getString("token"))) {
       if (channel.equals("events")) {
         producer.getToEvents().send(event.toString());
-        ;
+
       } else if (channel.equals("data")) {
         producer.getToData().send(event.toString());
-        ;
+
       } else if (channel.equals("valid_data")) {
         producer.getToValidData().send(event.toString());
-        ;
-      } else if (channel.equals("webdata")) {
-        
-        // Dynamic Channel builder
-        // OutgoingKafkaRecordMetadata<String> metadata =
-        //     OutgoingKafkaRecordMetadata.<String>builder()
-        //         .withTopic(bridgeId + "-" + channel)
-        //         .build();
-        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
 
+      } else if (channel.equals("webdata")) {
+        // producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
         producer.getToWebData().send(event.toString());
 
       } else if (channel.equals("webcmds")) {
-        
-        // Dynamic Channel builder
-        // OutgoingKafkaRecordMetadata<String> metadata =
-        //     OutgoingKafkaRecordMetadata.<String>builder()
-        //         .withTopic(bridgeId + "-" + channel)
-        //         .build();
-        // producer.getToData().send(Message.of(event.toString()).addMetadata(metadata));
-
+        // producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
         producer.getToWebCmds().send(event.toString());
+
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
+
       } else if (channel.equals("social")) {
         producer.getToSocial().send(event.toString());
+
       } else if (channel.equals("signals")) {
         producer.getToSignals().send(event.toString());
+
       } else if (channel.equals("statefulmessages")) {
         producer.getToStatefulMessages().send(event.toString());
+
       } else if (channel.equals("health")) {
         producer.getToHealth().send(event.toString());
-      }
-      if (channel.equals("messages")) {
+
+      } else if (channel.equals("messages")) {
         producer.getToMessages().send(event.toString());
-        ;
-      }
-      if (channel.equals("services")) {
+
+      } else if (channel.equals("services")) {
         producer.getToServices().send(event.toString());
-        ;
-      }
-      if (channel.equals("search_events")) {
+
+      } else if (channel.equals("search_events")) {
         producer.getToSearchEvents().send(event.toString());
-        ;
+
       }
 
     } else {
