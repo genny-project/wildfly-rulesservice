@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.models.GennyToken;
-import life.genny.data.BridgeSwitch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.microprofile.reactive.messaging.Message;
