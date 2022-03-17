@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.naming.NamingException;
+
+import life.genny.data.BridgeSwitch;
 import life.genny.eventbus.EventBusInterface;
 import life.genny.models.GennyToken;
 import org.apache.commons.lang3.StringUtils;
@@ -30,19 +32,22 @@ public class EventBusBean implements EventBusInterface {
     GennyToken userToken = new GennyToken(event.getString("token"));
 
 	// create metadata for correct bridge
-	// OutgoingKafkaRecordMetadata<String> metadata = null;
+	OutgoingKafkaRecordMetadata<String> metadata = null;
 
-	// if ("webcmds".equals(channel) || "webdata".equals(channel)) {
+	if ("webcmds".equals(channel) || "webdata".equals(channel)) {
 
-	// 	String bridgeId = BridgeSwitch.get(userToken);
+		String bridgeId = BridgeSwitch.get(userToken);
 
-	// 	if (bridgeId == null) {
-	// 		log.error("No Bridge ID found for " + userToken.getUserCode() + " : " + userToken.getUniqueId() + ", channel = " + channel);
-	// 	}
-	// 	metadata = OutgoingKafkaRecordMetadata.<String>builder()
-	// 		.withTopic(bridgeId + "-" + channel)
-	// 		.build();
-	// }
+		if (bridgeId == null) {
+			log.warn("No Bridge ID found for " + userToken.getUserCode() + " : " + userToken.getUniqueId());
+
+			bridgeId = BridgeSwitch.activeBridgeIds.iterator().next();
+			log.warn("Sending to " + bridgeId + " instead!");
+		}
+		metadata = OutgoingKafkaRecordMetadata.<String>builder()
+			.withTopic(bridgeId + "-" + channel)
+			.build();
+	}
 
     if ("answer".equals(channel)) {
       producer.getToanswer().send(event.toString());
@@ -57,12 +62,12 @@ public class EventBusBean implements EventBusInterface {
         producer.getToValidData().send(event.toString());
 
       } else if (channel.equals("webdata")) {
-        // producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
-        producer.getToWebData().send(event.toString());
+        producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
+        // producer.getToWebData().send(event.toString());
 
       } else if (channel.equals("webcmds")) {
-        // producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
-        producer.getToWebCmds().send(event.toString());
+        producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
+        // producer.getToWebCmds().send(event.toString());
 
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
