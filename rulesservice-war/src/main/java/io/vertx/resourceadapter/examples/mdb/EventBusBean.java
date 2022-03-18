@@ -62,12 +62,12 @@ public class EventBusBean implements EventBusInterface {
         producer.getToValidData().send(event.toString());
 
       } else if (channel.equals("webdata")) {
-        producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
-        // producer.getToWebData().send(event.toString());
+        // producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
+        producer.getToWebData().send(event.toString());
 
       } else if (channel.equals("webcmds")) {
-        producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
-        // producer.getToWebCmds().send(event.toString());
+        // producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
+        producer.getToWebCmds().send(event.toString());
 
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
