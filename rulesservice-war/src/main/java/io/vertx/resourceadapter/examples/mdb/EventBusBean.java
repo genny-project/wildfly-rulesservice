@@ -41,8 +41,8 @@ public class EventBusBean implements EventBusInterface {
 		if (bridgeId == null) {
 			log.warn("No Bridge ID found for " + userToken.getUserCode() + " : " + userToken.getUniqueId());
 
-			bridgeId = BridgeSwitch.activeBridgeIds.iterator().next();
-			log.warn("Sending to " + bridgeId + " instead!");
+			// bridgeId = BridgeSwitch.activeBridgeIds.iterator().next();
+			// log.warn("Sending to " + bridgeId + " instead!");
 		}
 
 		if (bridgeId == null) {
