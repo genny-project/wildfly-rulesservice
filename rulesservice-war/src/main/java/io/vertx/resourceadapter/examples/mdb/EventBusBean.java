@@ -44,9 +44,12 @@ public class EventBusBean implements EventBusInterface {
 			bridgeId = BridgeSwitch.activeBridgeIds.iterator().next();
 			log.warn("Sending to " + bridgeId + " instead!");
 		}
-		metadata = OutgoingKafkaRecordMetadata.<String>builder()
-			.withTopic(bridgeId + "-" + channel)
-			.build();
+
+		if (bridgeId == null) {
+			metadata = OutgoingKafkaRecordMetadata.<String>builder()
+				.withTopic(bridgeId + "-" + channel)
+				.build();
+		}
 	}
 
     if ("answer".equals(channel)) {
