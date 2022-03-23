@@ -54,21 +54,28 @@ public class EventBusEventListener {
   @Merge
   public CompletionStage<Void> onMessage(Message<String> message) {
     // final JsonObject payload = new JsonObject(message.body().toString());
-    final JsonObject payload = new JsonObject(message.getPayload());
+    final JsonObject obj = new JsonObject(message.getPayload());
+    final JsonObject payload = obj.getJsonObject("map");
 
     long startTime = System.nanoTime();
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
     payload.remove("token"); // dumbly hide from log
 
-    log.info(
-        "********* KAFKA EVENT LISTENER!!!! *********"
+    log.info("********* KAFKA EVENT LISTENER!!!! *********"
             + " valid_data came in "
-            + payload.toString().substring(0, payload.size() >= 40 ? 40 : payload.size()));
+			+ payload.toString().substring(0, payload.size() >= 40 ? 40 : payload.size()));
+
     payload.put("token", token); // put it back
     String logMessage = "";
 
     QEventMessage eventMsg = null;
+
+	if (payload.getString("event_type") == null) {
+		log.error("Message must contain the event_type field!!!");
+		return message.ack();
+	}
+
     if (payload.getString("event_type").equals("EVT_ATTRIBUTE_VALUE_CHANGE")) {
       eventMsg = JsonUtils.fromJson(payload.toString(), QEventAttributeValueChangeMessage.class);
       logMessage += " EVT_ATTRIBUTE_VALUE_CHANGE " + eventMsg.hashCode();
