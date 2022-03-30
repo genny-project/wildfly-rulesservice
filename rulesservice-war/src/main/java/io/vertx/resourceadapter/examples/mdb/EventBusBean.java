@@ -41,14 +41,15 @@ public class EventBusBean implements EventBusInterface {
 		if (bridgeId == null) {
 			log.warn("No Bridge ID found for " + userToken.getUserCode() + " : " + userToken.getUniqueId());
 
-			// bridgeId = BridgeSwitch.activeBridgeIds.iterator().next();
-			// log.warn("Sending to " + bridgeId + " instead!");
-		}
+			bridgeId = BridgeSwitch.findActiveBridgeId(userToken);
 
-		if (bridgeId == null) {
-			metadata = OutgoingKafkaRecordMetadata.<String>builder()
-				.withTopic(bridgeId + "-" + channel)
-				.build();
+			if (bridgeId != null) {
+				log.warn("Sending to " + bridgeId + " instead!");
+
+				metadata = OutgoingKafkaRecordMetadata.<String>builder()
+					.withTopic(bridgeId + "-" + channel)
+					.build();
+			}
 		}
 	}
 
@@ -65,12 +66,20 @@ public class EventBusBean implements EventBusInterface {
         producer.getToValidData().send(event.toString());
 
       } else if (channel.equals("webdata")) {
-        // producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
-        producer.getToWebData().send(event.toString());
+
+		  if (metadata != null) {
+			  producer.getToWebData().send(Message.of(event.toString()).addMetadata(metadata));
+		  } else {
+			  producer.getToWebData().send(event.toString());
+		  }
 
       } else if (channel.equals("webcmds")) {
-        // producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
-        producer.getToWebCmds().send(event.toString());
+
+		  if (metadata != null) {
+			  producer.getToWebCmds().send(Message.of(event.toString()).addMetadata(metadata));
+		  } else {
+			  producer.getToWebCmds().send(event.toString());
+		  }
 
       } else if (channel.equals("cmds")) {
         producer.getToCmds().send(event.toString());
