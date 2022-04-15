@@ -77,7 +77,7 @@ public class EventBusEventListener {
     //           + " does not exist as a key for any of these bridges "
     //           + BridgeSwitch.bridges.values().stream().collect(Collectors.toSet()));
     // }
-    payload.remove("token"); // dumbly hide from log
+    // payload.remove("token"); // dumbly hide from log
 
     log.info(
         "********* KAFKA EVENT LISTENER!!!! *********"
