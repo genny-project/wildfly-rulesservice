@@ -89,7 +89,7 @@ public class EventBusDataListener {
     log.info(
         "********* KAFKA DATA LISTENER!!!! *********"
             + " valid_data came in "
-            + payload.toString().substring(0, payload.size() >= 40 ? 40 : payload.size()));
+            + payload.toString());//.substring(0, payload.size() >= 40 ? 40 : payload.size()));
     payload.put("token", token);
 
     QDataAnswerMessage dataMsg = null;
