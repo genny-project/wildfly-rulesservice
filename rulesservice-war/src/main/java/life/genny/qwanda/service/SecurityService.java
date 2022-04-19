@@ -68,6 +68,7 @@ public class SecurityService implements Serializable {
 					.getEmail());
 			user.put("name",
 					((KeycloakPrincipal) request.getUserPrincipal()).getKeycloakSecurityContext().getToken().getName());
+			
 
 		}
 
