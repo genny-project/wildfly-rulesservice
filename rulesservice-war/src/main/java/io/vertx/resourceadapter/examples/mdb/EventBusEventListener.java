@@ -56,8 +56,8 @@ public class EventBusEventListener {
     // final JsonObject payload = new JsonObject(message.body().toString());
     final JsonObject obj = new JsonObject(message.getPayload());
     log.info("[!] OBJECT MESSAGE: " + obj.toString());
-    final JsonObject payload = obj.getJsonObject("map");
-	log.info("PAYLOAD = " + payload.toString());
+    final JsonObject payload = new JsonObject(message.getPayload());
+	  log.info("PAYLOAD = " + payload.toString());
 
     long startTime = System.nanoTime();
     String token = payload.getString("token");
