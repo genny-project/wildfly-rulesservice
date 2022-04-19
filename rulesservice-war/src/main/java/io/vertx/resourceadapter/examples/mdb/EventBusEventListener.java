@@ -55,6 +55,7 @@ public class EventBusEventListener {
   public CompletionStage<Void> onMessage(Message<String> message) {
     // final JsonObject payload = new JsonObject(message.body().toString());
     final JsonObject obj = new JsonObject(message.getPayload());
+    log.info("[!] OBJECT MESSAGE: " + obj.toString());
     final JsonObject payload = obj.getJsonObject("map");
 	log.info("PAYLOAD = " + payload.toString());
 
