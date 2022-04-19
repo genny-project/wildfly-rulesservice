@@ -79,7 +79,14 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			DefUtils.loadDEFS(securityService.getRealm());
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+
+			DefUtils.loadDEFS(productCode);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -93,7 +100,14 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			Boolean changeInRules = RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir,false);
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+			
+			Boolean changeInRules = RulesLoader.loadRules(productCode,GennySettings.rulesDir,false);
 			Boolean noskip = true;
 			JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
 			if (skipJson.containsKey("status")) {
@@ -125,7 +139,14 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			Boolean noChangeInRules = RulesLoader.loadRules(securityService.getRealm(),GennySettings.rulesDir,true);
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+
+			Boolean noChangeInRules = RulesLoader.loadRules(productCode,GennySettings.rulesDir,true);
 			Boolean noskip = true;
 			JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
 			if (skipJson.containsKey("status")) {
@@ -156,10 +177,19 @@ public class ServiceEndpoint {
 	public Response reloadRulesFull(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
+			
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+
+			
 			if (realm == null) {
 				realm = securityService.getRealm();
 			}
-			loadRulesFull(realm);
+			loadRulesFull(productCode);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -173,6 +203,13 @@ public class ServiceEndpoint {
 	public Response loadAttributes(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+
 			if (realm == null) {
 				realm = securityService.getRealm();
 			}
@@ -190,11 +227,18 @@ public class ServiceEndpoint {
 	public Response reloadRulesSkip(@PathParam("realm") String realm) {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
+			// get token
+			String token = securityService.getToken();
+			GennyToken userToken = new GennyToken(token);
+			
+			String productCode = userToken.getRealm();
+				
+
 			if (realm == null) {
 				realm = securityService.getRealm();
 			}
 // Ideally we use the token realm , but it ois not working for me ACC
-			loadRules(realm);
+			loadRules(productCode);
 			return Response.status(200).entity("Load Process Begun").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
