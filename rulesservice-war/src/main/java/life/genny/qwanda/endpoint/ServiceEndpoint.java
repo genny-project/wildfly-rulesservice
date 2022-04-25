@@ -214,6 +214,7 @@ public class ServiceEndpoint {
 				realm = securityService.getRealm();
 			}
 			GennyToken gennyToken = new GennyToken(securityService.getToken());
+			gennyToken.setProjectCode(realm);
 			RulesUtils.loadAllAttributesIntoCache(gennyToken);
 			return Response.status(200).entity("Loaded").build();
 		} else {
