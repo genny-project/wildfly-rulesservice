@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import life.genny.eventbus.WildflyCacheInterface;
 import life.genny.qwanda.service.Hazel;
+import life.genny.models.GennyToken;
 
 //@ApplicationScoped
 public class WildflyCache implements WildflyCacheInterface {
@@ -23,7 +24,7 @@ public class WildflyCache implements WildflyCacheInterface {
 	}
 
 	@Override
-	public Object readCache(String realm, String key, String token) {
+	public Object readCache(String realm, String key, GennyToken token) {
 	//	log.info("WildflyCache read:"+realm+":"+key);
 		Object ret = inDb.getMapBaseEntitys(realm).get(key);
 
@@ -31,7 +32,7 @@ public class WildflyCache implements WildflyCacheInterface {
 	}
 
 	@Override
-	public void writeCache(String realm, String key, String value, String token, long ttl_seconds) {
+	public void writeCache(String realm, String key, String value, GennyToken token, long ttl_seconds) {
 		synchronized (this) {
 		if (value == null) {
 			inDb.getMapBaseEntitys(realm).remove(key);

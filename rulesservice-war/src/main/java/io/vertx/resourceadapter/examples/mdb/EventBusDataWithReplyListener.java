@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import life.genny.models.GennyToken;
 
 import org.apache.logging.log4j.Logger;
 
@@ -120,6 +121,7 @@ public class EventBusDataWithReplyListener {
 
 		String serviceTokenStr = VertxUtils.getObject(userToken.getRealm(), "CACHE", "SERVICE_TOKEN", String.class);
 		GennyToken serviceToken = new GennyToken("PER_SERVICE", serviceTokenStr);
+		serviceToken.setProjectCode(userToken.getRealm());
 		BaseEntityUtils beUtils = new BaseEntityUtils(userToken);
 		beUtils.setServiceToken(serviceToken);
 
@@ -533,7 +535,7 @@ public class EventBusDataWithReplyListener {
 
 	
 						try {
-							QwandaUtils.apiPostEntity(webhookURL, msgpayload.toString(), serviceToken.getToken());
+							QwandaUtils.apiPostEntity(webhookURL, msgpayload.toString(), serviceToken);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
