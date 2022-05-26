@@ -88,21 +88,19 @@ public class SecureResources {
 				log.error(url.toUpperCase() + " not found in cache");
 
 			} else {
-				String value = jsonObj.getString("value");
+				String value = jsonObj.getJsonObject("value").toString();
 				projectBe = JsonUtils.fromJson(value.toString(), BaseEntity.class);
 				JsonObject tokenObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM,
 						"TOKEN" + url.toUpperCase());
-				token = tokenObj.getString("value");
+				token = tokenObj.getJsonObject("value").toString();
 
 				log.info(projectBe.getRealm());
 			}
 
 			if ((projectBe != null) ) {
-				retInit = new JsonObject(projectBe.getValue("ENV_KEYCLOAK_JSON", "NO JSON"));
+				retInit = new JsonObject(projectBe.getValue("ENV_KEYCLOAK_JSON", "{}"));
 			//	log.info("KEYCLOAK JSON VALUE: " + retInit);
-				String tokenRealm = retInit.getString("resource");
 				String realm = projectBe.getRealm();
-				String serviceToken = projectBe.getValue("ENV_SERVICE_TOKEN", "DUMMY");
 				keycloakJsonMap.put(realm,retInit.toString());
 				keycloakJsonMap.put(url,retInit.toString());
 				keycloakJsonMap.put(realm+".json",retInit.toString());
@@ -111,7 +109,8 @@ public class SecureResources {
 			}
 		} catch (Exception e)
 		{
-					log.error("KeycloakJson not available for "+fullurl);
+					log.error("KeycloakJson not available for "+fullurl, e);
+					e.printStackTrace();
 		}
 		return null;
 				
