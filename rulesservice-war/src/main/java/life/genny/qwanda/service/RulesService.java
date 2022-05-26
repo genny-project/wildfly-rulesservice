@@ -56,7 +56,7 @@ public class RulesService {
 		JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
 		if (skipJson.containsKey("status")) {
 			if ("ok".equalsIgnoreCase(skipJson.getString("status"))) {
-				String val = skipJson.getString("value");
+				String val = skipJson.getJsonObject("value").toString();
 				if ("TRUE".equalsIgnoreCase(val)) {
 					noChangeInRules = true;
 					noskip = false;
