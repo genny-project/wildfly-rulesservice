@@ -46,7 +46,7 @@ public class WildflyCache implements WildflyCacheInterface {
 		if (value == null) {
 			//inDb.getMapBaseEntitys(realm).remove(key);
 			 try {
-				QwandaUtils.apiPostEntity2(GennySettings.fyodorServiceUrl + "/cache/"+realm+"/"+key, value, token,null);
+				QwandaUtils.apiDeleteEntity2(GennySettings.fyodorServiceUrl + "/cache/"+realm+"/"+key, token);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
