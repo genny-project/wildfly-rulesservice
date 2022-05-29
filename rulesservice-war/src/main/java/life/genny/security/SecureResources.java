@@ -22,6 +22,7 @@ import io.vertx.core.json.JsonObject;
 
 import org.apache.commons.lang3.StringUtils;
 
+import life.genny.models.GennyToken;
 import life.genny.qwanda.entity.BaseEntity;
 import life.genny.qwandautils.GennySettings;
 import life.genny.qwandautils.JsonUtils;
@@ -82,19 +83,28 @@ public class SecureResources {
 			JsonObject retInit = null;
 			String token = null;
 			// Fetch Project BE
-			JsonObject jsonObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM, url.toUpperCase());
+			JsonObject tokenObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM,
+					"TOKEN" + url.toUpperCase());
+			try {
+				token = tokenObj.getJsonObject("value").toString();
+			} catch (Exception e) {
+				token = tokenObj.getString("value"); // TODO, ugly. 
+			}
+			GennyToken gToken = new GennyToken(token);
+			// cheat and just get the project
+			String productCode = "internmatch";
+			if (fullurl.contains("mentormatch"))		{
+				productCode = "mentormatch";
+			}
+			JsonObject jsonObj = VertxUtils.readCachedJson(productCode, "PRJ_"+productCode.toUpperCase(),gToken);
 			BaseEntity projectBe = null;
 			if ((jsonObj == null) || ("error".equals(jsonObj.getString("status")))) {
-				log.error(url.toUpperCase() + " not found in cache");
+				log.warn(url.toUpperCase() + " not found in cache");
 
 			} else {
 				String value = jsonObj.getJsonObject("value").toString();
 				projectBe = JsonUtils.fromJson(value.toString(), BaseEntity.class);
-				JsonObject tokenObj = VertxUtils.readCachedJson(GennySettings.GENNY_REALM,
-						"TOKEN" + url.toUpperCase());
-				token = tokenObj.getJsonObject("value").toString();
-
-				log.info(projectBe.getRealm());
+				log.info("ProductCode = "+projectBe.getRealm());
 			}
 
 			if ((projectBe != null) ) {
