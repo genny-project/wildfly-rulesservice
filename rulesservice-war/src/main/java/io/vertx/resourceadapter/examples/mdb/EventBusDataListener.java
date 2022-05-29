@@ -118,7 +118,7 @@ public class EventBusDataListener {
           if ((dataMsg.getItems().length == 1)) {
             Answer checkAnswer = dataMsg.getItems()[0];
             if (StringUtils.isBlank(checkAnswer.getAttributeCode())) {
-              log.error("NULL ANSWER CODE in only answer in message - aborting");
+              log.warn("NULL ANSWER CODE in only answer in message - aborting");
               return message.ack();
             }
           }
