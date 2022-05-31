@@ -86,7 +86,7 @@ public class ServiceEndpoint {
 			String productCode = userToken.getRealm();
 				
 
-			DefUtils.loadDEFS(productCode);
+			DefUtils.loadDEFS(userToken);
 			return Response.status(200).entity("Loaded").build();
 		} else {
 			return Response.status(401).entity("Unauthorized").build();
@@ -100,7 +100,7 @@ public class ServiceEndpoint {
 		if (securityService.inRole("superadmin") || securityService.inRole("dev") || securityService.inRole("test")
 				|| GennySettings.devMode) {
 
-			// get token
+			// get token!
 			String token = securityService.getToken();
 			GennyToken userToken = new GennyToken(token);
 			

@@ -82,6 +82,9 @@ public class EventBusDataListener {
 
     final JsonObject payload = new JsonObject(message.getPayload());
     String token = payload.getString("token");
+    if (payload.getJsonArray("items").isEmpty()) {
+    	return message.ack();
+    }
     GennyToken userToken = new GennyToken(token);
     payload.remove("token");
     log.debug("Get a valid_data message from Vert.x: " + payload);
@@ -118,7 +121,7 @@ public class EventBusDataListener {
           if ((dataMsg.getItems().length == 1)) {
             Answer checkAnswer = dataMsg.getItems()[0];
             if (StringUtils.isBlank(checkAnswer.getAttributeCode())) {
-              log.warn("NULL ANSWER CODE in only answer in message - aborting");
+              log.debug("NULL ANSWER CODE in only answer in message - aborting");
               return message.ack();
             }
           }
