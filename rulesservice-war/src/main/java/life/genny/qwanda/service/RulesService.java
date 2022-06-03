@@ -44,30 +44,13 @@ public class RulesService {
 		cacheInterface = new WildflyCache(inDb);
 		VertxUtils.init(eventBus, cacheInterface);
 		
-		// Load in DEFs for every realm
-		
-		
-		
 		// Load in Rules
 		RulesLoader.init();
 		log.info("Loading Rules");
-		Boolean noChangeInRules = RulesLoader.loadRules(GennySettings.rulesDir);
-		Boolean noskip = true;
-		JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
-		if (skipJson.containsKey("status")) {
-			if ("ok".equalsIgnoreCase(skipJson.getString("status"))) {
-				String val = skipJson.getString("value");
-				if ("TRUE".equalsIgnoreCase(val)) {
-					noChangeInRules = true;
-					noskip = false;
-				}
-			}
-		}
-		log.info("SKIP JENNY JSON = "+skipJson.toString());
 		
 		// force rules to startup
+		RulesLoader.loadRules(GennySettings.rulesDir);
 		(new RulesLoader()).triggerStartupRules(GennySettings.rulesDir);
-		
 		
 //		Boolean noskip = true;
 //		JsonObject skipJson = VertxUtils.readCachedJson("JENNY", "SKIP");
