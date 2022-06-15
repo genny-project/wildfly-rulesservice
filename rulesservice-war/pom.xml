@@ -39,7 +39,7 @@
         <version.org.wildfly>22.0.1.Final</version.org.wildfly>
         <version.wildfly-jsf>22.0.1.Final</version.wildfly-jsf>
         <version.wildfly-dist>22.0.1.Final</version.wildfly-dist>
-        <version.keycloak>15.0.2</version.keycloak>
+        <version.keycloak>17.0.1</version.keycloak>
         <version.wildfly.maven.plugin>1.2.1.Final</version.wildfly.maven.plugin>
 
         <maven.compiler.source>11</maven.compiler.source>
