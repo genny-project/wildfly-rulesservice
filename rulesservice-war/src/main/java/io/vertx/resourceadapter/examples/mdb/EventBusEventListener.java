@@ -66,7 +66,7 @@ public class EventBusEventListener {
     String payLoadString = payload.toString();
     log.info("********* KAFKA EVENT LISTENER!!!! *********"
             + " valid_data came in "
-			+ payload.toString().substring(0, payloadString.size() >= 40 ? 40 : payloadString.size()));
+			+ payloadString.substring(0, payloadString.size() >= 40 ? 40 : payloadString.size()));
 
     payload.put("token", token); // put it back
     String logMessage = "";
