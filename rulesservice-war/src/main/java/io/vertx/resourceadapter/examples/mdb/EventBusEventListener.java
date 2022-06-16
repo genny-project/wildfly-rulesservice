@@ -63,10 +63,10 @@ public class EventBusEventListener {
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
     payload.remove("token"); // dumbly hide from log
-
+    String payLoadString = payload.toString();
     log.info("********* KAFKA EVENT LISTENER!!!! *********"
             + " valid_data came in "
-			+ payload.toString().substring(0, payload.size() >= 40 ? 40 : payload.size()));
+			+ payload.toString().substring(0, payloadString.size() >= 40 ? 40 : payloadString.size()));
 
     payload.put("token", token); // put it back
     String logMessage = "";
@@ -98,10 +98,11 @@ public class EventBusEventListener {
       eventMsg = JsonUtils.fromJson(payload.toString(), QEventLinkChangeMessage.class);
       logMessage += " EVT_LINK_CHANGE ";
     } else if ((payload.getString("event_type").equals("AUTH_INIT"))) {
+    	
       JsonObject frontendData = payload.getJsonObject("data");
-      log.debug("Incoming Frontend data is " + frontendData.toString());
+      log.info("Incoming AUTH_INIT Frontend data is " + frontendData.toString());
       try {
-        String payloadString = payload.toString();
+
         eventMsg = JsonUtils.fromJson(payloadString, QEventMessage.class);
         eventMsg.getData().setValue(frontendData.toString());
       } catch (NoClassDefFoundError e) {

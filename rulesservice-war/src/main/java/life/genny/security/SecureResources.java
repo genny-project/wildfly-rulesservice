@@ -57,9 +57,11 @@ public class SecureResources {
 
 		// Now fetch all the Realms for keycloak json
 		for (String realm : realmsSet) {
-			log.info("Loaded realm is "+realm);
-			getKeycloakJson("http://"+realm + ".genny.life");
-			getKeycloakJson(GennySettings.projectUrl);
+			if (!"dev1".equals(realm)) { // hack to ignore dev1
+				log.info("Loaded realm is "+realm);
+				getKeycloakJson("http://"+realm + ".genny.life");
+				getKeycloakJson(GennySettings.projectUrl);
+			}
 		}
 	}
 
