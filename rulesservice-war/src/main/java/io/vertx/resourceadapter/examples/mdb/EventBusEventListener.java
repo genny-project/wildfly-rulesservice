@@ -63,10 +63,10 @@ public class EventBusEventListener {
     String token = payload.getString("token");
     GennyToken userToken = new GennyToken(token);
     payload.remove("token"); // dumbly hide from log
-    String payLoadString = payload.toString();
+    String payloadString = payload.toString();
     log.info("********* KAFKA EVENT LISTENER!!!! *********"
             + " valid_data came in "
-			+ payloadString.substring(0, payloadString.size() >= 40 ? 40 : payloadString.size()));
+			+ payloadString.substring(0, payloadString.length() >= 40 ? 40 : payloadString.length()));
 
     payload.put("token", token); // put it back
     String logMessage = "";
@@ -110,7 +110,7 @@ public class EventBusEventListener {
       }
     } else {
       try {
-        String payloadString = payload.toString();
+        payloadString = payload.toString();
         eventMsg = JsonUtils.fromJson(payloadString, QEventMessage.class);
       } catch (NoClassDefFoundError e) {
         log.error("No class def found [" + payload.toString() + "]");
