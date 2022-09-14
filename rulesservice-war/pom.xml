@@ -7,7 +7,7 @@
     <groupId>life.genny</groupId>
     <artifactId>rulesservice-war</artifactId>
     <packaging>war</packaging>
-    <version>10.1.0</version>
+    <version>10.2.0</version>
     <name>rulesservice-war</name>
     <url>http://genny.life</url>
 
