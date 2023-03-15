@@ -697,10 +697,10 @@
     </query>
     <!-- hint name="org.hibernate.timeout" value="200"/ -->
   </named-query>
-
+  
   <named-query name="getTaskInstanceById">
     <query>
-        select
+        select 
 	      new org.jbpm.kie.services.impl.model.UserTaskInstanceDesc(
 	      a.taskId,
 	      a.status,
@@ -716,26 +716,19 @@
 	      a.createdOn,
 	      a.dueDate,
     	      a.workItemId,
-    	      t.formName,
-    	      t.subject,
-    	      plog.correlationKey,
-    	      plog.processType,
     	      log.slaDueDate,
     	      log.slaCompliance
 	      )
-        from
+        from 
         	AuditTaskImpl a,
-        TaskImpl t,
-        ProcessInstanceLog plog,
-        NodeInstanceLog log
-        where
+            	NodeInstanceLog log
+        where 
         	a.taskId = :taskId
             	and log.workItemId = a.workItemId
-            	and plog.processInstanceId = log.processInstanceId
     </query>
     <!-- hint name="org.hibernate.timeout" value="200"/ -->
   </named-query>
-
+  
   <named-query name="getTaskInstanceByWorkItemId">
     <query>
         select 
